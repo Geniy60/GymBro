@@ -17,6 +17,38 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Removed duplicate machine edit action.
+
+Details:
+
+- Removed the edit icon action from machine cards because tapping the card already opens the machine form.
+- Machine cards now keep only the delete action as a separate icon button.
+
+Previous step:
+
+Adjusted workout card actions and new-workout exit prompts.
+
+Details:
+
+- Removed the edit icon action from workout cards because tapping the card already opens the workout.
+- New workout drafts now always show the save confirmation when leaving, even if nothing was entered yet.
+- Repeated workout drafts now also show the save confirmation when leaving before edits.
+- Existing saved workouts still close without a prompt when opened and left unchanged.
+
+Previous step:
+
+Added workout repeat action.
+
+Details:
+
+- Workout cards now include a repeat icon action.
+- Repeating a workout opens a new workout draft for today.
+- The repeated draft copies the original exercises, sets, weights, reps, and set notes.
+- The repeated workout receives new workout, exercise, and set IDs, so saving it creates a separate workout.
+- The repeated draft follows the existing workflow and is saved only when the user finishes or chooses to save after edits.
+
+Previous step:
+
 Fixed unchanged workout exit behavior.
 
 Details:
@@ -158,7 +190,7 @@ Verified:
 
 ## Next Proposed Step
 
-Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify opening an existing workout, leaving without edits, editing a set, and confirming the save prompt appears only after real changes.
+Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify machine card tap-to-edit, machine deletion, workout card actions, leaving a newly started empty workout, leaving a repeated workout without edits, and opening an existing saved workout without edits.
 
 ## Important Decisions
 

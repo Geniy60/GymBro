@@ -12,12 +12,14 @@ type WorkoutsScreenProps = {
   onStartWorkout: () => void;
   onDeleteWorkout: (workout: Workout) => void;
   onEditWorkout: (workout: Workout) => void;
+  onRepeatWorkout: (workout: Workout) => void;
   workouts: Workout[];
 };
 
 export function WorkoutsScreen({
   onDeleteWorkout,
   onEditWorkout,
+  onRepeatWorkout,
   onStartWorkout,
   workouts,
 }: WorkoutsScreenProps) {
@@ -90,6 +92,7 @@ export function WorkoutsScreen({
           <WorkoutCard
             onDelete={() => onDeleteWorkout(item)}
             onEdit={() => onEditWorkout(item)}
+            onRepeat={() => onRepeatWorkout(item)}
             workout={item}
           />
         )}

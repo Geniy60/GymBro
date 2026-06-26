@@ -129,6 +129,23 @@ export default function App() {
     setScreen('workoutSession');
   }
 
+  function repeatWorkout(workout: Workout) {
+    setEditingWorkout({
+      id: createId(),
+      name: createDefaultWorkoutName(),
+      startedAt: new Date().toISOString(),
+      exercises: workout.exercises.map((exercise) => ({
+        ...exercise,
+        id: createId(),
+        sets: exercise.sets.map((workoutSet) => ({
+          ...workoutSet,
+          id: createId(),
+        })),
+      })),
+    });
+    setScreen('workoutSession');
+  }
+
   function closeMachineForm() {
     setScreen('home');
     setEditingMachine(null);
@@ -233,6 +250,9 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <WorkoutSessionScreen
+          isNewWorkout={workouts.every(
+            (currentWorkout) => currentWorkout.id !== editingWorkout.id,
+          )}
           machines={machines}
           onBack={closeWorkoutForm}
           onSave={(workout) => {
@@ -306,6 +326,7 @@ export default function App() {
           <WorkoutsScreen
             onDeleteWorkout={confirmDeleteWorkout}
             onEditWorkout={openWorkoutSession}
+            onRepeatWorkout={repeatWorkout}
             onStartWorkout={startWorkout}
             workouts={workouts}
           />

@@ -30,19 +30,6 @@ export function MachineCard({ machine, onDelete, onEdit }: MachineCardProps) {
       </View>
       <View style={styles.cardActions}>
         <Pressable
-          accessibilityLabel={strings.accessibility.editMachine}
-          onPress={(event) => {
-            event.stopPropagation();
-            onEdit();
-          }}
-          style={({ pressed }) => [
-            styles.cardActionButton,
-            pressed && styles.pressedButton,
-          ]}
-        >
-          <Text style={styles.iconButtonText}>{strings.actions.editIcon}</Text>
-        </Pressable>
-        <Pressable
           accessibilityLabel={strings.accessibility.deleteMachine}
           onPress={(event) => {
             event.stopPropagation();

@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
@@ -7,10 +8,16 @@ import type { Workout } from '../../types';
 type WorkoutCardProps = {
   onDelete: () => void;
   onEdit: () => void;
+  onRepeat: () => void;
   workout: Workout;
 };
 
-export function WorkoutCard({ onDelete, onEdit, workout }: WorkoutCardProps) {
+export function WorkoutCard({
+  onDelete,
+  onEdit,
+  onRepeat,
+  workout,
+}: WorkoutCardProps) {
   const setCount = workout.exercises.reduce(
     (total, exercise) => total + exercise.sets.length,
     0,
@@ -32,17 +39,17 @@ export function WorkoutCard({ onDelete, onEdit, workout }: WorkoutCardProps) {
       </View>
       <View style={styles.cardActions}>
         <Pressable
-          accessibilityLabel={strings.accessibility.editWorkout}
+          accessibilityLabel={strings.accessibility.repeatWorkout}
           onPress={(event) => {
             event.stopPropagation();
-            onEdit();
+            onRepeat();
           }}
           style={({ pressed }) => [
             styles.cardActionButton,
             pressed && styles.pressedButton,
           ]}
         >
-          <Text style={styles.iconButtonText}>{strings.actions.editIcon}</Text>
+          <Ionicons name="repeat-outline" size={20} color={colors.text} />
         </Pressable>
         <Pressable
           accessibilityLabel={strings.accessibility.deleteWorkout}

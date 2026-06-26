@@ -18,6 +18,7 @@ import { colors } from '../../theme/colors';
 import type { Machine, Workout, WorkoutExercise, WorkoutSet } from '../../types';
 
 type WorkoutSessionScreenProps = {
+  isNewWorkout: boolean;
   machines: Machine[];
   onBack: () => void;
   onSave: (workout: Workout) => void;
@@ -25,6 +26,7 @@ type WorkoutSessionScreenProps = {
 };
 
 export function WorkoutSessionScreen({
+  isNewWorkout,
   machines,
   onBack,
   onSave,
@@ -151,7 +153,7 @@ export function WorkoutSessionScreen({
   }
 
   function confirmExitWorkout() {
-    if (!hasWorkoutChanged(workout, draftWorkout)) {
+    if (!isNewWorkout && !hasWorkoutChanged(workout, draftWorkout)) {
       onBack();
       return;
     }

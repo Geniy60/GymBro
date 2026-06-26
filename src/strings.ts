@@ -110,6 +110,7 @@ export const strings = {
     editMachine: 'Редактировать тренажер',
     editWorkout: 'Редактировать тренировку',
     finishWorkout: 'Завершить тренировку',
+    repeatWorkout: 'Повторить тренировку',
     settings: 'Открыть настройки',
     search: 'Поиск',
     clearSearch: 'Очистить поиск',
