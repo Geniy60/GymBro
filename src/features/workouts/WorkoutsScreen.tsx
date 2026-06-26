@@ -9,16 +9,16 @@ import type { Workout } from '../../types';
 import { WorkoutCard } from './WorkoutCard';
 
 type WorkoutsScreenProps = {
-  onAddWorkout: () => void;
+  onStartWorkout: () => void;
   onDeleteWorkout: (workout: Workout) => void;
   onEditWorkout: (workout: Workout) => void;
   workouts: Workout[];
 };
 
 export function WorkoutsScreen({
-  onAddWorkout,
   onDeleteWorkout,
   onEditWorkout,
+  onStartWorkout,
   workouts,
 }: WorkoutsScreenProps) {
   const [searchText, setSearchText] = useState('');
@@ -33,7 +33,7 @@ export function WorkoutsScreen({
     return workouts.filter((workout) => {
       const searchableText = [
         workout.name,
-        workout.note,
+        ...workout.exercises.map((exercise) => exercise.machineName),
       ].join(' ').toLocaleLowerCase();
 
       return searchableText.includes(normalizedSearch);
@@ -65,7 +65,7 @@ export function WorkoutsScreen({
         ) : null}
         <Pressable
           accessibilityLabel={strings.accessibility.addWorkout}
-          onPress={onAddWorkout}
+          onPress={onStartWorkout}
           style={({ pressed }) => [
             styles.addButton,
             pressed && styles.pressedButton,

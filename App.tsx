@@ -6,7 +6,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { MachineFormScreen } from './src/features/machines/MachineFormScreen';
 import { MachinesScreen } from './src/features/machines/MachinesScreen';
-import { WorkoutFormScreen } from './src/features/workouts/WorkoutFormScreen';
+import { WorkoutSessionScreen } from './src/features/workouts/WorkoutSessionScreen';
 import { WorkoutsScreen } from './src/features/workouts/WorkoutsScreen';
 import { loadMachines, saveMachines } from './src/storage/machinesStorage';
 import { loadWorkouts, saveWorkouts } from './src/storage/workoutsStorage';
@@ -112,14 +112,19 @@ export default function App() {
     setScreen('machineForm');
   }
 
-  function openAddWorkoutForm() {
-    setEditingWorkout(null);
-    setScreen('workoutForm');
+  function startWorkout() {
+    setEditingWorkout({
+      id: createId(),
+      name: createDefaultWorkoutName(),
+      startedAt: new Date().toISOString(),
+      exercises: [],
+    });
+    setScreen('workoutSession');
   }
 
-  function openEditWorkoutForm(workout: Workout) {
+  function openWorkoutSession(workout: Workout) {
     setEditingWorkout(workout);
-    setScreen('workoutForm');
+    setScreen('workoutSession');
   }
 
   function closeMachineForm() {
@@ -138,7 +143,7 @@ export default function App() {
       return;
     }
 
-    if (screen === 'workoutForm') {
+    if (screen === 'workoutSession') {
       closeWorkoutForm();
     }
   }
@@ -160,7 +165,7 @@ export default function App() {
 
   async function handleSaveWorkout(workout: Workout) {
     const nextWorkouts =
-      editingWorkout === null
+      workouts.every((currentWorkout) => currentWorkout.id !== workout.id)
         ? [...workouts, workout]
         : workouts.map((currentWorkout) =>
             currentWorkout.id === workout.id ? workout : currentWorkout,
@@ -232,10 +237,11 @@ export default function App() {
     );
   }
 
-  if (screen === 'workoutForm') {
+  if (screen === 'workoutSession' && editingWorkout !== null) {
     return (
       <SafeAreaProvider>
-        <WorkoutFormScreen
+        <WorkoutSessionScreen
+          machines={machines}
           onBack={closeWorkoutForm}
           onSave={(workout) => {
             void handleSaveWorkout(workout);
@@ -305,9 +311,9 @@ export default function App() {
           />
         ) : (
           <WorkoutsScreen
-            onAddWorkout={openAddWorkoutForm}
             onDeleteWorkout={confirmDeleteWorkout}
-            onEditWorkout={openEditWorkoutForm}
+            onEditWorkout={openWorkoutSession}
+            onStartWorkout={startWorkout}
             workouts={workouts}
           />
         )}
@@ -388,3 +394,11 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
 });
+
+function createId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function createDefaultWorkoutName() {
+  return strings.workouts.defaultNameWithDate(new Date().toLocaleDateString('ru-RU'));
+}

@@ -11,6 +11,11 @@ type WorkoutCardProps = {
 };
 
 export function WorkoutCard({ onDelete, onEdit, workout }: WorkoutCardProps) {
+  const setCount = workout.exercises.reduce(
+    (total, exercise) => total + exercise.sets.length,
+    0,
+  );
+
   return (
     <Pressable
       accessibilityLabel={strings.accessibility.editWorkout}
@@ -19,11 +24,9 @@ export function WorkoutCard({ onDelete, onEdit, workout }: WorkoutCardProps) {
     >
       <View style={styles.cardTextBlock}>
         <Text style={styles.cardTitle}>{workout.name}</Text>
-        {workout.note.length > 0 ? (
-          <Text numberOfLines={2} style={styles.cardNote}>
-            {workout.note}
-          </Text>
-        ) : null}
+        <Text style={styles.cardMeta}>
+          {strings.workouts.cardMeta(workout.exercises.length, setCount)}
+        </Text>
       </View>
       <View style={styles.cardActions}>
         <Pressable
@@ -82,10 +85,9 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '600',
   },
-  cardNote: {
+  cardMeta: {
     color: colors.muted,
     fontSize: 14,
-    lineHeight: 19,
     marginTop: 5,
   },
   cardActions: {

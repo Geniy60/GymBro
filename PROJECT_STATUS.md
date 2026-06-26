@@ -11,17 +11,25 @@ The initial app shell is in place with a compact header, safe-area handling, and
 
 The Machines tab now supports the first real MVP workflow: list, search, add, edit, and delete machines. Machine data is persisted locally on the device with AsyncStorage.
 
-The Workouts tab now supports the same simple local MVP workflow: list, search, add, edit, and delete workouts. Workout data is persisted locally on the device with AsyncStorage.
+The Workouts tab now starts and edits factual workout logs. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data is persisted locally on the device with AsyncStorage.
 
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Implemented local Workouts CRUD.
+Changed Workouts from note-based records to set-by-set workout logging.
 
 Details:
 
-- Added Workout and WorkoutDraft types.
+- Replaced the simple workout note form with a workout session screen.
+- The Workouts `+` button now starts a workout with a default date-based name.
+- A workout session can add machines from the Machines list.
+- Each selected machine can have separate set rows with weight, reps, and a note.
+- Existing saved note-based workouts are migrated to the new local format with empty exercises.
+
+Previous step:
+
+- Added the first local workout types.
 - Added AsyncStorage persistence for workouts.
 - Added a workout list screen with search, add, edit, delete, and filtered-empty state.
 - Added a workout form screen for creating and editing workouts.
@@ -85,7 +93,7 @@ Verified:
 
 ## Next Proposed Step
 
-Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify the Workouts add/edit/delete flow on a phone. After that, the simplest next feature step is deciding how workouts should use machines: either a plain note-based plan, or a structured list of selected machines/exercises.
+Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify starting a workout, adding machines, adding multiple sets, saving, reopening, and deleting workouts. After that, the simplest next feature step is improving workout entry speed, for example by repeating the previous set values when adding a new set.
 
 ## Important Decisions
 
@@ -110,5 +118,5 @@ Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, 
 - The settings button is visual only; no settings screen exists yet.
 - Machine IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
 - Workout IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
-- Workouts are not linked to machines yet; they only have a name and note field.
+- Workout set values are stored as strings for simple mobile input; validation and numeric summaries can be added later.
 - `npm audit` reports moderate vulnerabilities from the generated Expo and tunnel dependency tree; no remediation was applied because automatic fixes could affect Expo SDK compatibility.
