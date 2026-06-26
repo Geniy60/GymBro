@@ -29,6 +29,8 @@ export function WorkoutSessionScreen({
   workout,
 }: WorkoutSessionScreenProps) {
   const [draftWorkout, setDraftWorkout] = useState<Workout>(workout);
+  const [machineSearchText, setMachineSearchText] = useState('');
+  const filteredMachines = filterMachines(machines, machineSearchText);
 
   function updateWorkoutName(name: string) {
     setDraftWorkout((currentWorkout) => ({
@@ -158,21 +160,50 @@ export function WorkoutSessionScreen({
               title={strings.workouts.noMachinesTitle}
             />
           ) : (
-            <View style={styles.machinePicker}>
-              {machines.map((machine) => (
-                <Pressable
-                  accessibilityLabel={strings.workouts.addMachineToWorkout(machine.name)}
-                  key={machine.id}
-                  onPress={() => addExercise(machine)}
-                  style={({ pressed }) => [
-                    styles.machineButton,
-                    pressed && styles.pressedButton,
-                  ]}
-                >
-                  <Text style={styles.machineButtonText}>{machine.name}</Text>
-                </Pressable>
-              ))}
-            </View>
+            <>
+              <View style={styles.machineSearchRow}>
+                <TextInput
+                  accessibilityLabel={strings.accessibility.searchMachinesInWorkout}
+                  onChangeText={setMachineSearchText}
+                  placeholder={strings.workouts.machineSearchPlaceholder}
+                  placeholderTextColor={colors.muted}
+                  style={styles.machineSearchInput}
+                  value={machineSearchText}
+                />
+                {machineSearchText.length > 0 ? (
+                  <Pressable
+                    accessibilityLabel={strings.accessibility.clearSearch}
+                    onPress={() => setMachineSearchText('')}
+                    style={({ pressed }) => [
+                      styles.clearButton,
+                      pressed && styles.pressedButton,
+                    ]}
+                  >
+                    <Ionicons name="close" size={22} color={colors.text} />
+                  </Pressable>
+                ) : null}
+              </View>
+
+              {filteredMachines.length === 0 ? (
+                <Text style={styles.helperText}>{strings.empty.filtered.title}</Text>
+              ) : (
+                <View style={styles.machinePicker}>
+                  {filteredMachines.map((machine) => (
+                    <Pressable
+                      accessibilityLabel={strings.workouts.addMachineToWorkout(machine.name)}
+                      key={machine.id}
+                      onPress={() => addExercise(machine)}
+                      style={({ pressed }) => [
+                        styles.machineButton,
+                        pressed && styles.pressedButton,
+                      ]}
+                    >
+                      <Text style={styles.machineButtonText}>{machine.name}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+            </>
           )}
         </View>
 
@@ -285,6 +316,24 @@ function createId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+function filterMachines(machines: Machine[], searchText: string) {
+  const normalizedSearchText = searchText.trim().toLocaleLowerCase();
+
+  if (normalizedSearchText.length === 0) {
+    return machines;
+  }
+
+  return machines.filter((machine) => {
+    const searchableText = [
+      machine.name,
+      machine.muscleGroup,
+      machine.note,
+    ].join(' ').toLocaleLowerCase();
+
+    return searchableText.includes(normalizedSearchText);
+  });
+}
+
 function createEmptySet(): WorkoutSet {
   return {
     id: createId(),
@@ -371,6 +420,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+  },
+  machineSearchRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 10,
+  },
+  machineSearchInput: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    color: colors.text,
+    flex: 1,
+    fontSize: 16,
+    height: 44,
+    paddingHorizontal: 14,
+  },
+  clearButton: {
+    alignItems: 'center',
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
   },
   machineButton: {
     backgroundColor: colors.panel,

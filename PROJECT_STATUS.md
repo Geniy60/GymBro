@@ -17,9 +17,15 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Improved workout list readability.
+Improved machine selection inside active workouts.
 
 Details:
+
+- Added local search for machines inside the workout session screen.
+- The search matches machine name, muscle group, and note.
+- Added a clear search button for the machine picker.
+
+Previous step:
 
 - Workout cards now show the workout date from `startedAt`.
 - Workout search now includes the formatted workout date.

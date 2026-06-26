@@ -76,6 +76,7 @@ export const strings = {
     deleteSet: 'Удалить подход',
     emptyExercises: 'Добавь тренажер выше, затем вноси подходы по одному.',
     exercisesTitle: 'Упражнения',
+    machineSearchPlaceholder: 'Поиск тренажера',
     noMachinesTitle: 'Тренажеров пока нет',
     noMachinesMessage: 'Сначала добавь тренажеры во вкладке «Тренажеры».',
     repsLabel: 'Повторения',
@@ -101,5 +102,6 @@ export const strings = {
     clearSearch: 'Очистить поиск',
     saveMachine: 'Сохранить тренажер',
     saveWorkout: 'Сохранить тренировку',
+    searchMachinesInWorkout: 'Поиск тренажера для тренировки',
   },
 } as const;
