@@ -33,6 +33,7 @@ export function WorkoutsScreen({
     return workouts.filter((workout) => {
       const searchableText = [
         workout.name,
+        new Date(workout.startedAt).toLocaleDateString('ru-RU'),
         ...workout.exercises.map((exercise) => exercise.machineName),
       ].join(' ').toLocaleLowerCase();
 

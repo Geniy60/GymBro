@@ -84,6 +84,7 @@ export const strings = {
     setNoteLabel: 'Заметка к подходу',
     setNotePlaceholder: 'Заметка к подходу',
     setNumber: (number: number) => `${number}.`,
+    unknownDate: 'Дата не указана',
     weightLabel: 'Вес, кг',
     weightPlaceholder: 'кг',
   },

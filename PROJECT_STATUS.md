@@ -17,9 +17,14 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Improved workout entry speed in active workouts.
+Improved workout list readability.
 
 Details:
+
+- Workout cards now show the workout date from `startedAt`.
+- Workout search now includes the formatted workout date.
+
+Previous step:
 
 - Adding a machine to a workout now immediately creates the first empty set.
 - Adding a new set now copies the previous set's weight and reps for the same exercise.
