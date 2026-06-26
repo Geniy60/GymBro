@@ -17,10 +17,11 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Improved set entry speed in active workouts.
+Improved workout entry speed in active workouts.
 
 Details:
 
+- Adding a machine to a workout now immediately creates the first empty set.
 - Adding a new set now copies the previous set's weight and reps for the same exercise.
 - New copied sets still start with an empty note.
 

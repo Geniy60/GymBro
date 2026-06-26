@@ -42,7 +42,7 @@ export function WorkoutSessionScreen({
       id: createId(),
       machineId: machine.id,
       machineName: machine.name,
-      sets: [],
+      sets: [createEmptySet()],
     };
 
     setDraftWorkout((currentWorkout) => ({
@@ -285,13 +285,21 @@ function createId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+function createEmptySet(): WorkoutSet {
+  return {
+    id: createId(),
+    weightKg: '',
+    reps: '',
+    note: '',
+  };
+}
+
 function addSetToExercise(exercise: WorkoutExercise) {
   const previousSet = exercise.sets[exercise.sets.length - 1];
   const workoutSet: WorkoutSet = {
-    id: createId(),
+    ...createEmptySet(),
     weightKg: previousSet?.weightKg ?? '',
     reps: previousSet?.reps ?? '',
-    note: '',
   };
 
   return {
