@@ -390,6 +390,7 @@ function AppContent() {
           onSave={(workout) => {
             void handleSaveWorkout(workout);
           }}
+          previousWorkouts={workouts}
           workout={editingWorkout}
         />
         <StatusBar style="dark" />

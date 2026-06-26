@@ -26,6 +26,28 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Prefilled exercises from recent history.
+
+Details:
+
+- When adding a machine to a workout, the app now looks up the latest previous workout that used that machine.
+- If previous sets exist, the new exercise copies those set values with fresh set IDs.
+- If no history exists for the machine, the app still creates four empty sets.
+- The lookup uses already loaded workout data and a memoized map, so selecting machines does not trigger network requests.
+- TypeScript and test checks pass after the prefill change.
+
+Previous step:
+
+Changed default sets for newly added exercises.
+
+Details:
+
+- Adding a machine to a workout now creates four empty sets immediately.
+- Repeat/copy behavior is unchanged and still copies the source workout sets.
+- TypeScript and test checks pass after the default set count change.
+
+Previous step:
+
 Changed workout machine picker to a compact grid.
 
 Details:

@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   BackHandler,
   FlatList,
@@ -23,6 +23,7 @@ type WorkoutSessionScreenProps = {
   machines: Machine[];
   onBack: () => void;
   onSave: (workout: Workout) => void;
+  previousWorkouts: Workout[];
   workout: Workout;
 };
 
@@ -32,6 +33,7 @@ export function WorkoutSessionScreen({
   machines,
   onBack,
   onSave,
+  previousWorkouts,
   workout,
 }: WorkoutSessionScreenProps) {
   const [draftWorkout, setDraftWorkout] = useState<Workout>(workout);
@@ -39,6 +41,10 @@ export function WorkoutSessionScreen({
   const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<string[]>([]);
   const [visibleSetNoteIds, setVisibleSetNoteIds] = useState<string[]>([]);
   const filteredMachines = filterMachines(machines, machineSearchText);
+  const lastSetsByMachineId = useMemo(
+    () => buildLastSetsByMachineId(previousWorkouts, workout.id),
+    [previousWorkouts, workout.id],
+  );
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -61,7 +67,7 @@ export function WorkoutSessionScreen({
       id: createId(),
       machineId: machine.id,
       machineName: machine.name,
-      sets: [createEmptySet()],
+      sets: createSetsFromHistory(lastSetsByMachineId.get(machine.id)),
     };
 
     setDraftWorkout((currentWorkout) => ({
@@ -554,6 +560,49 @@ function filterMachines(machines: Machine[], searchText: string) {
   });
 }
 
+function buildLastSetsByMachineId(
+  workouts: Workout[],
+  currentWorkoutId: string,
+): Map<string, WorkoutSet[]> {
+  const lastSetsByMachineId = new Map<string, WorkoutSet[]>();
+  const sortedWorkouts = [...workouts].sort(
+    (firstWorkout, secondWorkout) =>
+      new Date(secondWorkout.startedAt).getTime() -
+      new Date(firstWorkout.startedAt).getTime(),
+  );
+
+  for (const workoutItem of sortedWorkouts) {
+    if (workoutItem.id === currentWorkoutId) {
+      continue;
+    }
+
+    for (const exercise of workoutItem.exercises) {
+      if (
+        exercise.machineId.length === 0 ||
+        exercise.sets.length === 0 ||
+        lastSetsByMachineId.has(exercise.machineId)
+      ) {
+        continue;
+      }
+
+      lastSetsByMachineId.set(exercise.machineId, exercise.sets);
+    }
+  }
+
+  return lastSetsByMachineId;
+}
+
+function createSetsFromHistory(historySets: WorkoutSet[] | undefined): WorkoutSet[] {
+  if (historySets === undefined || historySets.length === 0) {
+    return createEmptySets(4);
+  }
+
+  return historySets.map((historySet) => ({
+    ...historySet,
+    id: createId(),
+  }));
+}
+
 function createEmptySet(): WorkoutSet {
   return {
     id: createId(),
@@ -561,6 +610,10 @@ function createEmptySet(): WorkoutSet {
     reps: '',
     note: '',
   };
+}
+
+function createEmptySets(count: number): WorkoutSet[] {
+  return Array.from({ length: count }, createEmptySet);
 }
 
 function addSetToExercise(exercise: WorkoutExercise) {
