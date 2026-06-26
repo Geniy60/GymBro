@@ -4,18 +4,36 @@
 
 The project is now a minimal Expo SDK 54 / React Native / TypeScript mobile app for a personal gym assistant.
 
+The app now uses the shared Supabase project used by the sibling Vacation app.
+
 The initial app shell is in place with a compact header, safe-area handling, and two main tabs:
 
 - Machines
 - Workouts
 
-The Machines tab now supports the first real MVP workflow: list, search, add, edit, and delete machines. Machine data is persisted locally on the device with AsyncStorage.
+The Machines tab supports list, search, add, edit, and delete. Machine data now loads from Supabase through a small service layer and TanStack Query.
 
-The Workouts tab now starts and edits factual workout logs. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data is persisted locally on the device with AsyncStorage.
+The Workouts tab starts and edits factual workout logs. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
 
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
+
+Applied Supabase persistence.
+
+Details:
+
+- Added Supabase and TanStack Query dependencies.
+- Added Expo public Supabase configuration copied from the sibling Vacation app.
+- Added `gymbro_*` Supabase table types, client setup, query keys, and service modules for machines and workouts.
+- Replaced AsyncStorage app wiring with Supabase service calls and query invalidation.
+- Removed the old AsyncStorage dependency and local storage files.
+- Added a Supabase migration runner and migration instructions.
+- Added `supabase/migrations/20260626130000_gymbro_initial_schema.sql` with GymBro tables and standard machine seed data.
+- Applied the migration to the shared Supabase database.
+- Verified the app anon client can read `gymbro_machines`; the seeded standard machine count is 23.
+
+Previous step:
 
 Added one-time standard machine seed data.
 
@@ -313,7 +331,7 @@ Verified:
 
 ## Next Proposed Step
 
-Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify the seeded standard machine list, editing/deleting seeded machines, searching by machine name/tag/note, and adding seeded machines to a workout.
+Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify database-backed machines and workouts on phone.
 
 ## Important Decisions
 
@@ -329,9 +347,9 @@ Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, 
 - For Expo Android APK builds, increment `versionCode`, submit the EAS APK build, report submission or queue status, and do not wait for the full cloud build result unless explicitly asked.
 - Use Expo / React Native / TypeScript for the initial mobile MVP.
 - Stay on Expo SDK 54 for now because this SDK level was requested and matches the already tested sibling project setup.
-- Do not add a backend or database until there is a concrete persistence requirement.
+- Use the shared Supabase project from Vacation for GymBro persistence.
 - Use `Start Expo Go Tunnel.cmd` for phone testing through Expo Go when LAN discovery is unreliable.
-- Use AsyncStorage for local-only MVP persistence until sync or multi-device usage becomes a real requirement.
+- Use TanStack Query for server data loaded from Supabase.
 
 ## Known Rough Edges
 
@@ -339,4 +357,5 @@ Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, 
 - Machine IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
 - Workout IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
 - Workout set values are stored as strings for simple mobile input; validation and numeric summaries can be added later.
+- Local AsyncStorage data is no longer used by the app. Existing phone-local data will not automatically appear in Supabase unless a migration/import step is added later.
 - `npm audit` reports moderate vulnerabilities from the generated Expo and tunnel dependency tree; no remediation was applied because automatic fixes could affect Expo SDK compatibility.

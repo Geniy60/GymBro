@@ -1,4 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
+import {
+  QueryClientProvider,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -10,8 +15,17 @@ import { MachineFormScreen } from './src/features/machines/MachineFormScreen';
 import { MachinesScreen } from './src/features/machines/MachinesScreen';
 import { WorkoutSessionScreen } from './src/features/workouts/WorkoutSessionScreen';
 import { WorkoutsScreen } from './src/features/workouts/WorkoutsScreen';
-import { loadMachines, saveMachines } from './src/storage/machinesStorage';
-import { loadWorkouts, saveWorkouts } from './src/storage/workoutsStorage';
+import { queryClient, queryKeys } from './src/queryClient';
+import {
+  deleteMachine,
+  loadMachines,
+  saveMachine,
+} from './src/services/machinesService';
+import {
+  deleteWorkout,
+  loadWorkouts,
+  saveWorkout,
+} from './src/services/workoutsService';
 import { strings } from './src/strings';
 import { colors } from './src/theme/colors';
 import type { AppScreen, Machine, MainTab, Workout } from './src/types';
@@ -33,17 +47,35 @@ const tabs: TabConfig[] = [
 ];
 
 export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
+    </QueryClientProvider>
+  );
+}
+
+function AppContent() {
   const [activeTab, setActiveTab] = useState<MainTab>('workouts');
   const [screen, setScreen] = useState<AppScreen>('home');
-  const [machines, setMachines] = useState<Machine[]>([]);
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
   const [editingWorkout, setEditingWorkout] = useState<Workout | null>(null);
+  const queryClientInstance = useQueryClient();
+  const machinesQuery = useQuery({
+    queryKey: queryKeys.machines,
+    queryFn: loadMachines,
+  });
+  const workoutsQuery = useQuery({
+    queryKey: queryKeys.workouts,
+    queryFn: loadWorkouts,
+  });
+  const machines = machinesQuery.data ?? [];
+  const workouts = workoutsQuery.data ?? [];
 
   useEffect(() => {
-    void loadStoredMachines();
-    void loadStoredWorkouts();
-  }, []);
+    if (machinesQuery.isError || workoutsQuery.isError) {
+      showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+    }
+  }, [machinesQuery.isError, workoutsQuery.isError]);
 
   useEffect(() => {
     if (screen !== 'machineForm') {
@@ -57,52 +89,6 @@ export default function App() {
 
     return () => subscription.remove();
   }, [screen]);
-
-  async function loadStoredMachines() {
-    const loadResult = await loadMachines();
-
-    if (loadResult.ok) {
-      setMachines(loadResult.machines);
-      return;
-    }
-
-    showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
-  }
-
-  async function loadStoredWorkouts() {
-    const loadResult = await loadWorkouts();
-
-    if (loadResult.ok) {
-      setWorkouts(loadResult.workouts);
-      return;
-    }
-
-    showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
-  }
-
-  async function persistMachines(nextMachines: Machine[]) {
-    const saveResult = await saveMachines(nextMachines);
-
-    if (saveResult.ok) {
-      setMachines(nextMachines);
-      return true;
-    }
-
-    showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
-    return false;
-  }
-
-  async function persistWorkouts(nextWorkouts: Workout[]) {
-    const saveResult = await saveWorkouts(nextWorkouts);
-
-    if (saveResult.ok) {
-      setWorkouts(nextWorkouts);
-      return true;
-    }
-
-    showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
-    return false;
-  }
 
   function openAddMachineForm() {
     setEditingMachine(null);
@@ -157,32 +143,22 @@ export default function App() {
   }
 
   async function handleSaveMachine(machine: Machine) {
-    const nextMachines =
-      editingMachine === null
-        ? [...machines, machine]
-        : machines.map((currentMachine) =>
-            currentMachine.id === machine.id ? machine : currentMachine,
-          );
-
-    const didSave = await persistMachines(nextMachines);
-
-    if (didSave) {
+    try {
+      await saveMachine(machine);
+      await queryClientInstance.invalidateQueries({ queryKey: queryKeys.machines });
       closeMachineForm();
+    } catch {
+      showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
     }
   }
 
   async function handleSaveWorkout(workout: Workout) {
-    const nextWorkouts =
-      workouts.every((currentWorkout) => currentWorkout.id !== workout.id)
-        ? [...workouts, workout]
-        : workouts.map((currentWorkout) =>
-            currentWorkout.id === workout.id ? workout : currentWorkout,
-          );
-
-    const didSave = await persistWorkouts(nextWorkouts);
-
-    if (didSave) {
+    try {
+      await saveWorkout(workout);
+      await queryClientInstance.invalidateQueries({ queryKey: queryKeys.workouts });
       closeWorkoutForm();
+    } catch {
+      showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
     }
   }
 
@@ -199,9 +175,7 @@ export default function App() {
           text: strings.actions.delete,
           style: 'destructive',
           onPress: () => {
-            void persistMachines(
-              machines.filter((currentMachine) => currentMachine.id !== machine.id),
-            );
+            void handleDeleteMachine(machine.id);
           },
         },
       ],
@@ -221,13 +195,29 @@ export default function App() {
           text: strings.actions.delete,
           style: 'destructive',
           onPress: () => {
-            void persistWorkouts(
-              workouts.filter((currentWorkout) => currentWorkout.id !== workout.id),
-            );
+            void handleDeleteWorkout(workout.id);
           },
         },
       ],
     );
+  }
+
+  async function handleDeleteMachine(machineId: string) {
+    try {
+      await deleteMachine(machineId);
+      await queryClientInstance.invalidateQueries({ queryKey: queryKeys.machines });
+    } catch {
+      showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
+    }
+  }
+
+  async function handleDeleteWorkout(workoutId: string) {
+    try {
+      await deleteWorkout(workoutId);
+      await queryClientInstance.invalidateQueries({ queryKey: queryKeys.workouts });
+    } catch {
+      showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
+    }
   }
 
   if (screen === 'machineForm') {
