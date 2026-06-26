@@ -17,9 +17,19 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Implemented local Machines CRUD.
+Refactored the app into a small feature-based structure.
 
 Details:
+
+- Moved machine UI into `src/features/machines`.
+- Moved the workouts placeholder into `src/features/workouts`.
+- Moved shared empty-state UI into `src/components`.
+- Moved AsyncStorage access for machines into `src/storage`.
+- Moved shared domain types into `src/types`.
+- Moved shared colors into `src/theme`.
+- Kept `App.tsx` focused on the top-level app shell, tab selection, and simple screen switching.
+
+Previous step:
 
 - Added `@react-native-async-storage/async-storage` for simple local device persistence.
 - Added a machine form screen for creating and editing machines.
