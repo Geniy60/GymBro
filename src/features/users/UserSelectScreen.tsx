@@ -110,7 +110,7 @@ function getUserDisplayIndex(userId: string): number {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.userSelectBackground,
   },
   content: {
     flex: 1,

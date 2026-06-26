@@ -7,18 +7,23 @@ import { colors } from '../../theme/colors';
 import type { AppUser } from '../../types';
 
 type SettingsScreenProps = {
+  backgroundColor: string;
   currentUser: AppUser | null;
   onBack: () => void;
   onChangeUser: () => void;
 };
 
 export function SettingsScreen({
+  backgroundColor,
   currentUser,
   onBack,
   onChangeUser,
 }: SettingsScreenProps) {
   return (
-    <SafeAreaView edges={['top', 'right', 'bottom', 'left']} style={styles.safeArea}>
+    <SafeAreaView
+      edges={['top', 'right', 'bottom', 'left']}
+      style={[styles.safeArea, { backgroundColor }]}
+    >
       <View style={styles.content}>
         <View style={styles.secondaryHeader}>
           <Pressable
@@ -62,7 +67,6 @@ export function SettingsScreen({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   content: {
     flex: 1,

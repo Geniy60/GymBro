@@ -26,6 +26,36 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Improved main tab contrast.
+
+Details:
+
+- Made the main `Machines` and `Workouts` tab colors slightly stronger so they do not blend into the user-specific backgrounds.
+- Added a light panel background and border behind the tab row for separation.
+- TypeScript and test checks pass after the tab color adjustment.
+
+Previous step:
+
+Softened Nastya background color.
+
+Details:
+
+- Changed Nastya's app background from `#FFF1F7` to the calmer `#FFF7FA`.
+- TypeScript and test checks pass after the palette adjustment.
+
+Previous step:
+
+Added user-specific soft backgrounds.
+
+Details:
+
+- The user selection screen now uses a very light yellow background.
+- The app background switches by selected user: `Настя` gets a very light pink background, `Женя` gets a very light blue background.
+- The soft user background is applied across the main screen, settings, machine form, and workout session.
+- TypeScript and test checks pass after the background change.
+
+Previous step:
+
 Adjusted user selection card order.
 
 Details:

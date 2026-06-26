@@ -87,6 +87,7 @@ function AppContent() {
     users.find((user) => user.id === selectedUserId) ?? null;
   const machines = machinesQuery.data ?? [];
   const workouts = workoutsQuery.data ?? [];
+  const appBackgroundColor = getUserBackgroundColor(selectedUserId);
 
   useEffect(() => {
     void loadStoredSelectedUser();
@@ -348,6 +349,7 @@ function AppContent() {
     return (
       <SafeAreaProvider>
         <SettingsScreen
+          backgroundColor={appBackgroundColor}
           currentUser={selectedUser}
           onBack={closeSettings}
           onChangeUser={openUserSelect}
@@ -362,6 +364,7 @@ function AppContent() {
     return (
       <SafeAreaProvider>
         <MachineFormScreen
+          backgroundColor={appBackgroundColor}
           machine={editingMachine}
           onBack={closeMachineForm}
           onSave={(machine) => {
@@ -378,6 +381,7 @@ function AppContent() {
     return (
       <SafeAreaProvider>
         <WorkoutSessionScreen
+          backgroundColor={appBackgroundColor}
           isNewWorkout={workouts.every(
             (currentWorkout) => currentWorkout.id !== editingWorkout.id,
           )}
@@ -396,7 +400,10 @@ function AppContent() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView edges={['top', 'right', 'bottom', 'left']} style={styles.safeArea}>
+      <SafeAreaView
+        edges={['top', 'right', 'bottom', 'left']}
+        style={[styles.safeArea, { backgroundColor: appBackgroundColor }]}
+      >
         <View style={styles.header}>
           <Text style={styles.appTitle}>{strings.app.title}</Text>
           <Pressable
@@ -471,7 +478,6 @@ function AppContent() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   header: {
     alignItems: 'center',
@@ -496,8 +502,10 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   tabRow: {
-    backgroundColor: '#DFEAF7',
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
     borderRadius: 8,
+    borderWidth: 1,
     flexDirection: 'row',
     gap: 4,
     marginBottom: 12,
@@ -515,10 +523,10 @@ const styles = StyleSheet.create({
     minHeight: 44,
   },
   machinesTab: {
-    backgroundColor: '#DCFCE7',
+    backgroundColor: '#CFF7D3',
   },
   workoutsTab: {
-    backgroundColor: '#EDE9FE',
+    backgroundColor: '#DDD6FE',
   },
   activeTab: {
     borderColor: colors.text,
@@ -545,4 +553,16 @@ function createId() {
 
 function createDefaultWorkoutName() {
   return strings.workouts.defaultNameWithDate(new Date().toLocaleDateString('ru-RU'));
+}
+
+function getUserBackgroundColor(userId: string | null): string {
+  if (userId === 'gymbro-user-nastya') {
+    return colors.nastyaBackground;
+  }
+
+  if (userId === 'gymbro-user-zhenya') {
+    return colors.zhenyaBackground;
+  }
+
+  return colors.background;
 }

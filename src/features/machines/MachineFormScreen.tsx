@@ -16,6 +16,7 @@ import { colors } from '../../theme/colors';
 import type { Machine, MachineDraft, MuscleGroup } from '../../types';
 
 type MachineFormScreenProps = {
+  backgroundColor: string;
   machine: Machine | null;
   onBack: () => void;
   onSave: (machine: Machine) => void;
@@ -28,6 +29,7 @@ const emptyMachineDraft: MachineDraft = {
 };
 
 export function MachineFormScreen({
+  backgroundColor,
   machine,
   onBack,
   onSave,
@@ -86,7 +88,10 @@ export function MachineFormScreen({
   }
 
   return (
-    <SafeAreaView edges={['top', 'right', 'bottom', 'left']} style={styles.safeArea}>
+    <SafeAreaView
+      edges={['top', 'right', 'bottom', 'left']}
+      style={[styles.safeArea, { backgroundColor }]}
+    >
       <ScrollView
         contentContainerStyle={styles.formContent}
         keyboardShouldPersistTaps="handled"
@@ -194,7 +199,6 @@ export function MachineFormScreen({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   formContent: {
     paddingBottom: 28,

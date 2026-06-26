@@ -18,6 +18,7 @@ import { colors } from '../../theme/colors';
 import type { Machine, Workout, WorkoutExercise, WorkoutSet } from '../../types';
 
 type WorkoutSessionScreenProps = {
+  backgroundColor: string;
   isNewWorkout: boolean;
   machines: Machine[];
   onBack: () => void;
@@ -26,6 +27,7 @@ type WorkoutSessionScreenProps = {
 };
 
 export function WorkoutSessionScreen({
+  backgroundColor,
   isNewWorkout,
   machines,
   onBack,
@@ -180,7 +182,10 @@ export function WorkoutSessionScreen({
   }
 
   return (
-    <SafeAreaView edges={['top', 'right', 'bottom', 'left']} style={styles.safeArea}>
+    <SafeAreaView
+      edges={['top', 'right', 'bottom', 'left']}
+      style={[styles.safeArea, { backgroundColor }]}
+    >
       <View style={styles.content}>
         <View style={styles.secondaryHeader}>
           <Pressable
@@ -587,7 +592,6 @@ function hasWorkoutChanged(initialWorkout: Workout, draftWorkout: Workout) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   content: {
     flex: 1,

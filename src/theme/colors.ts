@@ -1,5 +1,8 @@
 export const colors = {
   background: '#F7F8FA',
+  userSelectBackground: '#FFF9D8',
+  nastyaBackground: '#FFF7FA',
+  zhenyaBackground: '#EEF7FF',
   panel: '#FFFFFF',
   text: '#172033',
   muted: '#6B7280',
