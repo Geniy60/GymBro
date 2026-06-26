@@ -249,11 +249,13 @@ export function WorkoutSessionScreen({
                 <Text style={styles.helperText}>{strings.empty.filtered.title}</Text>
               ) : (
                 <FlatList
+                  columnWrapperStyle={styles.machinePickerRow}
                   contentContainerStyle={styles.machinePickerContent}
                   data={filteredMachines}
-                  horizontal
                   keyboardShouldPersistTaps="handled"
                   keyExtractor={(machine) => machine.id}
+                  nestedScrollEnabled
+                  numColumns={2}
                   renderItem={({ item: machine }) => (
                     <MachinePickerButton
                       machine={machine}
@@ -261,7 +263,7 @@ export function WorkoutSessionScreen({
                       workout={draftWorkout}
                     />
                   )}
-                  showsHorizontalScrollIndicator={false}
+                  showsVerticalScrollIndicator={false}
                   style={styles.machinePicker}
                 />
               )}
@@ -660,10 +662,14 @@ const styles = StyleSheet.create({
   },
   machinePicker: {
     flexGrow: 0,
+    maxHeight: 118,
   },
   machinePickerContent: {
+    gap: 6,
+    paddingBottom: 2,
+  },
+  machinePickerRow: {
     gap: 8,
-    paddingRight: 4,
   },
   machineSearchRow: {
     alignItems: 'center',
@@ -697,10 +703,11 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
-    minHeight: 34,
+    flex: 1,
     justifyContent: 'center',
+    minHeight: 38,
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: 5,
   },
   selectedMachineButton: {
     backgroundColor: '#DCFCE7',

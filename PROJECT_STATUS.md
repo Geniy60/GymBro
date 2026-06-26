@@ -26,6 +26,16 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Changed workout machine picker to a compact grid.
+
+Details:
+
+- Replaced the horizontal one-row machine picker in the workout session with a two-column vertical grid.
+- Limited the picker height so added exercises still keep the main screen space.
+- TypeScript and test checks pass after the picker layout change.
+
+Previous step:
+
 Improved main tab contrast.
 
 Details:
