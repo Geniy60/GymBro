@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { EmptyState } from '../../components/EmptyState';
 import { strings } from '../../strings';
@@ -72,7 +72,7 @@ export function MachinesScreen({
             pressed && styles.pressedButton,
           ]}
         >
-          <Ionicons name="add" size={26} color={colors.panel} />
+          <Text style={styles.addButtonText}>{strings.actions.addIcon}</Text>
         </Pressable>
       </View>
 
@@ -148,6 +148,12 @@ const styles = StyleSheet.create({
     height: 44,
     justifyContent: 'center',
     width: 44,
+  },
+  addButtonText: {
+    color: colors.panel,
+    fontSize: 28,
+    fontWeight: '700',
+    lineHeight: 30,
   },
   list: {
     flex: 1,

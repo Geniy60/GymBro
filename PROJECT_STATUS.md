@@ -17,9 +17,18 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Refactored the app into a small feature-based structure.
+Matched the main menu and machine action buttons to the sibling Fridge app style.
 
 Details:
+
+- Updated the main two-tab menu to use the Fridge-style switch container with pastel tab backgrounds and a dark active border.
+- Updated the Machines add button to use the Fridge-style green square button with a text plus.
+- Updated machine card edit/delete actions to use compact text-icon buttons.
+- Updated delete action styling to use the Fridge-style red outlined button.
+- Confirmed the machine save button already matches the Fridge-style full-width green save button.
+- Aligned the shared action colors with the Fridge button palette.
+
+Previous step:
 
 - Moved machine UI into `src/features/machines`.
 - Moved the workouts placeholder into `src/features/workouts`.

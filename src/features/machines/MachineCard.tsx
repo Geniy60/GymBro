@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
@@ -41,7 +40,7 @@ export function MachineCard({ machine, onDelete, onEdit }: MachineCardProps) {
             pressed && styles.pressedButton,
           ]}
         >
-          <Ionicons name="pencil" size={19} color={colors.text} />
+          <Text style={styles.iconButtonText}>{strings.actions.editIcon}</Text>
         </Pressable>
         <Pressable
           accessibilityLabel={strings.accessibility.deleteMachine}
@@ -55,7 +54,9 @@ export function MachineCard({ machine, onDelete, onEdit }: MachineCardProps) {
             pressed && styles.pressedButton,
           ]}
         >
-          <Ionicons name="trash-outline" size={19} color={colors.destructive} />
+          <Text style={[styles.iconButtonText, styles.deleteButtonText]}>
+            {strings.actions.deleteIcon}
+          </Text>
         </Pressable>
       </View>
     </Pressable>
@@ -109,9 +110,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 40,
   },
+  iconButtonText: {
+    color: colors.text,
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 22,
+  },
   destructiveActionButton: {
-    backgroundColor: colors.errorBackground,
     borderColor: colors.destructiveBorder,
+  },
+  deleteButtonText: {
+    color: colors.destructive,
   },
   pressedButton: {
     opacity: 0.7,

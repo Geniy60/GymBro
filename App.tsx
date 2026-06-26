@@ -169,11 +169,20 @@ export default function App() {
                 onPress={() => setActiveTab(tab.key)}
                 style={({ pressed }) => [
                   styles.tab,
+                  tab.key === 'machines' ? styles.machinesTab : styles.workoutsTab,
                   isActive && styles.activeTab,
                   pressed && styles.pressedButton,
                 ]}
               >
-                <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>
+                <Text
+                  style={[
+                    styles.tabLabel,
+                    tab.key === 'machines'
+                      ? styles.machinesTabLabel
+                      : styles.workoutsTabLabel,
+                    isActive && styles.activeTabLabel,
+                  ]}
+                >
                   {tab.label}
                 </Text>
               </Pressable>
@@ -226,32 +235,45 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   tabRow: {
+    backgroundColor: '#DFEAF7',
+    borderRadius: 8,
     flexDirection: 'row',
-    gap: 8,
+    gap: 4,
     marginBottom: 12,
-    paddingHorizontal: 20,
-    paddingTop: 14,
+    marginHorizontal: 20,
+    marginTop: 14,
+    padding: 4,
   },
   tab: {
     alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
+    borderColor: 'transparent',
+    borderRadius: 6,
+    borderWidth: 2,
     flex: 1,
     justifyContent: 'center',
     minHeight: 44,
   },
+  machinesTab: {
+    backgroundColor: '#DCFCE7',
+  },
+  workoutsTab: {
+    backgroundColor: '#EDE9FE',
+  },
   activeTab: {
-    backgroundColor: colors.active,
-    borderColor: colors.activeText,
+    borderColor: colors.text,
   },
   tabLabel: {
-    color: colors.muted,
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  machinesTabLabel: {
+    color: '#166534',
+  },
+  workoutsTabLabel: {
+    color: '#6D28D9',
   },
   activeTabLabel: {
-    color: colors.activeText,
+    color: colors.text,
   },
 });

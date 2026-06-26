@@ -26,7 +26,10 @@ export const strings = {
   },
   actions: {
     cancel: 'Отмена',
+    addIcon: '+',
     delete: 'Удалить',
+    deleteIcon: '×',
+    editIcon: '✎',
     resetSearch: 'Сбросить поиск',
     save: 'Сохранить',
   },
