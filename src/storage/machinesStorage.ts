@@ -1,10 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { muscleGroups } from '../muscleGroups';
+import { standardMachines } from '../standardMachines';
 import { strings } from '../strings';
 import type { Machine, MuscleGroup } from '../types';
 
 const machinesStorageKey = 'gymbro.machines.v1';
+const standardMachinesSeededStorageKey = 'gymbro.standardMachinesSeeded.v1';
 
 type LoadMachinesResult =
   | {
@@ -24,9 +26,11 @@ export async function loadMachines(): Promise<LoadMachinesResult> {
     const storedValue = await AsyncStorage.getItem(machinesStorageKey);
 
     if (storedValue === null) {
+      await saveSeededMachines(standardMachines);
+
       return {
         ok: true,
-        machines: [],
+        machines: standardMachines,
       };
     }
 
@@ -39,9 +43,12 @@ export async function loadMachines(): Promise<LoadMachinesResult> {
       };
     }
 
+    const normalizedMachines = parsedValue.map(normalizeStoredMachine);
+    const machines = await seedStandardMachinesIfNeeded(normalizedMachines);
+
     return {
       ok: true,
-      machines: parsedValue.map(normalizeStoredMachine),
+      machines,
     };
   } catch {
     return {
@@ -130,4 +137,36 @@ function parseLegacyMuscleGroups(value: string): MuscleGroup[] {
       aliases.some((alias) => normalizedValue.includes(alias))
     );
   });
+}
+
+async function seedStandardMachinesIfNeeded(machines: Machine[]) {
+  const hasSeededStandardMachines = await AsyncStorage.getItem(
+    standardMachinesSeededStorageKey,
+  );
+
+  if (hasSeededStandardMachines !== null) {
+    return machines;
+  }
+
+  const machinesById = new Set(machines.map((machine) => machine.id));
+  const machineNames = new Set(
+    machines.map((machine) => machine.name.trim().toLocaleLowerCase()),
+  );
+  const missingStandardMachines = standardMachines.filter((standardMachine) => {
+    const normalizedName = standardMachine.name.trim().toLocaleLowerCase();
+
+    return !machinesById.has(standardMachine.id) && !machineNames.has(normalizedName);
+  });
+  const seededMachines = [...missingStandardMachines, ...machines];
+
+  await saveSeededMachines(seededMachines);
+
+  return seededMachines;
+}
+
+async function saveSeededMachines(machines: Machine[]) {
+  await AsyncStorage.multiSet([
+    [machinesStorageKey, JSON.stringify(machines)],
+    [standardMachinesSeededStorageKey, 'true'],
+  ]);
 }

@@ -17,6 +17,18 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Added one-time standard machine seed data.
+
+Details:
+
+- Added a built-in standard machine catalog with stable IDs, Russian movement-style names, muscle group tags, and notes that help identify the real gym machine.
+- Standard machines are seeded into local storage once and then behave like normal editable/deletable machines.
+- Added a dedicated seed flag so standard machines can be added once to existing installs without being restored after the user edits or deletes them.
+- The seed avoids duplicates by stable ID and by matching existing machine names.
+- Standard machine names and notes are centralized in `src/strings.ts`.
+
+Previous step:
+
 Replaced free-text machine muscle groups with standard tags.
 
 Details:
@@ -301,7 +313,7 @@ Verified:
 
 ## Next Proposed Step
 
-Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify adding/editing machine muscle group tags, searching machines by tag, and adding tagged machines to a workout.
+Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify the seeded standard machine list, editing/deleting seeded machines, searching by machine name/tag/note, and adding seeded machines to a workout.
 
 ## Important Decisions
 

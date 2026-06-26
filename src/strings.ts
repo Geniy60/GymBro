@@ -155,4 +155,98 @@ export const strings = {
       lowerBack: ['поясница', 'разгибатели спины'],
     },
   },
+  standardMachines: {
+    legPress: {
+      name: 'Жим ногами',
+      note: 'Leg press. Платформа для жима ногами сидя или под углом.',
+    },
+    legExtension: {
+      name: 'Разгибание ног',
+      note: 'Leg extension. Валик перед голенями, разгибание коленей сидя.',
+    },
+    seatedLegCurl: {
+      name: 'Сгибание ног сидя',
+      note: 'Seated leg curl. Сгибание коленей сидя, валик у голеней.',
+    },
+    lyingLegCurl: {
+      name: 'Сгибание ног лежа',
+      note: 'Lying leg curl. Сгибание коленей лежа лицом вниз.',
+    },
+    hipAdduction: {
+      name: 'Сведение ног',
+      note: 'Adductor. Ноги сводятся внутрь.',
+    },
+    hipAbduction: {
+      name: 'Разведение ног',
+      note: 'Abductor. Ноги разводятся наружу.',
+    },
+    calfRaise: {
+      name: 'Подъем на икры',
+      note: 'Calf raise. Подъем на носки сидя или стоя.',
+    },
+    gluteKickback: {
+      name: 'Отведение ноги назад',
+      note: 'Glute kickback. Нога уходит назад, акцент на ягодицы.',
+    },
+    chestPress: {
+      name: 'Жим от груди',
+      note: 'Chest press. Жим рукоятей вперед сидя.',
+    },
+    inclineChestPress: {
+      name: 'Жим от груди в наклоне',
+      note: 'Incline chest press. Жим вверх-вперед, акцент на верх груди.',
+    },
+    pecDeck: {
+      name: 'Сведение рук / бабочка',
+      note: 'Pec deck или butterfly. Сведение рук перед грудью.',
+    },
+    shoulderPress: {
+      name: 'Жим плечами',
+      note: 'Shoulder press. Жим рукоятей вверх сидя.',
+    },
+    lateralRaise: {
+      name: 'Разведение рук в стороны',
+      note: 'Lateral raise. Подъем рук в стороны, акцент на средние дельты.',
+    },
+    latPulldown: {
+      name: 'Вертикальная тяга',
+      note: 'Lat pulldown. Тяга рукояти сверху к груди.',
+    },
+    seatedRow: {
+      name: 'Горизонтальная тяга',
+      note: 'Seated row. Тяга рукояти к животу сидя.',
+    },
+    highRow: {
+      name: 'Рычажная тяга сверху',
+      note: 'High row. Рычажная тяга сверху-вниз на спину.',
+    },
+    machinePullover: {
+      name: 'Пуловер в тренажере',
+      note: 'Machine pullover. Движение прямыми или полусогнутыми руками сверху вниз.',
+    },
+    backExtension: {
+      name: 'Гиперэкстензия',
+      note: 'Back extension. Разгибание корпуса, акцент на поясницу и ягодицы.',
+    },
+    bicepsCurl: {
+      name: 'Сгибание рук на бицепс',
+      note: 'Biceps curl machine. Сгибание локтей на тренажере.',
+    },
+    tricepsExtension: {
+      name: 'Разгибание рук на трицепс',
+      note: 'Triceps extension или pushdown. Разгибание локтей.',
+    },
+    assistedPullUpDip: {
+      name: 'Гравитрон',
+      note: 'Assisted pull-up / dip. Подтягивания или отжимания с противовесом.',
+    },
+    abdominalCrunch: {
+      name: 'Скручивания в тренажере',
+      note: 'Abdominal crunch. Сгибание корпуса на пресс.',
+    },
+    torsoRotation: {
+      name: 'Повороты корпуса',
+      note: 'Torso rotation. Повороты корпуса сидя, акцент на косые мышцы пресса.',
+    },
+  },
 } as const;
