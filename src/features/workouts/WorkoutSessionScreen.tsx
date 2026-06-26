@@ -61,22 +61,10 @@ export function WorkoutSessionScreen({
   }
 
   function addSet(exerciseId: string) {
-    const workoutSet: WorkoutSet = {
-      id: createId(),
-      weightKg: '',
-      reps: '',
-      note: '',
-    };
-
     setDraftWorkout((currentWorkout) => ({
       ...currentWorkout,
       exercises: currentWorkout.exercises.map((exercise) =>
-        exercise.id === exerciseId
-          ? {
-              ...exercise,
-              sets: [...exercise.sets, workoutSet],
-            }
-          : exercise,
+        exercise.id === exerciseId ? addSetToExercise(exercise) : exercise,
       ),
     }));
   }
@@ -295,6 +283,21 @@ export function WorkoutSessionScreen({
 
 function createId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function addSetToExercise(exercise: WorkoutExercise) {
+  const previousSet = exercise.sets[exercise.sets.length - 1];
+  const workoutSet: WorkoutSet = {
+    id: createId(),
+    weightKg: previousSet?.weightKg ?? '',
+    reps: previousSet?.reps ?? '',
+    note: '',
+  };
+
+  return {
+    ...exercise,
+    sets: [...exercise.sets, workoutSet],
+  };
 }
 
 const styles = StyleSheet.create({

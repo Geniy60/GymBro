@@ -17,9 +17,14 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Changed Workouts from note-based records to set-by-set workout logging.
+Improved set entry speed in active workouts.
 
 Details:
+
+- Adding a new set now copies the previous set's weight and reps for the same exercise.
+- New copied sets still start with an empty note.
+
+Previous step:
 
 - Replaced the simple workout note form with a workout session screen.
 - The Workouts `+` button now starts a workout with a default date-based name.
