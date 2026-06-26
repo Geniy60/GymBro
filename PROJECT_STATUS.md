@@ -17,6 +17,16 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Fixed unchanged workout exit behavior.
+
+Details:
+
+- Opening an existing workout and leaving without edits now returns to the workout list immediately.
+- The save confirmation dialog is shown only when the normalized workout draft differs from the original workout.
+- Workout name normalization is shared between saving and dirty checking, so trailing spaces do not create a false unsaved-change prompt.
+
+Previous step:
+
 Improved active workout density with collapsible notes and exercises.
 
 Details:
@@ -148,7 +158,7 @@ Verified:
 
 ## Next Proposed Step
 
-Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify starting a workout, adding machines, adding multiple sets, saving, reopening, and deleting workouts. After that, the simplest next feature step is improving workout entry speed, for example by repeating the previous set values when adding a new set.
+Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify opening an existing workout, leaving without edits, editing a set, and confirming the save prompt appears only after real changes.
 
 ## Important Decisions
 

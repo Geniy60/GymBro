@@ -147,15 +147,15 @@ export function WorkoutSessionScreen({
   }
 
   function saveWorkout() {
-    const nextWorkout = {
-      ...draftWorkout,
-      name: draftWorkout.name.trim() || strings.workouts.defaultName,
-    };
-
-    onSave(nextWorkout);
+    onSave(normalizeWorkoutForSave(draftWorkout));
   }
 
   function confirmExitWorkout() {
+    if (!hasWorkoutChanged(workout, draftWorkout)) {
+      onBack();
+      return;
+    }
+
     showAppAlert(
       strings.alerts.exitWorkoutTitle,
       strings.alerts.exitWorkoutMessage,
@@ -556,6 +556,20 @@ function addSetToExercise(exercise: WorkoutExercise) {
     ...exercise,
     sets: [...exercise.sets, workoutSet],
   };
+}
+
+function normalizeWorkoutForSave(workout: Workout): Workout {
+  return {
+    ...workout,
+    name: workout.name.trim() || strings.workouts.defaultName,
+  };
+}
+
+function hasWorkoutChanged(initialWorkout: Workout, draftWorkout: Workout) {
+  return (
+    JSON.stringify(normalizeWorkoutForSave(initialWorkout)) !==
+    JSON.stringify(normalizeWorkoutForSave(draftWorkout))
+  );
 }
 
 const styles = StyleSheet.create({
