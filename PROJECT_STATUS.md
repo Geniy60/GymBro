@@ -11,15 +11,24 @@ The initial app shell is in place with a compact header, safe-area handling, and
 
 The Machines tab now supports the first real MVP workflow: list, search, add, edit, and delete machines. Machine data is persisted locally on the device with AsyncStorage.
 
-The Workouts tab is still a placeholder with search and an empty state.
+The Workouts tab now supports the same simple local MVP workflow: list, search, add, edit, and delete workouts. Workout data is persisted locally on the device with AsyncStorage.
 
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Matched the main menu and machine action buttons to the sibling Fridge app style.
+Implemented local Workouts CRUD.
 
 Details:
+
+- Added Workout and WorkoutDraft types.
+- Added AsyncStorage persistence for workouts.
+- Added a workout list screen with search, add, edit, delete, and filtered-empty state.
+- Added a workout form screen for creating and editing workouts.
+- Added native delete confirmation before removing a workout.
+- Kept workouts intentionally simple with only name and note fields for the current MVP.
+
+Previous step:
 
 - Updated the main two-tab menu to use the Fridge-style switch container with pastel tab backgrounds and a dark active border.
 - Updated the Machines add button to use the Fridge-style green square button with a text plus.
@@ -76,7 +85,7 @@ Verified:
 
 ## Next Proposed Step
 
-Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify the Machines add/edit/delete flow on a phone. After that, the simplest next feature step is making the Workouts tab useful by adding a basic workout list and a workout form.
+Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify the Workouts add/edit/delete flow on a phone. After that, the simplest next feature step is deciding how workouts should use machines: either a plain note-based plan, or a structured list of selected machines/exercises.
 
 ## Important Decisions
 
@@ -99,6 +108,7 @@ Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, 
 ## Known Rough Edges
 
 - The settings button is visual only; no settings screen exists yet.
-- The Workouts tab does not have real data, add screens, edit screens, or persistence yet.
 - Machine IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
+- Workout IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
+- Workouts are not linked to machines yet; they only have a name and note field.
 - `npm audit` reports moderate vulnerabilities from the generated Expo and tunnel dependency tree; no remediation was applied because automatic fixes could affect Expo SDK compatibility.

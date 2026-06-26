@@ -37,6 +37,9 @@ export const strings = {
     deleteMachineTitle: 'Удалить тренажер?',
     deleteMachineMessage: (name: string) =>
       `Тренажер «${name}» будет удален из списка.`,
+    deleteWorkoutTitle: 'Удалить тренировку?',
+    deleteWorkoutMessage: (name: string) =>
+      `Тренировка «${name}» будет удалена из списка.`,
     storageLoadTitle: 'Не удалось загрузить данные',
     storageLoadMessage: 'Попробуй открыть приложение еще раз.',
     storageSaveTitle: 'Не удалось сохранить данные',
@@ -56,15 +59,30 @@ export const strings = {
         nameRequired: 'Введите название тренажера.',
       },
     },
+    workout: {
+      addTitle: 'Новая тренировка',
+      editTitle: 'Редактировать тренировку',
+      nameLabel: 'Название',
+      namePlaceholder: 'Например, День ног',
+      noteLabel: 'Заметка',
+      notePlaceholder: 'Цель, порядок упражнений или важные ощущения',
+      errors: {
+        nameRequired: 'Введите название тренировки.',
+      },
+    },
   },
   accessibility: {
     addMachine: 'Добавить тренажер',
+    addWorkout: 'Добавить тренировку',
     back: 'Назад',
     deleteMachine: 'Удалить тренажер',
+    deleteWorkout: 'Удалить тренировку',
     editMachine: 'Редактировать тренажер',
+    editWorkout: 'Редактировать тренировку',
     settings: 'Открыть настройки',
     search: 'Поиск',
     clearSearch: 'Очистить поиск',
     saveMachine: 'Сохранить тренажер',
+    saveWorkout: 'Сохранить тренировку',
   },
 } as const;

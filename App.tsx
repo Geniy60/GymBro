@@ -6,11 +6,13 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { MachineFormScreen } from './src/features/machines/MachineFormScreen';
 import { MachinesScreen } from './src/features/machines/MachinesScreen';
+import { WorkoutFormScreen } from './src/features/workouts/WorkoutFormScreen';
 import { WorkoutsScreen } from './src/features/workouts/WorkoutsScreen';
 import { loadMachines, saveMachines } from './src/storage/machinesStorage';
+import { loadWorkouts, saveWorkouts } from './src/storage/workoutsStorage';
 import { strings } from './src/strings';
 import { colors } from './src/theme/colors';
-import type { AppScreen, Machine, MainTab } from './src/types';
+import type { AppScreen, Machine, MainTab, Workout } from './src/types';
 
 type TabConfig = {
   key: MainTab;
@@ -32,10 +34,13 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<MainTab>('machines');
   const [screen, setScreen] = useState<AppScreen>('home');
   const [machines, setMachines] = useState<Machine[]>([]);
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
+  const [editingWorkout, setEditingWorkout] = useState<Workout | null>(null);
 
   useEffect(() => {
     void loadStoredMachines();
+    void loadStoredWorkouts();
   }, []);
 
   useEffect(() => {
@@ -44,7 +49,7 @@ export default function App() {
     }
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      closeMachineForm();
+      closeFormScreen();
       return true;
     });
 
@@ -56,6 +61,17 @@ export default function App() {
 
     if (loadResult.ok) {
       setMachines(loadResult.machines);
+      return;
+    }
+
+    Alert.alert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+  }
+
+  async function loadStoredWorkouts() {
+    const loadResult = await loadWorkouts();
+
+    if (loadResult.ok) {
+      setWorkouts(loadResult.workouts);
       return;
     }
 
@@ -74,6 +90,18 @@ export default function App() {
     return false;
   }
 
+  async function persistWorkouts(nextWorkouts: Workout[]) {
+    const saveResult = await saveWorkouts(nextWorkouts);
+
+    if (saveResult.ok) {
+      setWorkouts(nextWorkouts);
+      return true;
+    }
+
+    Alert.alert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
+    return false;
+  }
+
   function openAddMachineForm() {
     setEditingMachine(null);
     setScreen('machineForm');
@@ -84,9 +112,35 @@ export default function App() {
     setScreen('machineForm');
   }
 
+  function openAddWorkoutForm() {
+    setEditingWorkout(null);
+    setScreen('workoutForm');
+  }
+
+  function openEditWorkoutForm(workout: Workout) {
+    setEditingWorkout(workout);
+    setScreen('workoutForm');
+  }
+
   function closeMachineForm() {
     setScreen('home');
     setEditingMachine(null);
+  }
+
+  function closeWorkoutForm() {
+    setScreen('home');
+    setEditingWorkout(null);
+  }
+
+  function closeFormScreen() {
+    if (screen === 'machineForm') {
+      closeMachineForm();
+      return;
+    }
+
+    if (screen === 'workoutForm') {
+      closeWorkoutForm();
+    }
   }
 
   async function handleSaveMachine(machine: Machine) {
@@ -101,6 +155,21 @@ export default function App() {
 
     if (didSave) {
       closeMachineForm();
+    }
+  }
+
+  async function handleSaveWorkout(workout: Workout) {
+    const nextWorkouts =
+      editingWorkout === null
+        ? [...workouts, workout]
+        : workouts.map((currentWorkout) =>
+            currentWorkout.id === workout.id ? workout : currentWorkout,
+          );
+
+    const didSave = await persistWorkouts(nextWorkouts);
+
+    if (didSave) {
+      closeWorkoutForm();
     }
   }
 
@@ -126,6 +195,28 @@ export default function App() {
     );
   }
 
+  function confirmDeleteWorkout(workout: Workout) {
+    Alert.alert(
+      strings.alerts.deleteWorkoutTitle,
+      strings.alerts.deleteWorkoutMessage(workout.name),
+      [
+        {
+          text: strings.actions.cancel,
+          style: 'cancel',
+        },
+        {
+          text: strings.actions.delete,
+          style: 'destructive',
+          onPress: () => {
+            void persistWorkouts(
+              workouts.filter((currentWorkout) => currentWorkout.id !== workout.id),
+            );
+          },
+        },
+      ],
+    );
+  }
+
   if (screen === 'machineForm') {
     return (
       <SafeAreaProvider>
@@ -135,6 +226,21 @@ export default function App() {
           onSave={(machine) => {
             void handleSaveMachine(machine);
           }}
+        />
+        <StatusBar style="dark" />
+      </SafeAreaProvider>
+    );
+  }
+
+  if (screen === 'workoutForm') {
+    return (
+      <SafeAreaProvider>
+        <WorkoutFormScreen
+          onBack={closeWorkoutForm}
+          onSave={(workout) => {
+            void handleSaveWorkout(workout);
+          }}
+          workout={editingWorkout}
         />
         <StatusBar style="dark" />
       </SafeAreaProvider>
@@ -198,7 +304,12 @@ export default function App() {
             onEditMachine={openEditMachineForm}
           />
         ) : (
-          <WorkoutsScreen />
+          <WorkoutsScreen
+            onAddWorkout={openAddWorkoutForm}
+            onDeleteWorkout={confirmDeleteWorkout}
+            onEditWorkout={openEditWorkoutForm}
+            workouts={workouts}
+          />
         )}
 
         <StatusBar style="dark" />
