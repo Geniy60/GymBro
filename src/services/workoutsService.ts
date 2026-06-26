@@ -5,6 +5,7 @@ type WorkoutRow = {
   id: string;
   name: string;
   started_at: string;
+  user_id: string;
 };
 
 type WorkoutExerciseRow = {
@@ -22,10 +23,11 @@ type WorkoutSetRow = {
   weight_kg: string;
 };
 
-export async function loadWorkouts(): Promise<Workout[]> {
+export async function loadWorkouts(userId: string): Promise<Workout[]> {
   const { data: workoutRows, error: workoutError } = await supabase
     .from('gymbro_workouts')
-    .select('id, name, started_at')
+    .select('id, name, started_at, user_id')
+    .eq('user_id', userId)
     .order('started_at', { ascending: false });
 
   if (workoutError) {
@@ -63,11 +65,12 @@ export async function loadWorkouts(): Promise<Workout[]> {
   );
 }
 
-export async function saveWorkout(workout: Workout): Promise<void> {
+export async function saveWorkout(workout: Workout, userId: string): Promise<void> {
   const { error: workoutError } = await supabase.from('gymbro_workouts').upsert({
     id: workout.id,
     name: workout.name,
     started_at: workout.startedAt,
+    user_id: userId,
   });
 
   if (workoutError) {
@@ -158,6 +161,7 @@ function mapWorkoutRow(
 ): Workout {
   return {
     id: workoutRow.id,
+    userId: workoutRow.user_id,
     name: workoutRow.name,
     startedAt: workoutRow.started_at,
     exercises: exerciseRows.map((exerciseRow) =>

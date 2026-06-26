@@ -27,6 +27,25 @@ export type Database = {
         };
         Relationships: [];
       };
+      gymbro_users: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+          sort_order: number;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          name: string;
+          sort_order?: number;
+        };
+        Update: {
+          name?: string;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
       gymbro_machine_muscle_groups: {
         Row: {
           machine_id: string;
@@ -46,15 +65,18 @@ export type Database = {
           name: string;
           started_at: string;
           updated_at: string;
+          user_id: string;
         };
         Insert: {
           id: string;
           name: string;
           started_at: string;
+          user_id: string;
         };
         Update: {
           name?: string;
           started_at?: string;
+          user_id?: string;
         };
         Relationships: [];
       };

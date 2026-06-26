@@ -1,6 +1,11 @@
 export type MainTab = 'machines' | 'workouts';
 
-export type AppScreen = 'home' | 'machineForm' | 'workoutSession';
+export type AppScreen =
+  | 'home'
+  | 'machineForm'
+  | 'settings'
+  | 'userSelect'
+  | 'workoutSession';
 
 export type Machine = {
   id: string;
@@ -32,7 +37,13 @@ export type MuscleGroup =
   | 'abductors'
   | 'lowerBack';
 
+export type AppUser = {
+  id: string;
+  name: string;
+};
+
 export type Workout = {
+  userId: string;
   id: string;
   name: string;
   startedAt: string;

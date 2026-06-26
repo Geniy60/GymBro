@@ -13,6 +13,8 @@ import { showAppAlert } from './src/appAlert';
 import { AppAlertHost } from './src/components/AppAlertHost';
 import { MachineFormScreen } from './src/features/machines/MachineFormScreen';
 import { MachinesScreen } from './src/features/machines/MachinesScreen';
+import { SettingsScreen } from './src/features/settings/SettingsScreen';
+import { UserSelectScreen } from './src/features/users/UserSelectScreen';
 import { WorkoutSessionScreen } from './src/features/workouts/WorkoutSessionScreen';
 import { WorkoutsScreen } from './src/features/workouts/WorkoutsScreen';
 import { queryClient, queryKeys } from './src/queryClient';
@@ -21,14 +23,19 @@ import {
   loadMachines,
   saveMachine,
 } from './src/services/machinesService';
+import { loadUsers } from './src/services/usersService';
 import {
   deleteWorkout,
   loadWorkouts,
   saveWorkout,
 } from './src/services/workoutsService';
+import {
+  loadSelectedUserId,
+  saveSelectedUserId,
+} from './src/storage/selectedUserStorage';
 import { strings } from './src/strings';
 import { colors } from './src/theme/colors';
-import type { AppScreen, Machine, MainTab, Workout } from './src/types';
+import type { AppScreen, AppUser, Machine, MainTab, Workout } from './src/types';
 
 type TabConfig = {
   key: MainTab;
@@ -59,36 +66,87 @@ function AppContent() {
   const [screen, setScreen] = useState<AppScreen>('home');
   const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
   const [editingWorkout, setEditingWorkout] = useState<Workout | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [hasLoadedSelectedUser, setHasLoadedSelectedUser] = useState(false);
   const queryClientInstance = useQueryClient();
+  const usersQuery = useQuery({
+    queryKey: queryKeys.users,
+    queryFn: loadUsers,
+  });
   const machinesQuery = useQuery({
     queryKey: queryKeys.machines,
     queryFn: loadMachines,
   });
   const workoutsQuery = useQuery({
-    queryKey: queryKeys.workouts,
-    queryFn: loadWorkouts,
+    enabled: selectedUserId !== null,
+    queryKey: queryKeys.workouts(selectedUserId ?? 'none'),
+    queryFn: () => loadWorkouts(selectedUserId ?? ''),
   });
+  const users = usersQuery.data ?? [];
+  const selectedUser =
+    users.find((user) => user.id === selectedUserId) ?? null;
   const machines = machinesQuery.data ?? [];
   const workouts = workoutsQuery.data ?? [];
 
   useEffect(() => {
-    if (machinesQuery.isError || workoutsQuery.isError) {
-      showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
-    }
-  }, [machinesQuery.isError, workoutsQuery.isError]);
+    void loadStoredSelectedUser();
+  }, []);
 
   useEffect(() => {
-    if (screen !== 'machineForm') {
+    if (machinesQuery.isError || workoutsQuery.isError || usersQuery.isError) {
+      console.error('GymBro data load error', {
+        machines: machinesQuery.error,
+        users: usersQuery.error,
+        workouts: workoutsQuery.error,
+      });
+      showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+    }
+  }, [
+    machinesQuery.error,
+    machinesQuery.isError,
+    usersQuery.error,
+    usersQuery.isError,
+    workoutsQuery.error,
+    workoutsQuery.isError,
+  ]);
+
+  useEffect(() => {
+    if (!hasLoadedSelectedUser || usersQuery.isLoading || users.length === 0) {
+      return;
+    }
+
+    if (selectedUser === null) {
+      setScreen('userSelect');
+    }
+  }, [hasLoadedSelectedUser, selectedUser, users.length, usersQuery.isLoading]);
+
+  useEffect(() => {
+    if (screen !== 'machineForm' && screen !== 'settings') {
       return undefined;
     }
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      closeMachineForm();
+      if (screen === 'machineForm') {
+        closeMachineForm();
+        return true;
+      }
+
+      closeSettings();
       return true;
     });
 
     return () => subscription.remove();
   }, [screen]);
+
+  async function loadStoredSelectedUser() {
+    try {
+      setSelectedUserId(await loadSelectedUserId());
+    } catch {
+      setSelectedUserId(null);
+    } finally {
+      setHasLoadedSelectedUser(true);
+    }
+  }
 
   function openAddMachineForm() {
     setEditingMachine(null);
@@ -101,8 +159,14 @@ function AppContent() {
   }
 
   function startWorkout() {
+    if (selectedUserId === null) {
+      setScreen('userSelect');
+      return;
+    }
+
     setEditingWorkout({
       id: createId(),
+      userId: selectedUserId,
       name: createDefaultWorkoutName(),
       startedAt: new Date().toISOString(),
       exercises: [],
@@ -116,8 +180,14 @@ function AppContent() {
   }
 
   function repeatWorkout(workout: Workout) {
+    if (selectedUserId === null) {
+      setScreen('userSelect');
+      return;
+    }
+
     setEditingWorkout({
       id: createId(),
+      userId: selectedUserId,
       name: createDefaultWorkoutName(),
       startedAt: new Date().toISOString(),
       exercises: workout.exercises.map((exercise) => ({
@@ -142,6 +212,32 @@ function AppContent() {
     setEditingWorkout(null);
   }
 
+  function openSettings() {
+    setScreen('settings');
+  }
+
+  function closeSettings() {
+    setScreen('home');
+  }
+
+  function openUserSelect() {
+    setScreen('userSelect');
+  }
+
+  async function handleSelectUser(user: AppUser) {
+    setSelectedUserId(user.id);
+    setScreen('home');
+    void queryClientInstance.invalidateQueries({
+      queryKey: queryKeys.workouts(user.id),
+    });
+
+    try {
+      await saveSelectedUserId(user.id);
+    } catch {
+      showAppAlert(strings.alerts.userSaveTitle, strings.alerts.userSaveMessage);
+    }
+  }
+
   async function handleSaveMachine(machine: Machine) {
     try {
       await saveMachine(machine);
@@ -153,9 +249,16 @@ function AppContent() {
   }
 
   async function handleSaveWorkout(workout: Workout) {
+    if (selectedUserId === null) {
+      setScreen('userSelect');
+      return;
+    }
+
     try {
-      await saveWorkout(workout);
-      await queryClientInstance.invalidateQueries({ queryKey: queryKeys.workouts });
+      await saveWorkout(workout, selectedUserId);
+      await queryClientInstance.invalidateQueries({
+        queryKey: queryKeys.workouts(selectedUserId),
+      });
       closeWorkoutForm();
     } catch {
       showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
@@ -214,10 +317,45 @@ function AppContent() {
   async function handleDeleteWorkout(workoutId: string) {
     try {
       await deleteWorkout(workoutId);
-      await queryClientInstance.invalidateQueries({ queryKey: queryKeys.workouts });
+      if (selectedUserId !== null) {
+        await queryClientInstance.invalidateQueries({
+          queryKey: queryKeys.workouts(selectedUserId),
+        });
+      }
     } catch {
       showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
     }
+  }
+
+  if (screen === 'userSelect') {
+    return (
+      <SafeAreaProvider>
+        <UserSelectScreen
+          currentUserId={selectedUserId}
+          onBack={selectedUser === null ? undefined : closeSettings}
+          onSelectUser={(user) => {
+            void handleSelectUser(user);
+          }}
+          users={users}
+        />
+        <StatusBar style="dark" />
+        <AppAlertHost />
+      </SafeAreaProvider>
+    );
+  }
+
+  if (screen === 'settings') {
+    return (
+      <SafeAreaProvider>
+        <SettingsScreen
+          currentUser={selectedUser}
+          onBack={closeSettings}
+          onChangeUser={openUserSelect}
+        />
+        <StatusBar style="dark" />
+        <AppAlertHost />
+      </SafeAreaProvider>
+    );
   }
 
   if (screen === 'machineForm') {
@@ -263,6 +401,7 @@ function AppContent() {
           <Text style={styles.appTitle}>{strings.app.title}</Text>
           <Pressable
             accessibilityLabel={strings.accessibility.settings}
+            onPress={openSettings}
             style={({ pressed }) => [
               styles.settingsButton,
               pressed && styles.pressedButton,

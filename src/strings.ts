@@ -36,6 +36,17 @@ export const strings = {
     resetSearch: 'Сбросить поиск',
     save: 'Сохранить',
   },
+  settings: {
+    changeUser: 'Сменить',
+    currentUser: 'Пользователь',
+    noUser: 'Не выбран',
+    title: 'Настройки',
+  },
+  users: {
+    selectMessage: 'Выбери, чьи тренировки показывать на этом телефоне.',
+    selectTitle: 'Кто тренируется?',
+    selectUser: (name: string) => `Выбрать пользователя ${name}`,
+  },
   alerts: {
     deleteMachineTitle: 'Удалить тренажер?',
     deleteMachineMessage: (name: string) =>
@@ -49,6 +60,9 @@ export const strings = {
     storageLoadMessage: 'Проверь подключение к интернету и попробуй еще раз.',
     storageSaveTitle: 'Не удалось сохранить данные',
     storageSaveMessage: 'Проверь подключение к интернету и попробуй снова.',
+    userSaveTitle: 'Не удалось запомнить пользователя',
+    userSaveMessage:
+      'Выбор применен сейчас, но может не сохраниться после перезапуска приложения.',
   },
   forms: {
     machine: {
@@ -114,6 +128,7 @@ export const strings = {
     settings: 'Открыть настройки',
     search: 'Поиск',
     clearSearch: 'Очистить поиск',
+    changeUser: 'Сменить пользователя',
     saveMachine: 'Сохранить тренажер',
     saveWorkout: 'Сохранить тренировку',
     startWorkout: 'Начать тренировку',

@@ -13,11 +13,85 @@ The initial app shell is in place with a compact header, safe-area handling, and
 
 The Machines tab supports list, search, add, edit, and delete. Machine data now loads from Supabase through a small service layer and TanStack Query.
 
-The Workouts tab starts and edits factual workout logs. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
+The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
+
+The app has a simple local user selector for the two seeded users:
+
+- Женя
+- Настя
+
+The selected user is stored locally on the phone with AsyncStorage. Machines stay shared; workouts are scoped by `user_id`.
 
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
+
+Adjusted user selection card order.
+
+Details:
+
+- The user selection screen now displays `Настя` before `Женя` using a small local display order.
+- The database user seed order was left unchanged.
+- TypeScript and test checks pass after the ordering change.
+
+Previous step:
+
+Added user images to the user selection screen.
+
+Details:
+
+- Cropped the provided two-character image into separate user assets.
+- Mapped the left character to `gymbro-user-nastya` and the right character to `gymbro-user-zhenya`.
+- Updated the user selection screen to show image cards for each known user.
+- TypeScript and test checks pass after the UI change.
+
+Previous step:
+
+Fixed selected-user persistence on Expo Go.
+
+Details:
+
+- Downgraded `@react-native-async-storage/async-storage` to the Expo SDK 54 compatible version using `expo install`.
+- Verified Expo dependency compatibility with `npx expo install --check`.
+- This should fix the phone-side failure when saving the selected user.
+- TypeScript and test checks pass after the dependency fix.
+
+Previous step:
+
+Made selected-user selection more tolerant.
+
+Details:
+
+- Selecting a user now applies immediately and returns to the main screen before background workout refresh finishes.
+- Local selected-user persistence errors now show a specific user-setting alert instead of the generic data-save alert.
+- Data-load query errors are logged with the underlying query error object to make the next phone-side issue easier to diagnose.
+
+Previous step:
+
+Made selected-user startup loading tolerant.
+
+Details:
+
+- If the local selected-user setting cannot be read from AsyncStorage, the app now falls back to no selected user and shows the user selection flow.
+- This avoids showing a data-load failure alert for a recoverable local phone setting issue.
+
+Previous step:
+
+Added local user selection and per-user workouts.
+
+Details:
+
+- Added `gymbro_users` table and seeded `Женя` and `Настя`.
+- Added `gymbro_workouts.user_id`, backfilled existing workouts to `Женя`, and indexed workouts by user/date.
+- Applied `supabase/migrations/20260626142000_gymbro_users.sql` to the shared Supabase database.
+- Added local selected-user storage with AsyncStorage.
+- Added a first-run user selection screen.
+- Added a settings screen with a current-user row and change-user action.
+- Workouts now load, save, delete, and repeat under the selected user.
+- Machines remain shared across users.
+- Verified the app anon client can read `gymbro_users` and `gymbro_workouts.user_id`.
+
+Previous step:
 
 Applied Supabase persistence.
 
@@ -331,7 +405,7 @@ Verified:
 
 ## Next Proposed Step
 
-Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify database-backed machines and workouts on phone.
+Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify first-run user selection, settings user switching, and separate workout lists for `Женя` and `Настя`.
 
 ## Important Decisions
 
@@ -350,10 +424,10 @@ Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, 
 - Use the shared Supabase project from Vacation for GymBro persistence.
 - Use `Start Expo Go Tunnel.cmd` for phone testing through Expo Go when LAN discovery is unreliable.
 - Use TanStack Query for server data loaded from Supabase.
+- Use AsyncStorage only for local phone settings, currently selected user.
 
 ## Known Rough Edges
 
-- The settings button is visual only; no settings screen exists yet.
 - Machine IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
 - Workout IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
 - Workout set values are stored as strings for simple mobile input; validation and numeric summaries can be added later.
