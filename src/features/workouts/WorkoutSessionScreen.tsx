@@ -32,6 +32,8 @@ export function WorkoutSessionScreen({
 }: WorkoutSessionScreenProps) {
   const [draftWorkout, setDraftWorkout] = useState<Workout>(workout);
   const [machineSearchText, setMachineSearchText] = useState('');
+  const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<string[]>([]);
+  const [visibleSetNoteIds, setVisibleSetNoteIds] = useState<string[]>([]);
   const filteredMachines = filterMachines(machines, machineSearchText);
 
   useEffect(() => {
@@ -71,6 +73,9 @@ export function WorkoutSessionScreen({
         (exercise) => exercise.id !== exerciseId,
       ),
     }));
+    setCollapsedExerciseIds((currentIds) =>
+      currentIds.filter((currentId) => currentId !== exerciseId),
+    );
   }
 
   function addSet(exerciseId: string) {
@@ -120,6 +125,25 @@ export function WorkoutSessionScreen({
           : exercise,
       ),
     }));
+    setVisibleSetNoteIds((currentIds) =>
+      currentIds.filter((currentId) => currentId !== setId),
+    );
+  }
+
+  function toggleSetNote(setId: string) {
+    setVisibleSetNoteIds((currentIds) =>
+      currentIds.includes(setId)
+        ? currentIds.filter((currentId) => currentId !== setId)
+        : [...currentIds, setId],
+    );
+  }
+
+  function toggleExerciseCollapse(exerciseId: string) {
+    setCollapsedExerciseIds((currentIds) =>
+      currentIds.includes(exerciseId)
+        ? currentIds.filter((currentId) => currentId !== exerciseId)
+        : [...currentIds, exerciseId],
+    );
   }
 
   function saveWorkout() {
@@ -222,17 +246,12 @@ export function WorkoutSessionScreen({
               ) : (
                 <View style={styles.machinePicker}>
                   {filteredMachines.map((machine) => (
-                    <Pressable
-                      accessibilityLabel={strings.workouts.addMachineToWorkout(machine.name)}
+                    <MachinePickerButton
                       key={machine.id}
+                      machine={machine}
                       onPress={() => addExercise(machine)}
-                      style={({ pressed }) => [
-                        styles.machineButton,
-                        pressed && styles.pressedButton,
-                      ]}
-                    >
-                      <Text style={styles.machineButtonText}>{machine.name}</Text>
-                    </Pressable>
+                      workout={draftWorkout}
+                    />
                   ))}
                 </View>
               )}
@@ -246,86 +265,18 @@ export function WorkoutSessionScreen({
             <Text style={styles.helperText}>{strings.workouts.emptyExercises}</Text>
           ) : (
             draftWorkout.exercises.map((exercise) => (
-              <View key={exercise.id} style={styles.exerciseCard}>
-                <View style={styles.exerciseHeader}>
-                  <Text style={styles.exerciseTitle}>{exercise.machineName}</Text>
-                  <Pressable
-                    accessibilityLabel={strings.workouts.deleteExercise}
-                    onPress={() => deleteExercise(exercise.id)}
-                    style={({ pressed }) => [
-                      styles.smallDeleteButton,
-                      pressed && styles.pressedButton,
-                    ]}
-                  >
-                    <Text style={styles.smallDeleteButtonText}>
-                      {strings.actions.deleteIcon}
-                    </Text>
-                  </Pressable>
-                </View>
-
-                {exercise.sets.map((workoutSet, index) => (
-                  <View key={workoutSet.id} style={styles.setRow}>
-                    <Text style={styles.setNumber}>
-                      {strings.workouts.setNumber(index + 1)}
-                    </Text>
-                    <TextInput
-                      accessibilityLabel={strings.workouts.weightLabel}
-                      keyboardType="decimal-pad"
-                      onChangeText={(value) =>
-                        updateSet(exercise.id, workoutSet.id, 'weightKg', value)
-                      }
-                      placeholder={strings.workouts.weightPlaceholder}
-                      placeholderTextColor={colors.muted}
-                      style={styles.smallInput}
-                      value={workoutSet.weightKg}
-                    />
-                    <TextInput
-                      accessibilityLabel={strings.workouts.repsLabel}
-                      keyboardType="number-pad"
-                      onChangeText={(value) =>
-                        updateSet(exercise.id, workoutSet.id, 'reps', value)
-                      }
-                      placeholder={strings.workouts.repsPlaceholder}
-                      placeholderTextColor={colors.muted}
-                      style={styles.smallInput}
-                      value={workoutSet.reps}
-                    />
-                    <Pressable
-                      accessibilityLabel={strings.workouts.deleteSet}
-                      onPress={() => deleteSet(exercise.id, workoutSet.id)}
-                      style={({ pressed }) => [
-                        styles.smallDeleteButton,
-                        pressed && styles.pressedButton,
-                      ]}
-                    >
-                      <Text style={styles.smallDeleteButtonText}>
-                        {strings.actions.deleteIcon}
-                      </Text>
-                    </Pressable>
-                    <TextInput
-                      accessibilityLabel={strings.workouts.setNoteLabel}
-                      onChangeText={(value) =>
-                        updateSet(exercise.id, workoutSet.id, 'note', value)
-                      }
-                      placeholder={strings.workouts.setNotePlaceholder}
-                      placeholderTextColor={colors.muted}
-                      style={styles.setNoteInput}
-                      value={workoutSet.note}
-                    />
-                  </View>
-                ))}
-
-                <Pressable
-                  accessibilityLabel={strings.workouts.addSet}
-                  onPress={() => addSet(exercise.id)}
-                  style={({ pressed }) => [
-                    styles.secondaryButton,
-                    pressed && styles.pressedButton,
-                  ]}
-                >
-                  <Text style={styles.secondaryButtonText}>{strings.workouts.addSet}</Text>
-                </Pressable>
-              </View>
+              <WorkoutExerciseCard
+                addSet={addSet}
+                collapsedExerciseIds={collapsedExerciseIds}
+                deleteExercise={deleteExercise}
+                deleteSet={deleteSet}
+                exercise={exercise}
+                key={exercise.id}
+                toggleExerciseCollapse={toggleExerciseCollapse}
+                toggleSetNote={toggleSetNote}
+                updateSet={updateSet}
+                visibleSetNoteIds={visibleSetNoteIds}
+              />
             ))
           )}
         </View>
@@ -342,6 +293,223 @@ export function WorkoutSessionScreen({
         </Pressable>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function WorkoutExerciseCard({
+  addSet,
+  collapsedExerciseIds,
+  deleteExercise,
+  deleteSet,
+  exercise,
+  toggleExerciseCollapse,
+  toggleSetNote,
+  updateSet,
+  visibleSetNoteIds,
+}: {
+  addSet: (exerciseId: string) => void;
+  collapsedExerciseIds: string[];
+  deleteExercise: (exerciseId: string) => void;
+  deleteSet: (exerciseId: string, setId: string) => void;
+  exercise: WorkoutExercise;
+  toggleExerciseCollapse: (exerciseId: string) => void;
+  toggleSetNote: (setId: string) => void;
+  updateSet: (
+    exerciseId: string,
+    setId: string,
+    field: keyof WorkoutSet,
+    value: string,
+  ) => void;
+  visibleSetNoteIds: string[];
+}) {
+  const isCollapsed = collapsedExerciseIds.includes(exercise.id);
+
+  return (
+    <View style={styles.exerciseCard}>
+      <View style={styles.exerciseHeader}>
+        <View style={styles.exerciseTitleBlock}>
+          <Text style={styles.exerciseTitle}>{exercise.machineName}</Text>
+          <Text style={styles.exerciseMeta}>
+            {strings.workouts.exerciseMeta(exercise.sets.length)}
+          </Text>
+        </View>
+        <View style={styles.exerciseHeaderActions}>
+          <Pressable
+            accessibilityLabel={strings.workouts.deleteExercise}
+            onPress={() => deleteExercise(exercise.id)}
+            style={({ pressed }) => [
+              styles.smallIconButton,
+              styles.smallDeleteButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Text style={styles.smallDeleteButtonText}>
+              {strings.actions.deleteIcon}
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityLabel={
+              isCollapsed
+                ? strings.workouts.expandExercise
+                : strings.workouts.collapseExercise
+            }
+            onPress={() => toggleExerciseCollapse(exercise.id)}
+            style={({ pressed }) => [
+              styles.smallIconButton,
+              styles.collapseButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Ionicons
+              color={colors.text}
+              name={isCollapsed ? 'chevron-down' : 'chevron-up'}
+              size={20}
+            />
+          </Pressable>
+        </View>
+      </View>
+
+      {isCollapsed ? null : (
+        <>
+          {exercise.sets.map((workoutSet, index) => (
+            <View key={workoutSet.id} style={styles.setBlock}>
+              <View style={styles.setRow}>
+                <Text style={styles.setNumber}>
+                  {strings.workouts.setNumber(index + 1)}
+                </Text>
+                <TextInput
+                  accessibilityLabel={strings.workouts.weightLabel}
+                  keyboardType="decimal-pad"
+                  onChangeText={(value) =>
+                    updateSet(exercise.id, workoutSet.id, 'weightKg', value)
+                  }
+                  placeholder={strings.workouts.weightPlaceholder}
+                  placeholderTextColor={colors.muted}
+                  style={styles.smallInput}
+                  value={workoutSet.weightKg}
+                />
+                <TextInput
+                  accessibilityLabel={strings.workouts.repsLabel}
+                  keyboardType="number-pad"
+                  onChangeText={(value) =>
+                    updateSet(exercise.id, workoutSet.id, 'reps', value)
+                  }
+                  placeholder={strings.workouts.repsPlaceholder}
+                  placeholderTextColor={colors.muted}
+                  style={styles.smallInput}
+                  value={workoutSet.reps}
+                />
+                <Pressable
+                  accessibilityLabel={strings.workouts.toggleSetNote}
+                  onPress={() => toggleSetNote(workoutSet.id)}
+                  style={({ pressed }) => [
+                    styles.smallIconButton,
+                    styles.smallNoteButton,
+                    (visibleSetNoteIds.includes(workoutSet.id) ||
+                      workoutSet.note.length > 0) &&
+                      styles.activeSmallNoteButton,
+                    pressed && styles.pressedButton,
+                  ]}
+                >
+                  <Ionicons
+                    color={
+                      visibleSetNoteIds.includes(workoutSet.id) ||
+                      workoutSet.note.length > 0
+                        ? '#6D28D9'
+                        : colors.text
+                    }
+                    name="document-text-outline"
+                    size={20}
+                  />
+                </Pressable>
+                <Pressable
+                  accessibilityLabel={strings.workouts.deleteSet}
+                  onPress={() => deleteSet(exercise.id, workoutSet.id)}
+                  style={({ pressed }) => [
+                    styles.smallIconButton,
+                    styles.smallDeleteButton,
+                    pressed && styles.pressedButton,
+                  ]}
+                >
+                  <Text style={styles.smallDeleteButtonText}>
+                    {strings.actions.deleteIcon}
+                  </Text>
+                </Pressable>
+              </View>
+              {visibleSetNoteIds.includes(workoutSet.id) ||
+              workoutSet.note.length > 0 ? (
+                <TextInput
+                  accessibilityLabel={strings.workouts.setNoteLabel}
+                  onChangeText={(value) =>
+                    updateSet(exercise.id, workoutSet.id, 'note', value)
+                  }
+                  placeholder={strings.workouts.setNotePlaceholder}
+                  placeholderTextColor={colors.muted}
+                  style={styles.setNoteInput}
+                  value={workoutSet.note}
+                />
+              ) : null}
+            </View>
+          ))}
+
+          <Pressable
+            accessibilityLabel={strings.workouts.addSet}
+            onPress={() => addSet(exercise.id)}
+            style={({ pressed }) => [
+              styles.secondaryButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Text style={styles.secondaryButtonText}>{strings.workouts.addSet}</Text>
+          </Pressable>
+        </>
+      )}
+    </View>
+  );
+}
+
+function MachinePickerButton({
+  machine,
+  onPress,
+  workout,
+}: {
+  machine: Machine;
+  onPress: () => void;
+  workout: Workout;
+}) {
+  const matchingExercises = workout.exercises.filter(
+    (exercise) => exercise.machineId === machine.id,
+  );
+  const setCount = matchingExercises.reduce(
+    (total, exercise) => total + exercise.sets.length,
+    0,
+  );
+  const isSelected = matchingExercises.length > 0;
+
+  return (
+    <Pressable
+      accessibilityLabel={strings.workouts.addMachineToWorkout(machine.name)}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.machineButton,
+        isSelected && styles.selectedMachineButton,
+        pressed && styles.pressedButton,
+      ]}
+    >
+      <Text
+        style={[
+          styles.machineButtonText,
+          isSelected && styles.selectedMachineButtonText,
+        ]}
+      >
+        {machine.name}
+      </Text>
+      {isSelected ? (
+        <Text style={styles.machineButtonMeta}>
+          {strings.workouts.machineAlreadyAdded(matchingExercises.length, setCount)}
+        </Text>
+      ) : null}
+    </Pressable>
   );
 }
 
@@ -489,11 +657,25 @@ const styles = StyleSheet.create({
     minHeight: 40,
     justifyContent: 'center',
     paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  selectedMachineButton: {
+    backgroundColor: '#DCFCE7',
+    borderColor: colors.primary,
   },
   machineButtonText: {
     color: colors.text,
     fontSize: 14,
     fontWeight: '700',
+  },
+  selectedMachineButtonText: {
+    color: '#166534',
+  },
+  machineButtonMeta: {
+    color: '#166534',
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 2,
   },
   helperText: {
     color: colors.muted,
@@ -515,16 +697,31 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
   },
+  exerciseTitleBlock: {
+    flex: 1,
+  },
+  exerciseHeaderActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
   exerciseTitle: {
     color: colors.text,
-    flex: 1,
     fontSize: 17,
     fontWeight: '700',
+  },
+  exerciseMeta: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '600',
+    marginTop: 2,
   },
   setRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    gap: 8,
+  },
+  setBlock: {
     gap: 8,
     marginBottom: 10,
   },
@@ -551,19 +748,33 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
-    flexBasis: '100%',
     fontSize: 15,
     minHeight: 40,
     paddingHorizontal: 10,
   },
-  smallDeleteButton: {
+  smallIconButton: {
     alignItems: 'center',
-    borderColor: colors.destructiveBorder,
     borderRadius: 8,
     borderWidth: 1,
     height: 40,
     justifyContent: 'center',
     width: 40,
+  },
+  collapseButton: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+  },
+  smallNoteButton: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+  },
+  activeSmallNoteButton: {
+    backgroundColor: '#EDE9FE',
+    borderColor: '#6D28D9',
+  },
+  smallDeleteButton: {
+    backgroundColor: colors.panel,
+    borderColor: colors.destructiveBorder,
   },
   smallDeleteButtonText: {
     color: colors.destructive,

@@ -17,9 +17,25 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Matched confirmation dialogs to the sibling Fridge app style.
+Improved active workout density with collapsible notes and exercises.
 
 Details:
+
+- Set note button now uses an Ionicons document icon.
+- Exercise collapse/expand is now the last right-side Ionicons chevron button after delete.
+- Set note input is hidden by default.
+- Each set row now has a compact note button beside the delete button.
+- Tapping the note button shows or hides the note input.
+- Sets with existing notes keep the note input visible.
+- Each machine/exercise card can now be collapsed and expanded.
+- Collapsed machine cards keep a set-count summary visible.
+
+Previous step:
+
+- Machines already added to the current workout are highlighted in the picker.
+- Highlighted machines show how many times they were added and how many sets they contain.
+
+Previous step:
 
 - Alert buttons now stack vertically so Russian button labels fit on phone screens.
 - Added an app-level custom alert host matching Fridge's modal confirmation style.
