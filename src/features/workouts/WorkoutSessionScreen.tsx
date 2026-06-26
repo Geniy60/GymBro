@@ -2,8 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import {
   BackHandler,
+  FlatList,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -181,10 +181,7 @@ export function WorkoutSessionScreen({
 
   return (
     <SafeAreaView edges={['top', 'right', 'bottom', 'left']} style={styles.safeArea}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-      >
+      <View style={styles.content}>
         <View style={styles.secondaryHeader}>
           <Pressable
             accessibilityLabel={strings.accessibility.back}
@@ -246,41 +243,52 @@ export function WorkoutSessionScreen({
               {filteredMachines.length === 0 ? (
                 <Text style={styles.helperText}>{strings.empty.filtered.title}</Text>
               ) : (
-                <View style={styles.machinePicker}>
-                  {filteredMachines.map((machine) => (
+                <FlatList
+                  contentContainerStyle={styles.machinePickerContent}
+                  data={filteredMachines}
+                  horizontal
+                  keyboardShouldPersistTaps="handled"
+                  keyExtractor={(machine) => machine.id}
+                  renderItem={({ item: machine }) => (
                     <MachinePickerButton
-                      key={machine.id}
                       machine={machine}
                       onPress={() => addExercise(machine)}
                       workout={draftWorkout}
                     />
-                  ))}
-                </View>
+                  )}
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.machinePicker}
+                />
               )}
             </>
           )}
         </View>
 
-        <View style={styles.block}>
+        <View style={styles.exercisesBlock}>
           <Text style={styles.blockTitle}>{strings.workouts.exercisesTitle}</Text>
-          {draftWorkout.exercises.length === 0 ? (
-            <Text style={styles.helperText}>{strings.workouts.emptyExercises}</Text>
-          ) : (
-            draftWorkout.exercises.map((exercise) => (
+          <FlatList
+            contentContainerStyle={styles.exercisesListContent}
+            data={draftWorkout.exercises}
+            keyboardShouldPersistTaps="handled"
+            keyExtractor={(exercise) => exercise.id}
+            ListEmptyComponent={
+              <Text style={styles.helperText}>{strings.workouts.emptyExercises}</Text>
+            }
+            renderItem={({ item: exercise }) => (
               <WorkoutExerciseCard
                 addSet={addSet}
                 collapsedExerciseIds={collapsedExerciseIds}
                 deleteExercise={deleteExercise}
                 deleteSet={deleteSet}
                 exercise={exercise}
-                key={exercise.id}
                 toggleExerciseCollapse={toggleExerciseCollapse}
                 toggleSetNote={toggleSetNote}
                 updateSet={updateSet}
                 visibleSetNoteIds={visibleSetNoteIds}
               />
-            ))
-          )}
+            )}
+            style={styles.exercisesList}
+          />
         </View>
 
         <Pressable
@@ -293,7 +301,7 @@ export function WorkoutSessionScreen({
         >
           <Text style={styles.saveButtonText}>{strings.actions.finish}</Text>
         </Pressable>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -365,7 +373,7 @@ function WorkoutExerciseCard({
             <Ionicons
               color={colors.text}
               name={isCollapsed ? 'chevron-down' : 'chevron-up'}
-              size={20}
+              size={18}
             />
           </Pressable>
         </View>
@@ -421,7 +429,7 @@ function WorkoutExerciseCard({
                         : colors.text
                     }
                     name="document-text-outline"
-                    size={20}
+                    size={18}
                   />
                 </Pressable>
                 <Pressable
@@ -529,7 +537,9 @@ function filterMachines(machines: Machine[], searchText: string) {
   return machines.filter((machine) => {
     const searchableText = [
       machine.name,
-      machine.muscleGroup,
+      ...machine.muscleGroups.map(
+        (muscleGroup) => strings.muscleGroups.labels[muscleGroup],
+      ),
       machine.note,
     ].join(' ').toLocaleLowerCase();
 
@@ -580,15 +590,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
-    paddingBottom: 28,
+    flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 8,
+    paddingTop: 4,
   },
   secondaryHeader: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 18,
+    marginBottom: 8,
   },
   backButton: {
     alignItems: 'center',
@@ -606,12 +616,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   formField: {
-    gap: 8,
-    marginBottom: 16,
+    gap: 4,
+    marginBottom: 8,
   },
   fieldLabel: {
     color: colors.text,
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '600',
   },
   formInput: {
@@ -620,29 +630,42 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
-    fontSize: 16,
-    minHeight: 48,
-    paddingHorizontal: 14,
+    fontSize: 15,
+    minHeight: 40,
+    paddingHorizontal: 12,
   },
   block: {
-    marginBottom: 18,
+    marginBottom: 8,
+  },
+  exercisesBlock: {
+    flex: 1,
+    marginBottom: 0,
+  },
+  exercisesList: {
+    flex: 1,
+  },
+  exercisesListContent: {
+    flexGrow: 1,
+    paddingBottom: 76,
   },
   blockTitle: {
     color: colors.text,
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '700',
-    marginBottom: 10,
+    marginBottom: 6,
   },
   machinePicker: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexGrow: 0,
+  },
+  machinePickerContent: {
     gap: 8,
+    paddingRight: 4,
   },
   machineSearchRow: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   machineSearchInput: {
     backgroundColor: colors.panel,
@@ -651,9 +674,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: colors.text,
     flex: 1,
-    fontSize: 16,
-    height: 44,
-    paddingHorizontal: 14,
+    fontSize: 15,
+    height: 40,
+    paddingHorizontal: 12,
   },
   clearButton: {
     alignItems: 'center',
@@ -661,19 +684,19 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
-    height: 44,
+    height: 40,
     justifyContent: 'center',
-    width: 44,
+    width: 40,
   },
   machineButton: {
     backgroundColor: colors.panel,
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
-    minHeight: 40,
+    minHeight: 34,
     justifyContent: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
   selectedMachineButton: {
     backgroundColor: '#DCFCE7',
@@ -703,15 +726,15 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
-    marginBottom: 10,
-    padding: 12,
+    marginBottom: 8,
+    padding: 8,
   },
   exerciseHeader: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 6,
   },
   exerciseTitleBlock: {
     flex: 1,
@@ -719,33 +742,41 @@ const styles = StyleSheet.create({
   exerciseHeaderActions: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
   },
   exerciseTitle: {
     color: colors.text,
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700',
   },
   exerciseMeta: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: 1,
   },
   setRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 8,
+    gap: 5,
   },
   setBlock: {
-    gap: 8,
-    marginBottom: 10,
+    gap: 6,
+    marginBottom: 7,
   },
   setNumber: {
+    backgroundColor: '#F3F4F6',
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
     color: colors.muted,
     fontSize: 14,
     fontWeight: '700',
-    width: 34,
+    height: 38,
+    lineHeight: 36,
+    overflow: 'hidden',
+    textAlign: 'center',
+    width: 32,
   },
   smallInput: {
     backgroundColor: colors.panel,
@@ -753,9 +784,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
-    fontSize: 15,
-    height: 40,
-    paddingHorizontal: 10,
+    fontSize: 14,
+    height: 38,
+    includeFontPadding: false,
+    paddingHorizontal: 6,
+    paddingBottom: 0,
+    paddingTop: 2,
+    textAlignVertical: 'center',
     width: 78,
   },
   setNoteInput: {
@@ -764,17 +799,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
-    fontSize: 15,
-    minHeight: 40,
-    paddingHorizontal: 10,
+    fontSize: 14,
+    minHeight: 34,
+    paddingHorizontal: 8,
   },
   smallIconButton: {
     alignItems: 'center',
     borderRadius: 8,
     borderWidth: 1,
-    height: 40,
+    height: 38,
     justifyContent: 'center',
-    width: 40,
+    width: 38,
   },
   collapseButton: {
     backgroundColor: colors.panel,
@@ -794,9 +829,9 @@ const styles = StyleSheet.create({
   },
   smallDeleteButtonText: {
     color: colors.destructive,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
-    lineHeight: 22,
+    lineHeight: 20,
   },
   secondaryButton: {
     alignItems: 'center',
@@ -805,19 +840,23 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
-    minHeight: 42,
+    minHeight: 36,
   },
   secondaryButtonText: {
     color: colors.primary,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
   },
   saveButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
     borderRadius: 8,
+    bottom: 20,
     justifyContent: 'center',
+    left: 20,
     minHeight: 48,
+    position: 'absolute',
+    right: 20,
   },
   saveButtonText: {
     color: colors.panel,

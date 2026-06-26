@@ -10,9 +10,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { muscleGroups } from '../../muscleGroups';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import type { Machine, MachineDraft } from '../../types';
+import type { Machine, MachineDraft, MuscleGroup } from '../../types';
 
 type MachineFormScreenProps = {
   machine: Machine | null;
@@ -22,7 +23,7 @@ type MachineFormScreenProps = {
 
 const emptyMachineDraft: MachineDraft = {
   name: '',
-  muscleGroup: '',
+  muscleGroups: [],
   note: '',
 };
 
@@ -36,7 +37,7 @@ export function MachineFormScreen({
       ? emptyMachineDraft
       : {
           name: machine.name,
-          muscleGroup: machine.muscleGroup,
+          muscleGroups: machine.muscleGroups,
           note: machine.note,
         },
   );
@@ -44,7 +45,7 @@ export function MachineFormScreen({
 
   const isEditingMachine = machine !== null;
 
-  function updateMachineDraft(field: keyof MachineDraft, value: string) {
+  function updateMachineTextDraft(field: 'name' | 'note', value: string) {
     setMachineDraft((currentDraft) => ({
       ...currentDraft,
       [field]: value,
@@ -55,10 +56,21 @@ export function MachineFormScreen({
     }
   }
 
+  function toggleMuscleGroup(muscleGroup: MuscleGroup) {
+    setMachineDraft((currentDraft) => ({
+      ...currentDraft,
+      muscleGroups: currentDraft.muscleGroups.includes(muscleGroup)
+        ? currentDraft.muscleGroups.filter(
+            (currentMuscleGroup) => currentMuscleGroup !== muscleGroup,
+          )
+        : [...currentDraft.muscleGroups, muscleGroup],
+    }));
+  }
+
   function saveMachine() {
     const nextDraft: MachineDraft = {
       name: machineDraft.name.trim(),
-      muscleGroup: machineDraft.muscleGroup.trim(),
+      muscleGroups: machineDraft.muscleGroups,
       note: machineDraft.note.trim(),
     };
 
@@ -102,7 +114,7 @@ export function MachineFormScreen({
           <TextInput
             accessibilityLabel={strings.forms.machine.nameLabel}
             autoFocus
-            onChangeText={(value) => updateMachineDraft('name', value)}
+            onChangeText={(value) => updateMachineTextDraft('name', value)}
             placeholder={strings.forms.machine.namePlaceholder}
             placeholderTextColor={colors.muted}
             style={[
@@ -118,14 +130,36 @@ export function MachineFormScreen({
 
         <View style={styles.formField}>
           <Text style={styles.fieldLabel}>{strings.forms.machine.muscleGroupLabel}</Text>
-          <TextInput
-            accessibilityLabel={strings.forms.machine.muscleGroupLabel}
-            onChangeText={(value) => updateMachineDraft('muscleGroup', value)}
-            placeholder={strings.forms.machine.muscleGroupPlaceholder}
-            placeholderTextColor={colors.muted}
-            style={styles.formInput}
-            value={machineDraft.muscleGroup}
-          />
+          <Text style={styles.fieldHint}>{strings.forms.machine.muscleGroupHint}</Text>
+          <View style={styles.tagGrid}>
+            {muscleGroups.map((muscleGroup) => {
+              const isSelected = machineDraft.muscleGroups.includes(muscleGroup);
+
+              return (
+                <Pressable
+                  accessibilityLabel={strings.muscleGroups.labels[muscleGroup]}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: isSelected }}
+                  key={muscleGroup}
+                  onPress={() => toggleMuscleGroup(muscleGroup)}
+                  style={({ pressed }) => [
+                    styles.tagButton,
+                    isSelected && styles.selectedTagButton,
+                    pressed && styles.pressedButton,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.tagButtonText,
+                      isSelected && styles.selectedTagButtonText,
+                    ]}
+                  >
+                    {strings.muscleGroups.labels[muscleGroup]}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
 
         <View style={styles.formField}>
@@ -133,7 +167,7 @@ export function MachineFormScreen({
           <TextInput
             accessibilityLabel={strings.forms.machine.noteLabel}
             multiline
-            onChangeText={(value) => updateMachineDraft('note', value)}
+            onChangeText={(value) => updateMachineTextDraft('note', value)}
             placeholder={strings.forms.machine.notePlaceholder}
             placeholderTextColor={colors.muted}
             style={[styles.formInput, styles.noteInput]}
@@ -197,6 +231,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
+  fieldHint: {
+    color: colors.muted,
+    fontSize: 13,
+    lineHeight: 18,
+  },
   formInput: {
     backgroundColor: colors.panel,
     borderColor: colors.border,
@@ -210,6 +249,33 @@ const styles = StyleSheet.create({
   noteInput: {
     minHeight: 104,
     paddingTop: 12,
+  },
+  tagGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  tagButton: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    minHeight: 36,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  selectedTagButton: {
+    backgroundColor: '#DCFCE7',
+    borderColor: colors.primary,
+  },
+  tagButtonText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  selectedTagButtonText: {
+    color: '#166534',
   },
   inputError: {
     borderColor: colors.destructive,

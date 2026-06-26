@@ -5,15 +5,32 @@ export type AppScreen = 'home' | 'machineForm' | 'workoutSession';
 export type Machine = {
   id: string;
   name: string;
-  muscleGroup: string;
+  muscleGroups: MuscleGroup[];
   note: string;
 };
 
 export type MachineDraft = {
   name: string;
-  muscleGroup: string;
+  muscleGroups: MuscleGroup[];
   note: string;
 };
+
+export type MuscleGroup =
+  | 'chest'
+  | 'back'
+  | 'shoulders'
+  | 'biceps'
+  | 'triceps'
+  | 'forearms'
+  | 'abs'
+  | 'glutes'
+  | 'quads'
+  | 'hamstrings'
+  | 'calves'
+  | 'traps'
+  | 'adductors'
+  | 'abductors'
+  | 'lowerBack';
 
 export type Workout = {
   id: string;

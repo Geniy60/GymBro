@@ -17,6 +17,117 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Replaced free-text machine muscle groups with standard tags.
+
+Details:
+
+- Added a typed standard muscle-group tag list for machines.
+- Machine form now uses multi-select muscle group tags instead of a free-text muscle group input.
+- Machine cards show selected muscle groups as a compact one-line tag summary.
+- Machine search and workout machine search now include selected muscle group labels.
+- Existing stored machines are migrated from the old `muscleGroup` string to the new `muscleGroups` tag array when possible.
+- Legacy aliases such as old broad muscle group names are centralized with the other strings.
+
+Previous step:
+
+Simplified machine cards.
+
+Details:
+
+- Removed machine notes from machine list cards to make the cards shorter.
+- Notes are still stored and editable in the machine form.
+
+Previous step:
+
+Polished compact set row layout.
+
+Details:
+
+- Made the set number a small bordered badge instead of loose text.
+- Aligned set number, weight input, reps input, note action, and delete action to the same height.
+- Reduced horizontal gaps between set row controls so the row reads as one cohesive input group.
+
+Previous step:
+
+Adjusted compact set input baseline.
+
+Details:
+
+- Kept bottom padding at zero and added a small top padding to visually center compact weight/reps input text on Android.
+
+Previous step:
+
+Fixed dense set input clipping regression.
+
+Details:
+
+- Removed the forced line height that caused compact weight/reps input text to clip again.
+- Restored a safer input height while disabling extra font padding for better vertical balance.
+
+Previous step:
+
+Refined dense set input vertical alignment.
+
+Details:
+
+- Slightly reduced the compact weight/reps input height after fixing text clipping.
+- Added explicit line height and vertical text centering so the input content sits more evenly inside the border.
+
+Previous step:
+
+Adjusted dense set input height.
+
+Details:
+
+- Increased the compact weight/reps input height so text is not clipped vertically.
+- Removed vertical input padding to keep text centered while preserving a compact set row.
+
+Previous step:
+
+Adjusted dense set input widths.
+
+Details:
+
+- Increased the compact weight/reps input width so placeholders and entered values fit better.
+- Reduced horizontal input padding to keep the set row compact.
+
+Previous step:
+
+Compressed active workout exercise entries.
+
+Details:
+
+- Reduced padding and spacing inside exercise cards.
+- Reduced exercise header spacing and metadata size.
+- Reduced set row gaps, set number width, input height, input width, and action button size.
+- Reduced set note input height and the add-set button height.
+- Reduced note and collapse icon sizes to fit the denser controls.
+
+Previous step:
+
+Compressed the active workout screen vertically.
+
+Details:
+
+- Reduced vertical spacing in the workout session header, name field, machine picker, and section headings.
+- Made the workout name input and machine search input shorter.
+- Changed the machine picker from wrapping rows to a single horizontal scrolling row so it does not consume exercise-list height.
+- Kept the exercise list as the only vertical scrolling area and kept the finish button fixed.
+
+Previous step:
+
+Adjusted active workout scrolling.
+
+Details:
+
+- The workout session screen no longer scrolls as one full form.
+- Only the exercise list scrolls during an active workout.
+- The workout header, name field, and machine picker stay fixed above the exercise list.
+- The finish button is fixed at the bottom over the exercise list and remains visible while scrolling.
+- The exercise list has bottom padding so the last exercise is not hidden behind the finish button.
+
+Previous step:
+
 Removed duplicate machine edit action.
 
 Details:
@@ -190,7 +301,7 @@ Verified:
 
 ## Next Proposed Step
 
-Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify machine card tap-to-edit, machine deletion, workout card actions, leaving a newly started empty workout, leaving a repeated workout without edits, and opening an existing saved workout without edits.
+Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify adding/editing machine muscle group tags, searching machines by tag, and adding tagged machines to a workout.
 
 ## Important Decisions
 

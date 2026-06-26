@@ -33,7 +33,9 @@ export function MachinesScreen({
     return machines.filter((machine) => {
       const searchableText = [
         machine.name,
-        machine.muscleGroup,
+        ...machine.muscleGroups.map(
+          (muscleGroup) => strings.muscleGroups.labels[muscleGroup],
+        ),
         machine.note,
       ].join(' ').toLocaleLowerCase();
 

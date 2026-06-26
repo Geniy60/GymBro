@@ -19,12 +19,11 @@ export function MachineCard({ machine, onDelete, onEdit }: MachineCardProps) {
     >
       <View style={styles.cardTextBlock}>
         <Text style={styles.cardTitle}>{machine.name}</Text>
-        {machine.muscleGroup.length > 0 ? (
-          <Text style={styles.cardMeta}>{machine.muscleGroup}</Text>
-        ) : null}
-        {machine.note.length > 0 ? (
-          <Text numberOfLines={2} style={styles.cardNote}>
-            {machine.note}
+        {machine.muscleGroups.length > 0 ? (
+          <Text numberOfLines={1} style={styles.cardMeta}>
+            {machine.muscleGroups
+              .map((muscleGroup) => strings.muscleGroups.labels[muscleGroup])
+              .join(', ')}
           </Text>
         ) : null}
       </View>
@@ -76,12 +75,6 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 14,
     marginTop: 3,
-  },
-  cardNote: {
-    color: colors.muted,
-    fontSize: 14,
-    lineHeight: 19,
-    marginTop: 5,
   },
   cardActions: {
     alignItems: 'center',
