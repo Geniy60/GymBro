@@ -1,9 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { Alert, BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import { showAppAlert } from './src/appAlert';
+import { AppAlertHost } from './src/components/AppAlertHost';
 import { MachineFormScreen } from './src/features/machines/MachineFormScreen';
 import { MachinesScreen } from './src/features/machines/MachinesScreen';
 import { WorkoutSessionScreen } from './src/features/workouts/WorkoutSessionScreen';
@@ -21,17 +23,17 @@ type TabConfig = {
 
 const tabs: TabConfig[] = [
   {
-    key: 'machines',
-    label: strings.tabs.machines,
-  },
-  {
     key: 'workouts',
     label: strings.tabs.workouts,
+  },
+  {
+    key: 'machines',
+    label: strings.tabs.machines,
   },
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<MainTab>('machines');
+  const [activeTab, setActiveTab] = useState<MainTab>('workouts');
   const [screen, setScreen] = useState<AppScreen>('home');
   const [machines, setMachines] = useState<Machine[]>([]);
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -44,12 +46,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (screen === 'home') {
+    if (screen !== 'machineForm') {
       return undefined;
     }
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      closeFormScreen();
+      closeMachineForm();
       return true;
     });
 
@@ -64,7 +66,7 @@ export default function App() {
       return;
     }
 
-    Alert.alert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+    showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
   }
 
   async function loadStoredWorkouts() {
@@ -75,7 +77,7 @@ export default function App() {
       return;
     }
 
-    Alert.alert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+    showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
   }
 
   async function persistMachines(nextMachines: Machine[]) {
@@ -86,7 +88,7 @@ export default function App() {
       return true;
     }
 
-    Alert.alert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
+    showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
     return false;
   }
 
@@ -98,7 +100,7 @@ export default function App() {
       return true;
     }
 
-    Alert.alert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
+    showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
     return false;
   }
 
@@ -137,17 +139,6 @@ export default function App() {
     setEditingWorkout(null);
   }
 
-  function closeFormScreen() {
-    if (screen === 'machineForm') {
-      closeMachineForm();
-      return;
-    }
-
-    if (screen === 'workoutSession') {
-      closeWorkoutForm();
-    }
-  }
-
   async function handleSaveMachine(machine: Machine) {
     const nextMachines =
       editingMachine === null
@@ -179,7 +170,7 @@ export default function App() {
   }
 
   function confirmDeleteMachine(machine: Machine) {
-    Alert.alert(
+    showAppAlert(
       strings.alerts.deleteMachineTitle,
       strings.alerts.deleteMachineMessage(machine.name),
       [
@@ -201,7 +192,7 @@ export default function App() {
   }
 
   function confirmDeleteWorkout(workout: Workout) {
-    Alert.alert(
+    showAppAlert(
       strings.alerts.deleteWorkoutTitle,
       strings.alerts.deleteWorkoutMessage(workout.name),
       [
@@ -233,6 +224,7 @@ export default function App() {
           }}
         />
         <StatusBar style="dark" />
+        <AppAlertHost />
       </SafeAreaProvider>
     );
   }
@@ -249,6 +241,7 @@ export default function App() {
           workout={editingWorkout}
         />
         <StatusBar style="dark" />
+        <AppAlertHost />
       </SafeAreaProvider>
     );
   }
@@ -319,6 +312,7 @@ export default function App() {
         )}
 
         <StatusBar style="dark" />
+        <AppAlertHost />
       </SafeAreaView>
     </SafeAreaProvider>
   );

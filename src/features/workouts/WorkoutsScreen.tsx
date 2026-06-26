@@ -64,16 +64,6 @@ export function WorkoutsScreen({
             <Ionicons name="close" size={22} color={colors.text} />
           </Pressable>
         ) : null}
-        <Pressable
-          accessibilityLabel={strings.accessibility.addWorkout}
-          onPress={onStartWorkout}
-          style={({ pressed }) => [
-            styles.addButton,
-            pressed && styles.pressedButton,
-          ]}
-        >
-          <Text style={styles.addButtonText}>{strings.actions.addIcon}</Text>
-        </Pressable>
       </View>
 
       <FlatList
@@ -105,6 +95,19 @@ export function WorkoutsScreen({
         )}
         style={styles.list}
       />
+
+      <Pressable
+        accessibilityLabel={strings.accessibility.startWorkout}
+        onPress={onStartWorkout}
+        style={({ pressed }) => [
+          styles.startWorkoutButton,
+          pressed && styles.pressedButton,
+        ]}
+      >
+        <Text style={styles.startWorkoutButtonText}>
+          {strings.workouts.startWorkout}
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -141,27 +144,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 44,
   },
-  addButton: {
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    height: 44,
-    justifyContent: 'center',
-    width: 44,
-  },
-  addButtonText: {
-    color: colors.panel,
-    fontSize: 28,
-    fontWeight: '700',
-    lineHeight: 30,
-  },
   list: {
     flex: 1,
   },
   listContent: {
     flexGrow: 1,
     gap: 10,
-    paddingBottom: 24,
+    paddingBottom: 104,
+  },
+  startWorkoutButton: {
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    bottom: 20,
+    justifyContent: 'center',
+    left: 20,
+    minHeight: 54,
+    position: 'absolute',
+    right: 20,
+  },
+  startWorkoutButtonText: {
+    color: colors.panel,
+    fontSize: 17,
+    fontWeight: '800',
   },
   pressedButton: {
     opacity: 0.7,

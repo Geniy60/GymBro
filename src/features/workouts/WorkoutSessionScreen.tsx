@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  BackHandler,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { showAppAlert } from '../../appAlert';
 import { EmptyState } from '../../components/EmptyState';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
@@ -31,6 +33,15 @@ export function WorkoutSessionScreen({
   const [draftWorkout, setDraftWorkout] = useState<Workout>(workout);
   const [machineSearchText, setMachineSearchText] = useState('');
   const filteredMachines = filterMachines(machines, machineSearchText);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      confirmExitWorkout();
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, [draftWorkout]);
 
   function updateWorkoutName(name: string) {
     setDraftWorkout((currentWorkout) => ({
@@ -120,6 +131,28 @@ export function WorkoutSessionScreen({
     onSave(nextWorkout);
   }
 
+  function confirmExitWorkout() {
+    showAppAlert(
+      strings.alerts.exitWorkoutTitle,
+      strings.alerts.exitWorkoutMessage,
+      [
+        {
+          text: strings.actions.cancel,
+          style: 'cancel',
+        },
+        {
+          text: strings.actions.dontSave,
+          style: 'destructive',
+          onPress: onBack,
+        },
+        {
+          text: strings.actions.save,
+          onPress: saveWorkout,
+        },
+      ],
+    );
+  }
+
   return (
     <SafeAreaView edges={['top', 'right', 'bottom', 'left']} style={styles.safeArea}>
       <ScrollView
@@ -129,7 +162,7 @@ export function WorkoutSessionScreen({
         <View style={styles.secondaryHeader}>
           <Pressable
             accessibilityLabel={strings.accessibility.back}
-            onPress={onBack}
+            onPress={confirmExitWorkout}
             style={({ pressed }) => [
               styles.backButton,
               pressed && styles.pressedButton,
@@ -298,14 +331,14 @@ export function WorkoutSessionScreen({
         </View>
 
         <Pressable
-          accessibilityLabel={strings.accessibility.saveWorkout}
+          accessibilityLabel={strings.accessibility.finishWorkout}
           onPress={saveWorkout}
           style={({ pressed }) => [
             styles.saveButton,
             pressed && styles.pressedButton,
           ]}
         >
-          <Text style={styles.saveButtonText}>{strings.actions.save}</Text>
+          <Text style={styles.saveButtonText}>{strings.actions.finish}</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

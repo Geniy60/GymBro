@@ -17,9 +17,31 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Improved machine selection inside active workouts.
+Matched confirmation dialogs to the sibling Fridge app style.
 
 Details:
+
+- Alert buttons now stack vertically so Russian button labels fit on phone screens.
+- Added an app-level custom alert host matching Fridge's modal confirmation style.
+- Replaced native delete confirmations with the custom app alert.
+- Replaced workout exit confirmation with the custom app alert.
+- Storage load/save errors now also use the same app alert.
+
+Previous step:
+
+- The workout screen back button now asks whether to save the workout.
+- Android hardware back on the workout screen shows the same save confirmation.
+- The confirmation offers cancel, do not save, and save actions.
+- The finish button still saves immediately.
+
+Previous step:
+
+- Workouts are now the first tab and the default app tab.
+- Removed the small add button from the Workouts toolbar.
+- Added a large bottom `Start workout` button that floats above the workout list.
+- The workout session primary action now says finish instead of save.
+
+Previous step:
 
 - Added local search for machines inside the workout session screen.
 - The search matches machine name, muscle group, and note.
