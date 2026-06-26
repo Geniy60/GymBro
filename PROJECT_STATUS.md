@@ -9,21 +9,32 @@ The initial app shell is in place with a compact header, safe-area handling, and
 - Machines
 - Workouts
 
-Both tabs currently show a search input and an empty state. No add/edit/delete workflow or persistence has been implemented yet.
+The Machines tab now supports the first real MVP workflow: list, search, add, edit, and delete machines. Machine data is persisted locally on the device with AsyncStorage.
+
+The Workouts tab is still a placeholder with search and an empty state.
 
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
-Aligned the project with Expo SDK 54.
+Implemented local Machines CRUD.
 
 Details:
+
+- Added `@react-native-async-storage/async-storage` for simple local device persistence.
+- Added a machine form screen for creating and editing machines.
+- Added machine cards with edit and delete actions.
+- Added native delete confirmation before removing a machine.
+- Added search filtering and a filtered-empty state with reset.
+- Kept all Russian UI text centralized in `src/strings.ts`.
+
+Previous step:
 
 - Downgraded the initial Expo SDK 56 scaffold to Expo SDK 54 to match the user's requested SDK level and the sibling Fridge project's tested environment.
 - Installed compatible React, React Native, Expo Status Bar, Safe Area Context, Vector Icons, React types, and TypeScript versions.
 - Verified the installed top-level versions include Expo 54.0.35, React Native 0.81.5, and React 19.1.0.
 
-Previous step:
+Tunnel helper:
 
 - Added `Start Expo Go Tunnel.cmd`, matching the helper pattern used in the sibling Fridge project.
 - Added `@expo/ngrok` as a development dependency so `npx expo start --tunnel --clear` can run without an extra first-run install prompt.
@@ -46,7 +57,7 @@ Verified:
 
 ## Next Proposed Step
 
-Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify the initial two-tab UI on a phone. After that, choose the first real data workflow to implement. The simplest app feature step is adding machines CRUD before building workout composition.
+Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify the Machines add/edit/delete flow on a phone. After that, the simplest next feature step is making the Workouts tab useful by adding a basic workout list and a workout form.
 
 ## Important Decisions
 
@@ -64,9 +75,11 @@ Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, 
 - Stay on Expo SDK 54 for now because this SDK level was requested and matches the already tested sibling project setup.
 - Do not add a backend or database until there is a concrete persistence requirement.
 - Use `Start Expo Go Tunnel.cmd` for phone testing through Expo Go when LAN discovery is unreliable.
+- Use AsyncStorage for local-only MVP persistence until sync or multi-device usage becomes a real requirement.
 
 ## Known Rough Edges
 
 - The settings button is visual only; no settings screen exists yet.
-- The two list tabs do not have real data, add screens, edit screens, or persistence yet.
+- The Workouts tab does not have real data, add screens, edit screens, or persistence yet.
+- Machine IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
 - `npm audit` reports moderate vulnerabilities from the generated Expo and tunnel dependency tree; no remediation was applied because automatic fixes could affect Expo SDK compatibility.
