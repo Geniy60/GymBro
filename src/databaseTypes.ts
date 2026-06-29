@@ -113,7 +113,7 @@ export type Database = {
           reps: string;
           sort_order: number;
           updated_at: string;
-          weight_kg: string;
+          weight_kg: number | null;
         };
         Insert: {
           exercise_id: string;
@@ -121,13 +121,13 @@ export type Database = {
           note?: string;
           reps?: string;
           sort_order?: number;
-          weight_kg?: string;
+          weight_kg?: number | null;
         };
         Update: {
           note?: string;
           reps?: string;
           sort_order?: number;
-          weight_kg?: string;
+          weight_kg?: number | null;
         };
         Relationships: [];
       };

@@ -26,6 +26,18 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Converted workout set weight storage to numeric.
+
+Details:
+
+- Added and applied `supabase/migrations/20260629120000_gymbro_weight_kg_numeric.sql`.
+- `gymbro_workout_sets.weight_kg` is now nullable `numeric` in Supabase.
+- Workout input state still uses strings for React Native `TextInput`, while save/load converts between string and numeric/null.
+- Empty or invalid weight input is saved as `null`.
+- TypeScript and test checks pass after the weight storage conversion.
+
+Previous step:
+
 Grouped workouts and confirmed exercise deletion.
 
 Details:

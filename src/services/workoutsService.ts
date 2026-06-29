@@ -20,7 +20,7 @@ type WorkoutSetRow = {
   id: string;
   note: string;
   reps: string;
-  weight_kg: string;
+  weight_kg: number | null;
 };
 
 export async function loadWorkouts(userId: string): Promise<Workout[]> {
@@ -113,7 +113,7 @@ export async function saveWorkout(workout: Workout, userId: string): Promise<voi
       note: workoutSet.note,
       reps: workoutSet.reps,
       sort_order: index,
-      weight_kg: workoutSet.weightKg,
+      weight_kg: parseWeightKg(workoutSet.weightKg),
     })),
   );
 
@@ -188,8 +188,24 @@ function mapWorkoutExerciseRow(
 function mapWorkoutSetRow(setRow: WorkoutSetRow): WorkoutSet {
   return {
     id: setRow.id,
-    weightKg: setRow.weight_kg,
+    weightKg: formatWeightKg(setRow.weight_kg),
     reps: setRow.reps,
     note: setRow.note,
   };
+}
+
+function parseWeightKg(weightKg: string): number | null {
+  const normalizedWeightKg = weightKg.trim().replace(',', '.');
+
+  if (normalizedWeightKg.length === 0) {
+    return null;
+  }
+
+  const parsedWeightKg = Number(normalizedWeightKg);
+
+  return Number.isFinite(parsedWeightKg) ? parsedWeightKg : null;
+}
+
+function formatWeightKg(weightKg: number | null): string {
+  return weightKg === null ? '' : String(weightKg);
 }
