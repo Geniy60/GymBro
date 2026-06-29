@@ -14,6 +14,7 @@ import { AppAlertHost } from './src/components/AppAlertHost';
 import { MachineFormScreen } from './src/features/machines/MachineFormScreen';
 import { MachinesScreen } from './src/features/machines/MachinesScreen';
 import { SettingsScreen } from './src/features/settings/SettingsScreen';
+import { StatsScreen } from './src/features/stats/StatsScreen';
 import { UserSelectScreen } from './src/features/users/UserSelectScreen';
 import { WorkoutSessionScreen } from './src/features/workouts/WorkoutSessionScreen';
 import { WorkoutsScreen } from './src/features/workouts/WorkoutsScreen';
@@ -46,6 +47,10 @@ const tabs: TabConfig[] = [
   {
     key: 'workouts',
     label: strings.tabs.workouts,
+  },
+  {
+    key: 'stats',
+    label: strings.tabs.stats,
   },
   {
     key: 'machines',
@@ -431,7 +436,9 @@ function AppContent() {
                 onPress={() => setActiveTab(tab.key)}
                 style={({ pressed }) => [
                   styles.tab,
-                  tab.key === 'machines' ? styles.machinesTab : styles.workoutsTab,
+                  tab.key === 'machines' && styles.machinesTab,
+                  tab.key === 'stats' && styles.statsTab,
+                  tab.key === 'workouts' && styles.workoutsTab,
                   isActive && styles.activeTab,
                   pressed && styles.pressedButton,
                 ]}
@@ -439,9 +446,9 @@ function AppContent() {
                 <Text
                   style={[
                     styles.tabLabel,
-                    tab.key === 'machines'
-                      ? styles.machinesTabLabel
-                      : styles.workoutsTabLabel,
+                    tab.key === 'machines' && styles.machinesTabLabel,
+                    tab.key === 'stats' && styles.statsTabLabel,
+                    tab.key === 'workouts' && styles.workoutsTabLabel,
                     isActive && styles.activeTabLabel,
                   ]}
                 >
@@ -459,6 +466,8 @@ function AppContent() {
             onDeleteMachine={confirmDeleteMachine}
             onEditMachine={openEditMachineForm}
           />
+        ) : activeTab === 'stats' ? (
+          <StatsScreen workouts={workouts} />
         ) : (
           <WorkoutsScreen
             onDeleteWorkout={confirmDeleteWorkout}
@@ -529,6 +538,9 @@ const styles = StyleSheet.create({
   workoutsTab: {
     backgroundColor: '#DDD6FE',
   },
+  statsTab: {
+    backgroundColor: '#FEF3C7',
+  },
   activeTab: {
     borderColor: colors.text,
   },
@@ -542,6 +554,9 @@ const styles = StyleSheet.create({
   },
   workoutsTabLabel: {
     color: '#6D28D9',
+  },
+  statsTabLabel: {
+    color: '#92400E',
   },
   activeTabLabel: {
     color: colors.text,

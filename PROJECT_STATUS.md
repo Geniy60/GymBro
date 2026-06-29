@@ -26,6 +26,28 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Adjusted main tab order.
+
+Details:
+
+- Main tabs now appear as Workouts, Stats, Machines.
+- The default active tab remains Workouts.
+- TypeScript and test checks pass after the tab order update.
+
+Previous step:
+
+Added statistics tab.
+
+Details:
+
+- Added a center `Stats` tab between Machines and Workouts.
+- Added `StatsScreen` with all-time workout count, current-month workout count, a six-month workout count bar chart, and per-machine max weights.
+- Statistics are computed locally from already loaded workouts for the selected user.
+- Max weights ignore empty/non-numeric values and keep the latest date when the same max appears multiple times.
+- TypeScript and test checks pass after the statistics feature.
+
+Previous step:
+
 Converted workout set weight storage to numeric.
 
 Details:

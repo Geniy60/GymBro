@@ -4,6 +4,7 @@ export const strings = {
   },
   tabs: {
     machines: 'Тренажеры',
+    stats: 'Статистика',
     workouts: 'Тренировки',
   },
   search: {
@@ -41,6 +42,14 @@ export const strings = {
     currentUser: 'Пользователь',
     noUser: 'Не выбран',
     title: 'Настройки',
+  },
+  stats: {
+    totalWorkouts: 'Всего',
+    monthWorkouts: 'За месяц',
+    chartTitle: 'Последние 6 месяцев',
+    maxesTitle: 'Максимумы по тренажерам',
+    emptyMaxes: 'Пока нет подходов с весом.',
+    maxWeight: (weightKg: string, date: string) => `${weightKg} кг · ${date}`,
   },
   users: {
     selectMessage: 'Выбери, чьи тренировки показывать на этом телефоне.',

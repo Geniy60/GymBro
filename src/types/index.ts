@@ -1,4 +1,4 @@
-export type MainTab = 'machines' | 'workouts';
+export type MainTab = 'machines' | 'stats' | 'workouts';
 
 export type AppScreen =
   | 'home'
