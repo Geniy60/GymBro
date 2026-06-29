@@ -18,10 +18,6 @@ export function WorkoutCard({
   onRepeat,
   workout,
 }: WorkoutCardProps) {
-  const setCount = workout.exercises.reduce(
-    (total, exercise) => total + exercise.sets.length,
-    0,
-  );
   const workoutDate = formatWorkoutDate(workout.startedAt);
 
   return (
@@ -33,9 +29,6 @@ export function WorkoutCard({
       <View style={styles.cardTextBlock}>
         <Text style={styles.cardTitle}>{workout.name}</Text>
         <Text style={styles.cardDate}>{workoutDate}</Text>
-        <Text style={styles.cardMeta}>
-          {strings.workouts.cardMeta(workout.exercises.length, setCount)}
-        </Text>
       </View>
       <View style={styles.cardActions}>
         <Pressable
@@ -103,11 +96,6 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 17,
     fontWeight: '600',
-  },
-  cardMeta: {
-    color: colors.muted,
-    fontSize: 14,
-    marginTop: 5,
   },
   cardDate: {
     color: colors.muted,

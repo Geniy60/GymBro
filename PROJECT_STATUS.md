@@ -26,6 +26,18 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Compacted workout list and bottom actions.
+
+Details:
+
+- Removed exercise/set count metadata from workout list cards.
+- Matched the `Start workout` button height and typography to the workout finish button.
+- Reduced the bottom offset for both bottom action buttons and adjusted list padding.
+- Removed the now-unused workout card metadata string.
+- TypeScript and test checks pass after the workout list and button spacing changes.
+
+Previous step:
+
 Compacted workout top row and collapsed cards.
 
 Details:

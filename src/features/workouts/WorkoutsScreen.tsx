@@ -153,23 +153,23 @@ const styles = StyleSheet.create({
   listContent: {
     flexGrow: 1,
     gap: 10,
-    paddingBottom: 104,
+    paddingBottom: 88,
   },
   startWorkoutButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
     borderRadius: 8,
-    bottom: 20,
+    bottom: 12,
     justifyContent: 'center',
     left: 20,
-    minHeight: 54,
+    minHeight: 48,
     position: 'absolute',
     right: 20,
   },
   startWorkoutButtonText: {
     color: colors.panel,
-    fontSize: 17,
-    fontWeight: '800',
+    fontSize: 16,
+    fontWeight: '700',
   },
   pressedButton: {
     opacity: 0.7,

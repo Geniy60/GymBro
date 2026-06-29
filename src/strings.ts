@@ -87,8 +87,6 @@ export const strings = {
     addExerciseTitle: 'Добавить тренажер',
     addMachineToWorkout: (name: string) => `Добавить ${name} в тренировку`,
     addSet: 'Добавить подход',
-    cardMeta: (exerciseCount: number, setCount: number) =>
-      `${exerciseCount} упр. · ${setCount} подх.`,
     clearExerciseSets: 'Очистить подходы',
     collapseExercise: 'Свернуть тренажер',
     defaultName: 'Тренировка',

@@ -791,7 +791,7 @@ const styles = StyleSheet.create({
   },
   exercisesListContent: {
     flexGrow: 1,
-    paddingBottom: 76,
+    paddingBottom: 68,
   },
   addMachineIconButton: {
     alignItems: 'center',
@@ -1014,7 +1014,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.primary,
     borderRadius: 8,
-    bottom: 20,
+    bottom: 12,
     justifyContent: 'center',
     left: 20,
     minHeight: 48,
