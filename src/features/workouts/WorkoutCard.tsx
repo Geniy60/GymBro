@@ -18,8 +18,6 @@ export function WorkoutCard({
   onRepeat,
   workout,
 }: WorkoutCardProps) {
-  const workoutDate = formatWorkoutDate(workout.startedAt);
-
   return (
     <Pressable
       accessibilityLabel={strings.accessibility.editWorkout}
@@ -28,7 +26,6 @@ export function WorkoutCard({
     >
       <View style={styles.cardTextBlock}>
         <Text style={styles.cardTitle}>{workout.name}</Text>
-        <Text style={styles.cardDate}>{workoutDate}</Text>
       </View>
       <View style={styles.cardActions}>
         <Pressable
@@ -65,16 +62,6 @@ export function WorkoutCard({
   );
 }
 
-function formatWorkoutDate(startedAt: string) {
-  const date = new Date(startedAt);
-
-  if (Number.isNaN(date.getTime())) {
-    return strings.workouts.unknownDate;
-  }
-
-  return date.toLocaleDateString('ru-RU');
-}
-
 const styles = StyleSheet.create({
   card: {
     alignItems: 'center',
@@ -96,12 +83,6 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 17,
     fontWeight: '600',
-  },
-  cardDate: {
-    color: colors.muted,
-    fontSize: 13,
-    fontWeight: '600',
-    marginTop: 4,
   },
   cardActions: {
     alignItems: 'center',

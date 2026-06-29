@@ -553,7 +553,14 @@ function createId() {
 }
 
 function createDefaultWorkoutName() {
-  return strings.workouts.defaultNameWithDate(new Date().toLocaleDateString('ru-RU'));
+  const today = new Date();
+  const weekday = today.toLocaleDateString('ru-RU', { weekday: 'long' });
+  const formattedWeekday = weekday.charAt(0).toLocaleUpperCase('ru-RU') + weekday.slice(1);
+
+  return strings.workouts.defaultNameWithDate(
+    formattedWeekday,
+    today.toLocaleDateString('ru-RU'),
+  );
 }
 
 function getUserBackgroundColor(userId: string | null): string {

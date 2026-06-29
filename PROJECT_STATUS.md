@@ -26,6 +26,16 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Updated default workout naming.
+
+Details:
+
+- New workouts now use a default name with weekday plus date, without the word `Workout`.
+- Existing saved workout names are unchanged.
+- TypeScript and test checks pass after the default naming update.
+
+Previous step:
+
 Applied shared search input across all search fields.
 
 Details:
