@@ -26,6 +26,28 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Adjusted workout exit confirmation rules.
+
+Details:
+
+- New empty workouts now close without a save confirmation.
+- New workouts with at least one exercise still ask whether to save.
+- Existing workouts still close silently when unchanged and ask when changed.
+- TypeScript and test checks pass after the exit confirmation update.
+
+Previous step:
+
+Removed duplicate workout date from cards.
+
+Details:
+
+- Workout cards now show only the workout name, without the separate date line.
+- Database loading still sorts workouts by `started_at desc`.
+- Removed the now-unused unknown-date string.
+- TypeScript and test checks pass after the card cleanup.
+
+Previous step:
+
 Updated default workout naming.
 
 Details:

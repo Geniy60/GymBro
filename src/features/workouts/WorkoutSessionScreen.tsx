@@ -201,7 +201,7 @@ export function WorkoutSessionScreen({
   }
 
   function confirmExitWorkout() {
-    if (!isNewWorkout && !hasWorkoutChanged(workout, draftWorkout)) {
+    if (!shouldConfirmExitWorkout(isNewWorkout, workout, draftWorkout)) {
       onBack();
       return;
     }
@@ -719,6 +719,18 @@ function hasWorkoutChanged(initialWorkout: Workout, draftWorkout: Workout) {
     JSON.stringify(normalizeWorkoutForSave(initialWorkout)) !==
     JSON.stringify(normalizeWorkoutForSave(draftWorkout))
   );
+}
+
+function shouldConfirmExitWorkout(
+  isNewWorkout: boolean,
+  initialWorkout: Workout,
+  draftWorkout: Workout,
+) {
+  if (isNewWorkout) {
+    return draftWorkout.exercises.length > 0;
+  }
+
+  return hasWorkoutChanged(initialWorkout, draftWorkout);
 }
 
 const styles = StyleSheet.create({
