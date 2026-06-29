@@ -85,6 +85,24 @@ export function WorkoutSessionScreen({
     closeMachinePicker();
   }
 
+  function confirmDeleteExercise(exerciseId: string) {
+    showAppAlert(
+      strings.alerts.deleteExerciseTitle,
+      strings.alerts.deleteExerciseMessage,
+      [
+        {
+          text: strings.actions.cancel,
+          style: 'cancel',
+        },
+        {
+          text: strings.actions.delete,
+          style: 'destructive',
+          onPress: () => deleteExercise(exerciseId),
+        },
+      ],
+    );
+  }
+
   function deleteExercise(exerciseId: string) {
     setDraftWorkout((currentWorkout) => ({
       ...currentWorkout,
@@ -346,7 +364,7 @@ export function WorkoutSessionScreen({
                 addSet={addSet}
                 clearExerciseSets={clearExerciseSets}
                 collapsedExerciseIds={collapsedExerciseIds}
-                deleteExercise={deleteExercise}
+                deleteExercise={confirmDeleteExercise}
                 deleteSet={deleteSet}
                 exercise={exercise}
                 toggleExerciseCollapse={toggleExerciseCollapse}

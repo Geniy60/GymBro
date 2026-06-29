@@ -26,6 +26,17 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Grouped workouts and confirmed exercise deletion.
+
+Details:
+
+- The workout list now shows month separators such as `Июнь 2026`.
+- Workout ordering still follows the existing loaded `started_at desc` order.
+- Deleting an exercise from an in-progress workout now requires confirmation.
+- TypeScript and test checks pass after the grouping and confirmation update.
+
+Previous step:
+
 Adjusted workout exit confirmation rules.
 
 Details:

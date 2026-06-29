@@ -8,6 +8,18 @@ import { colors } from '../../theme/colors';
 import type { Workout } from '../../types';
 import { WorkoutCard } from './WorkoutCard';
 
+type WorkoutListItem =
+  | {
+      id: string;
+      title: string;
+      type: 'month';
+    }
+  | {
+      id: string;
+      type: 'workout';
+      workout: Workout;
+    };
+
 type WorkoutsScreenProps = {
   onStartWorkout: () => void;
   onDeleteWorkout: (workout: Workout) => void;
@@ -42,6 +54,10 @@ export function WorkoutsScreen({
       return searchableText.includes(normalizedSearch);
     });
   }, [searchText, workouts]);
+  const workoutListItems = useMemo(
+    () => createWorkoutListItems(filteredWorkouts),
+    [filteredWorkouts],
+  );
 
   return (
     <View style={styles.content}>
@@ -55,7 +71,7 @@ export function WorkoutsScreen({
 
       <FlatList
         contentContainerStyle={styles.listContent}
-        data={filteredWorkouts}
+        data={workoutListItems}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
           <EmptyState
@@ -73,14 +89,18 @@ export function WorkoutsScreen({
             }
           />
         }
-        renderItem={({ item }) => (
-          <WorkoutCard
-            onDelete={() => onDeleteWorkout(item)}
-            onEdit={() => onEditWorkout(item)}
-            onRepeat={() => onRepeatWorkout(item)}
-            workout={item}
-          />
-        )}
+        renderItem={({ item }) =>
+          item.type === 'month' ? (
+            <Text style={styles.monthDivider}>{item.title}</Text>
+          ) : (
+            <WorkoutCard
+              onDelete={() => onDeleteWorkout(item.workout)}
+              onEdit={() => onEditWorkout(item.workout)}
+              onRepeat={() => onRepeatWorkout(item.workout)}
+              workout={item.workout}
+            />
+          )
+        }
         style={styles.list}
       />
 
@@ -98,6 +118,54 @@ export function WorkoutsScreen({
       </Pressable>
     </View>
   );
+}
+
+function createWorkoutListItems(workouts: Workout[]): WorkoutListItem[] {
+  const listItems: WorkoutListItem[] = [];
+  let currentMonthKey = '';
+
+  for (const workout of workouts) {
+    const date = new Date(workout.startedAt);
+    const monthKey = formatWorkoutMonthKey(date, workout.startedAt);
+
+    if (monthKey !== currentMonthKey) {
+      currentMonthKey = monthKey;
+      listItems.push({
+        id: `month-${monthKey}`,
+        title: formatWorkoutMonthTitle(date),
+        type: 'month',
+      });
+    }
+
+    listItems.push({
+      id: `workout-${workout.id}`,
+      type: 'workout',
+      workout,
+    });
+  }
+
+  return listItems;
+}
+
+function formatWorkoutMonthKey(date: Date, fallback: string): string {
+  if (Number.isNaN(date.getTime())) {
+    return fallback;
+  }
+
+  return `${date.getFullYear()}-${date.getMonth()}`;
+}
+
+function formatWorkoutMonthTitle(date: Date): string {
+  if (Number.isNaN(date.getTime())) {
+    return strings.workouts.unknownMonth;
+  }
+
+  const month = date.toLocaleDateString('ru-RU', {
+    month: 'long',
+    year: 'numeric',
+  });
+
+  return month.charAt(0).toLocaleUpperCase('ru-RU') + month.slice(1);
 }
 
 const styles = StyleSheet.create({
@@ -118,6 +186,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     gap: 10,
     paddingBottom: 88,
+  },
+  monthDivider: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '800',
+    marginTop: 4,
+    textTransform: 'uppercase',
   },
   startWorkoutButton: {
     alignItems: 'center',

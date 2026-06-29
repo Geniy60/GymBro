@@ -54,6 +54,8 @@ export const strings = {
     deleteWorkoutTitle: 'Удалить тренировку?',
     deleteWorkoutMessage: (name: string) =>
       `Тренировка «${name}» будет удалена из списка.`,
+    deleteExerciseTitle: 'Удалить упражнение?',
+    deleteExerciseMessage: 'Все подходы этого упражнения будут удалены.',
     exitWorkoutTitle: 'Сохранить тренировку?',
     exitWorkoutMessage: 'Перед выходом можно сохранить введенные подходы.',
     storageLoadTitle: 'Не удалось загрузить данные',
@@ -109,6 +111,7 @@ export const strings = {
     setNumber: (number: number) => `${number}.`,
     startWorkout: 'Начать тренировку',
     toggleSetNote: 'Показать заметку к подходу',
+    unknownMonth: 'Без даты',
     weightLabel: 'Вес, кг',
     weightPlaceholder: 'кг',
   },
