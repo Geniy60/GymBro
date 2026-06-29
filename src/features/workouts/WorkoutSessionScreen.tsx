@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { showAppAlert } from '../../appAlert';
 import { EmptyState } from '../../components/EmptyState';
+import { SearchInput } from '../../components/SearchInput';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { Machine, Workout, WorkoutExercise, WorkoutSet } from '../../types';
@@ -257,26 +258,11 @@ export function WorkoutSessionScreen({
           ) : (
             <>
               <View style={styles.machineSearchRow}>
-                <TextInput
-                  accessibilityLabel={strings.accessibility.searchMachinesInWorkout}
+                <SearchInput
                   onChangeText={setMachineSearchText}
                   placeholder={strings.workouts.machineSearchPlaceholder}
-                  placeholderTextColor={colors.muted}
-                  style={styles.machineSearchInput}
                   value={machineSearchText}
                 />
-                {machineSearchText.length > 0 ? (
-                  <Pressable
-                    accessibilityLabel={strings.accessibility.clearSearch}
-                    onPress={() => setMachineSearchText('')}
-                    style={({ pressed }) => [
-                      styles.clearButton,
-                      pressed && styles.pressedButton,
-                    ]}
-                  >
-                    <Ionicons name="close" size={22} color={colors.text} />
-                  </Pressable>
-                ) : null}
               </View>
 
               {filteredMachines.length === 0 ? (
@@ -805,35 +791,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   machinePickerListContent: {
-    gap: 8,
+    gap: 6,
     paddingBottom: 24,
   },
   machineSearchRow: {
-    alignItems: 'center',
     flexDirection: 'row',
-    gap: 10,
     marginBottom: 8,
-  },
-  machineSearchInput: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    color: colors.text,
-    flex: 1,
-    fontSize: 15,
-    height: 40,
-    paddingHorizontal: 12,
-  },
-  clearButton: {
-    alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 40,
-    justifyContent: 'center',
-    width: 40,
   },
   machineButton: {
     alignSelf: 'stretch',
@@ -842,9 +805,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
-    minHeight: 48,
+    minHeight: 42,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   selectedMachineButton: {
     backgroundColor: '#DCFCE7',

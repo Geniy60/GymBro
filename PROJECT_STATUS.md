@@ -26,6 +26,58 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Applied shared search input across all search fields.
+
+Details:
+
+- Replaced the Machines tab search with the shared `SearchInput`.
+- Replaced the Workouts tab search with the shared `SearchInput`.
+- All current app search fields now use the same inline clear `×` behavior.
+- TypeScript and test checks pass after applying the shared search component.
+
+Previous step:
+
+Made search clear icon an input overlay.
+
+Details:
+
+- Changed the shared search input clear `×` from a separate flex-row element to an absolute overlay inside the input field.
+- Added right padding to the input text so typed text does not overlap the clear control.
+- TypeScript and test checks pass after the search input visual fix.
+
+Previous step:
+
+Copied Fridge-style search input for workout machine picker.
+
+Details:
+
+- Added a small shared `SearchInput` component modeled on the sibling Fridge app.
+- Replaced the workout machine picker search row with this Fridge-style input, including the inline clear `×`.
+- Removed the now-unused workout picker search accessibility string.
+- TypeScript and test checks pass after the copied search input update.
+
+Previous step:
+
+Aligned workout machine picker search height.
+
+Details:
+
+- Matched the workout machine picker search input height to the app's standard 44px search fields.
+- Matched the picker clear button to the same 44px square size.
+- TypeScript and test checks pass after the picker search alignment.
+
+Previous step:
+
+Compacted workout machine picker rows.
+
+Details:
+
+- Reduced machine picker row height and vertical padding in the workout machine selection view.
+- Reduced the gap between picker rows.
+- TypeScript and test checks pass after the picker density adjustment.
+
+Previous step:
+
 Aligned workout top controls and repeat icon.
 
 Details:

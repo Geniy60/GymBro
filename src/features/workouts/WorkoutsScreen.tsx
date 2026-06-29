@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '../../components/EmptyState';
+import { SearchInput } from '../../components/SearchInput';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { Workout } from '../../types';
@@ -46,26 +46,11 @@ export function WorkoutsScreen({
   return (
     <View style={styles.content}>
       <View style={styles.toolbar}>
-        <TextInput
-          accessibilityLabel={strings.accessibility.search}
+        <SearchInput
           onChangeText={setSearchText}
           placeholder={strings.search.workouts}
-          placeholderTextColor={colors.muted}
-          style={styles.searchInput}
           value={searchText}
         />
-        {searchText.length > 0 ? (
-          <Pressable
-            accessibilityLabel={strings.accessibility.clearSearch}
-            onPress={() => setSearchText('')}
-            style={({ pressed }) => [
-              styles.clearButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Ionicons name="close" size={22} color={colors.text} />
-          </Pressable>
-        ) : null}
       </View>
 
       <FlatList
@@ -125,27 +110,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginBottom: 12,
-  },
-  searchInput: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    color: colors.text,
-    flex: 1,
-    fontSize: 16,
-    height: 44,
-    paddingHorizontal: 14,
-  },
-  clearButton: {
-    alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 44,
-    justifyContent: 'center',
-    width: 44,
   },
   list: {
     flex: 1,

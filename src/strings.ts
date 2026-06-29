@@ -131,7 +131,6 @@ export const strings = {
     saveMachine: 'Сохранить тренажер',
     saveWorkout: 'Сохранить тренировку',
     startWorkout: 'Начать тренировку',
-    searchMachinesInWorkout: 'Поиск тренажера для тренировки',
   },
   muscleGroups: {
     labels: {
