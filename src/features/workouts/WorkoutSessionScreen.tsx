@@ -342,7 +342,7 @@ export function WorkoutSessionScreen({
               pressed && styles.pressedButton,
             ]}
           >
-            <Ionicons name="add" size={24} color={colors.primary} />
+            <Ionicons name="add" size={26} color={colors.panel} />
           </Pressable>
         </View>
 
@@ -779,7 +779,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     flex: 1,
     fontSize: 15,
-    minHeight: 40,
+    height: 44,
     paddingHorizontal: 12,
   },
   exercisesBlock: {
@@ -795,11 +795,9 @@ const styles = StyleSheet.create({
   },
   addMachineIconButton: {
     alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: colors.primary,
+    backgroundColor: colors.primary,
     borderRadius: 8,
-    borderWidth: 1,
-    height: 40,
+    height: 44,
     justifyContent: 'center',
     width: 44,
   },

@@ -42,7 +42,7 @@ export function WorkoutCard({
             pressed && styles.pressedButton,
           ]}
         >
-          <Ionicons name="repeat-outline" size={20} color={colors.text} />
+          <Ionicons name="sync-outline" size={20} color={colors.text} />
         </Pressable>
         <Pressable
           accessibilityLabel={strings.accessibility.deleteWorkout}

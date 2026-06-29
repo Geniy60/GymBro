@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 12,
     marginHorizontal: 20,
-    marginTop: 14,
+    marginTop: 6,
     padding: 4,
   },
   tab: {

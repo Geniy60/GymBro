@@ -26,6 +26,27 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Aligned workout top controls and repeat icon.
+
+Details:
+
+- Kept the add-exercise button square and increased the workout name input height to match it.
+- Changed the workout repeat card icon to `sync-outline` for a cleaner circular-arrow repeat symbol.
+- TypeScript and test checks pass after the control alignment update.
+
+Previous step:
+
+Polished main spacing and workout action icons.
+
+Details:
+
+- Reduced the vertical gap between the `GymBro` header and the main tab menu.
+- Restyled the workout add-exercise button to match the filled add-button style used in the Fridge project.
+- Replaced the workout repeat card icon with a copy-style icon that better communicates creating a new workout from an existing one.
+- TypeScript and test checks pass after the UI polish.
+
+Previous step:
+
 Compacted workout list and bottom actions.
 
 Details:
