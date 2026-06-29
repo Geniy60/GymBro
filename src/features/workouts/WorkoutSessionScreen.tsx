@@ -38,6 +38,7 @@ export function WorkoutSessionScreen({
 }: WorkoutSessionScreenProps) {
   const [draftWorkout, setDraftWorkout] = useState<Workout>(workout);
   const [machineSearchText, setMachineSearchText] = useState('');
+  const [isMachinePickerOpen, setIsMachinePickerOpen] = useState(false);
   const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<string[]>([]);
   const [visibleSetNoteIds, setVisibleSetNoteIds] = useState<string[]>([]);
   const filteredMachines = filterMachines(machines, machineSearchText);
@@ -48,12 +49,17 @@ export function WorkoutSessionScreen({
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (isMachinePickerOpen) {
+        closeMachinePicker();
+        return true;
+      }
+
       confirmExitWorkout();
       return true;
     });
 
     return () => subscription.remove();
-  }, [draftWorkout]);
+  }, [draftWorkout, isMachinePickerOpen]);
 
   function updateWorkoutName(name: string) {
     setDraftWorkout((currentWorkout) => ({
@@ -74,6 +80,7 @@ export function WorkoutSessionScreen({
       ...currentWorkout,
       exercises: [...currentWorkout.exercises, exercise],
     }));
+    closeMachinePicker();
   }
 
   function deleteExercise(exerciseId: string) {
@@ -95,6 +102,29 @@ export function WorkoutSessionScreen({
         exercise.id === exerciseId ? addSetToExercise(exercise) : exercise,
       ),
     }));
+  }
+
+  function clearExerciseSets(exerciseId: string) {
+    const exerciseToClear = draftWorkout.exercises.find(
+      (exercise) => exercise.id === exerciseId,
+    );
+    const setCount = exerciseToClear?.sets.length ?? 0;
+    const clearedSetIds = exerciseToClear?.sets.map((workoutSet) => workoutSet.id) ?? [];
+
+    setDraftWorkout((currentWorkout) => ({
+      ...currentWorkout,
+      exercises: currentWorkout.exercises.map((exercise) =>
+        exercise.id === exerciseId
+          ? {
+              ...exercise,
+              sets: createEmptySets(setCount > 0 ? setCount : 4),
+            }
+          : exercise,
+      ),
+    }));
+    setVisibleSetNoteIds((currentIds) =>
+      currentIds.filter((currentId) => !clearedSetIds.includes(currentId)),
+    );
   }
 
   function updateSet(
@@ -160,6 +190,14 @@ export function WorkoutSessionScreen({
     onSave(normalizeWorkoutForSave(draftWorkout));
   }
 
+  function openMachinePicker() {
+    setIsMachinePickerOpen(true);
+  }
+
+  function closeMachinePicker() {
+    setIsMachinePickerOpen(false);
+  }
+
   function confirmExitWorkout() {
     if (!isNewWorkout && !hasWorkoutChanged(workout, draftWorkout)) {
       onBack();
@@ -184,6 +222,85 @@ export function WorkoutSessionScreen({
           onPress: saveWorkout,
         },
       ],
+    );
+  }
+
+  if (isMachinePickerOpen) {
+    return (
+      <SafeAreaView
+        edges={['top', 'right', 'bottom', 'left']}
+        style={[styles.safeArea, { backgroundColor }]}
+      >
+        <View style={styles.content}>
+          <View style={styles.secondaryHeader}>
+            <Pressable
+              accessibilityLabel={strings.accessibility.back}
+              onPress={closeMachinePicker}
+              style={({ pressed }) => [
+                styles.backButton,
+                pressed && styles.pressedButton,
+              ]}
+            >
+              <Ionicons name="arrow-back" size={22} color={colors.text} />
+            </Pressable>
+            <Text style={styles.secondaryTitle}>
+              {strings.workouts.addExerciseTitle}
+            </Text>
+          </View>
+
+          {machines.length === 0 ? (
+            <EmptyState
+              message={strings.workouts.noMachinesMessage}
+              title={strings.workouts.noMachinesTitle}
+            />
+          ) : (
+            <>
+              <View style={styles.machineSearchRow}>
+                <TextInput
+                  accessibilityLabel={strings.accessibility.searchMachinesInWorkout}
+                  onChangeText={setMachineSearchText}
+                  placeholder={strings.workouts.machineSearchPlaceholder}
+                  placeholderTextColor={colors.muted}
+                  style={styles.machineSearchInput}
+                  value={machineSearchText}
+                />
+                {machineSearchText.length > 0 ? (
+                  <Pressable
+                    accessibilityLabel={strings.accessibility.clearSearch}
+                    onPress={() => setMachineSearchText('')}
+                    style={({ pressed }) => [
+                      styles.clearButton,
+                      pressed && styles.pressedButton,
+                    ]}
+                  >
+                    <Ionicons name="close" size={22} color={colors.text} />
+                  </Pressable>
+                ) : null}
+              </View>
+
+              {filteredMachines.length === 0 ? (
+                <Text style={styles.helperText}>{strings.empty.filtered.title}</Text>
+              ) : (
+                <FlatList
+                  contentContainerStyle={styles.machinePickerListContent}
+                  data={filteredMachines}
+                  keyboardShouldPersistTaps="handled"
+                  keyExtractor={(machine) => machine.id}
+                  renderItem={({ item: machine }) => (
+                    <MachinePickerButton
+                      machine={machine}
+                      onPress={() => addExercise(machine)}
+                      workout={draftWorkout}
+                    />
+                  )}
+                  showsVerticalScrollIndicator={false}
+                  style={styles.machinePickerList}
+                />
+              )}
+            </>
+          )}
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -219,63 +336,19 @@ export function WorkoutSessionScreen({
           />
         </View>
 
-        <View style={styles.block}>
-          <Text style={styles.blockTitle}>{strings.workouts.addExerciseTitle}</Text>
-          {machines.length === 0 ? (
-            <EmptyState
-              message={strings.workouts.noMachinesMessage}
-              title={strings.workouts.noMachinesTitle}
-            />
-          ) : (
-            <>
-              <View style={styles.machineSearchRow}>
-                <TextInput
-                  accessibilityLabel={strings.accessibility.searchMachinesInWorkout}
-                  onChangeText={setMachineSearchText}
-                  placeholder={strings.workouts.machineSearchPlaceholder}
-                  placeholderTextColor={colors.muted}
-                  style={styles.machineSearchInput}
-                  value={machineSearchText}
-                />
-                {machineSearchText.length > 0 ? (
-                  <Pressable
-                    accessibilityLabel={strings.accessibility.clearSearch}
-                    onPress={() => setMachineSearchText('')}
-                    style={({ pressed }) => [
-                      styles.clearButton,
-                      pressed && styles.pressedButton,
-                    ]}
-                  >
-                    <Ionicons name="close" size={22} color={colors.text} />
-                  </Pressable>
-                ) : null}
-              </View>
-
-              {filteredMachines.length === 0 ? (
-                <Text style={styles.helperText}>{strings.empty.filtered.title}</Text>
-              ) : (
-                <FlatList
-                  columnWrapperStyle={styles.machinePickerRow}
-                  contentContainerStyle={styles.machinePickerContent}
-                  data={filteredMachines}
-                  keyboardShouldPersistTaps="handled"
-                  keyExtractor={(machine) => machine.id}
-                  nestedScrollEnabled
-                  numColumns={2}
-                  renderItem={({ item: machine }) => (
-                    <MachinePickerButton
-                      machine={machine}
-                      onPress={() => addExercise(machine)}
-                      workout={draftWorkout}
-                    />
-                  )}
-                  showsVerticalScrollIndicator={false}
-                  style={styles.machinePicker}
-                />
-              )}
-            </>
-          )}
-        </View>
+        <Pressable
+          accessibilityLabel={strings.accessibility.openMachinePicker}
+          onPress={openMachinePicker}
+          style={({ pressed }) => [
+            styles.addMachineButton,
+            pressed && styles.pressedButton,
+          ]}
+        >
+          <Ionicons name="add" size={20} color={colors.primary} />
+          <Text style={styles.addMachineButtonText}>
+            {strings.workouts.addExerciseTitle}
+          </Text>
+        </Pressable>
 
         <View style={styles.exercisesBlock}>
           <Text style={styles.blockTitle}>{strings.workouts.exercisesTitle}</Text>
@@ -290,6 +363,7 @@ export function WorkoutSessionScreen({
             renderItem={({ item: exercise }) => (
               <WorkoutExerciseCard
                 addSet={addSet}
+                clearExerciseSets={clearExerciseSets}
                 collapsedExerciseIds={collapsedExerciseIds}
                 deleteExercise={deleteExercise}
                 deleteSet={deleteSet}
@@ -321,6 +395,7 @@ export function WorkoutSessionScreen({
 
 function WorkoutExerciseCard({
   addSet,
+  clearExerciseSets,
   collapsedExerciseIds,
   deleteExercise,
   deleteSet,
@@ -331,6 +406,7 @@ function WorkoutExerciseCard({
   visibleSetNoteIds,
 }: {
   addSet: (exerciseId: string) => void;
+  clearExerciseSets: (exerciseId: string) => void;
   collapsedExerciseIds: string[];
   deleteExercise: (exerciseId: string) => void;
   deleteSet: (exerciseId: string, setId: string) => void;
@@ -357,6 +433,17 @@ function WorkoutExerciseCard({
           </Text>
         </View>
         <View style={styles.exerciseHeaderActions}>
+          <Pressable
+            accessibilityLabel={strings.workouts.clearExerciseSets}
+            onPress={() => clearExerciseSets(exercise.id)}
+            style={({ pressed }) => [
+              styles.smallIconButton,
+              styles.smallClearButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Ionicons color={colors.primary} name="refresh" size={18} />
+          </Pressable>
           <Pressable
             accessibilityLabel={strings.workouts.deleteExercise}
             onPress={() => deleteExercise(exercise.id)}
@@ -693,9 +780,6 @@ const styles = StyleSheet.create({
     minHeight: 40,
     paddingHorizontal: 12,
   },
-  block: {
-    marginBottom: 8,
-  },
   exercisesBlock: {
     flex: 1,
     marginBottom: 0,
@@ -713,16 +797,29 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 6,
   },
-  machinePicker: {
-    flexGrow: 0,
-    maxHeight: 118,
-  },
-  machinePickerContent: {
-    gap: 6,
-    paddingBottom: 2,
-  },
-  machinePickerRow: {
+  addMachineButton: {
+    alignItems: 'center',
+    backgroundColor: colors.panel,
+    borderColor: colors.primary,
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
     gap: 8,
+    justifyContent: 'center',
+    marginBottom: 8,
+    minHeight: 40,
+  },
+  addMachineButtonText: {
+    color: colors.primary,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  machinePickerList: {
+    flex: 1,
+  },
+  machinePickerListContent: {
+    gap: 8,
+    paddingBottom: 24,
   },
   machineSearchRow: {
     alignItems: 'center',
@@ -752,15 +849,15 @@ const styles = StyleSheet.create({
     width: 40,
   },
   machineButton: {
+    alignSelf: 'stretch',
     backgroundColor: colors.panel,
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
-    flex: 1,
     justifyContent: 'center',
-    minHeight: 38,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    minHeight: 48,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   selectedMachineButton: {
     backgroundColor: '#DCFCE7',
@@ -886,6 +983,10 @@ const styles = StyleSheet.create({
   activeSmallNoteButton: {
     backgroundColor: '#EDE9FE',
     borderColor: '#6D28D9',
+  },
+  smallClearButton: {
+    backgroundColor: colors.panel,
+    borderColor: colors.primary,
   },
   smallDeleteButton: {
     backgroundColor: colors.panel,

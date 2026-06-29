@@ -26,6 +26,17 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Improved workout machine selection and set reset.
+
+Details:
+
+- Replaced the inline machine picker in the workout session with a local full-screen picker view.
+- The picker uses a normal vertical list with search and returns to the workout after selecting a machine.
+- Added an exercise-level action to clear all set values while keeping the current set count.
+- TypeScript and test checks pass after the workout UI change.
+
+Previous step:
+
 Prefilled exercises from recent history.
 
 Details:

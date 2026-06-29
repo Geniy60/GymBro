@@ -89,6 +89,7 @@ export const strings = {
     addSet: 'Добавить подход',
     cardMeta: (exerciseCount: number, setCount: number) =>
       `${exerciseCount} упр. · ${setCount} подх.`,
+    clearExerciseSets: 'Очистить подходы',
     collapseExercise: 'Свернуть тренажер',
     defaultName: 'Тренировка',
     defaultNameWithDate: (date: string) => `Тренировка ${date}`,
@@ -124,6 +125,7 @@ export const strings = {
     editMachine: 'Редактировать тренажер',
     editWorkout: 'Редактировать тренировку',
     finishWorkout: 'Завершить тренировку',
+    openMachinePicker: 'Открыть выбор тренажера',
     repeatWorkout: 'Повторить тренировку',
     settings: 'Открыть настройки',
     search: 'Поиск',
