@@ -26,6 +26,38 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Removed workout name field label.
+
+Details:
+
+- Removed the visible `Название` label above the workout name input to save vertical space.
+- Changed the workout name placeholder to `Введите название тренировки`.
+- Removed the now-unused label style from the workout session screen.
+- TypeScript and test checks pass after the input spacing cleanup.
+
+Previous step:
+
+Removed workout exercise list heading.
+
+Details:
+
+- Removed the `Упражнения` heading above the workout exercise list to save vertical space.
+- Removed the now-unused heading style and string.
+- TypeScript and test checks pass after the spacing cleanup.
+
+Previous step:
+
+Compacted collapsed exercise cards.
+
+Details:
+
+- Collapsed exercise cards now use smaller vertical padding.
+- Collapsed exercise headers remove the extra bottom gap and keep content vertically centered.
+- Expanded exercise cards are unchanged.
+- TypeScript and test checks pass after the compact collapsed-card adjustment.
+
+Previous step:
+
 Collapsed previous exercises when adding a new one.
 
 Details:

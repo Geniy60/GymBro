@@ -80,7 +80,7 @@ export const strings = {
     },
     workout: {
       nameLabel: 'Название',
-      namePlaceholder: 'Например, Тренировка ног',
+      namePlaceholder: 'Введите название тренировки',
     },
   },
   workouts: {
@@ -98,7 +98,6 @@ export const strings = {
     emptyExercises: 'Добавь тренажер выше, затем вноси подходы по одному.',
     exerciseMeta: (setCount: number) => `${setCount} подх.`,
     expandExercise: 'Развернуть тренажер',
-    exercisesTitle: 'Упражнения',
     machineAlreadyAdded: (exerciseCount: number, setCount: number) =>
       `${exerciseCount}× · ${setCount} подх.`,
     machineSearchPlaceholder: 'Поиск тренажера',

@@ -326,7 +326,6 @@ export function WorkoutSessionScreen({
         </View>
 
         <View style={styles.formField}>
-          <Text style={styles.fieldLabel}>{strings.forms.workout.nameLabel}</Text>
           <TextInput
             accessibilityLabel={strings.forms.workout.nameLabel}
             onChangeText={updateWorkoutName}
@@ -352,7 +351,6 @@ export function WorkoutSessionScreen({
         </Pressable>
 
         <View style={styles.exercisesBlock}>
-          <Text style={styles.blockTitle}>{strings.workouts.exercisesTitle}</Text>
           <FlatList
             contentContainerStyle={styles.exercisesListContent}
             data={draftWorkout.exercises}
@@ -425,8 +423,13 @@ function WorkoutExerciseCard({
   const isCollapsed = collapsedExerciseIds.includes(exercise.id);
 
   return (
-    <View style={styles.exerciseCard}>
-      <View style={styles.exerciseHeader}>
+    <View style={[styles.exerciseCard, isCollapsed && styles.collapsedExerciseCard]}>
+      <View
+        style={[
+          styles.exerciseHeader,
+          isCollapsed && styles.collapsedExerciseHeader,
+        ]}
+      >
         <View style={styles.exerciseTitleBlock}>
           <Text style={styles.exerciseTitle}>{exercise.machineName}</Text>
           <Text style={styles.exerciseMeta}>
@@ -766,11 +769,6 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 8,
   },
-  fieldLabel: {
-    color: colors.text,
-    fontSize: 13,
-    fontWeight: '600',
-  },
   formInput: {
     backgroundColor: colors.panel,
     borderColor: colors.border,
@@ -791,12 +789,6 @@ const styles = StyleSheet.create({
   exercisesListContent: {
     flexGrow: 1,
     paddingBottom: 76,
-  },
-  blockTitle: {
-    color: colors.text,
-    fontSize: 15,
-    fontWeight: '700',
-    marginBottom: 6,
   },
   addMachineButton: {
     alignItems: 'center',
@@ -891,6 +883,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     padding: 8,
   },
+  collapsedExerciseCard: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
   exerciseHeader: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -898,7 +894,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 6,
   },
+  collapsedExerciseHeader: {
+    marginBottom: 0,
+    minHeight: 38,
+  },
   exerciseTitleBlock: {
+    justifyContent: 'center',
     flex: 1,
   },
   exerciseHeaderActions: {
