@@ -26,6 +26,16 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Collapsed previous exercises when adding a new one.
+
+Details:
+
+- Adding a new machine to a workout now collapses all existing exercise cards.
+- The newly added exercise stays expanded for immediate set editing.
+- TypeScript and test checks pass after the collapse behavior change.
+
+Previous step:
+
 Improved workout machine selection and set reset.
 
 Details:

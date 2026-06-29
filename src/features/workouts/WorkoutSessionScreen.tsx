@@ -80,6 +80,7 @@ export function WorkoutSessionScreen({
       ...currentWorkout,
       exercises: [...currentWorkout.exercises, exercise],
     }));
+    setCollapsedExerciseIds(draftWorkout.exercises.map((currentExercise) => currentExercise.id));
     closeMachinePicker();
   }
 
