@@ -325,7 +325,7 @@ export function WorkoutSessionScreen({
           <Text style={styles.secondaryTitle}>{strings.workouts.sessionTitle}</Text>
         </View>
 
-        <View style={styles.formField}>
+        <View style={styles.workoutTopRow}>
           <TextInput
             accessibilityLabel={strings.forms.workout.nameLabel}
             onChangeText={updateWorkoutName}
@@ -334,21 +334,17 @@ export function WorkoutSessionScreen({
             style={styles.formInput}
             value={draftWorkout.name}
           />
+          <Pressable
+            accessibilityLabel={strings.accessibility.openMachinePicker}
+            onPress={openMachinePicker}
+            style={({ pressed }) => [
+              styles.addMachineIconButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Ionicons name="add" size={24} color={colors.primary} />
+          </Pressable>
         </View>
-
-        <Pressable
-          accessibilityLabel={strings.accessibility.openMachinePicker}
-          onPress={openMachinePicker}
-          style={({ pressed }) => [
-            styles.addMachineButton,
-            pressed && styles.pressedButton,
-          ]}
-        >
-          <Ionicons name="add" size={20} color={colors.primary} />
-          <Text style={styles.addMachineButtonText}>
-            {strings.workouts.addExerciseTitle}
-          </Text>
-        </Pressable>
 
         <View style={styles.exercisesBlock}>
           <FlatList
@@ -437,30 +433,34 @@ function WorkoutExerciseCard({
           </Text>
         </View>
         <View style={styles.exerciseHeaderActions}>
-          <Pressable
-            accessibilityLabel={strings.workouts.clearExerciseSets}
-            onPress={() => clearExerciseSets(exercise.id)}
-            style={({ pressed }) => [
-              styles.smallIconButton,
-              styles.smallClearButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Ionicons color={colors.primary} name="refresh" size={18} />
-          </Pressable>
-          <Pressable
-            accessibilityLabel={strings.workouts.deleteExercise}
-            onPress={() => deleteExercise(exercise.id)}
-            style={({ pressed }) => [
-              styles.smallIconButton,
-              styles.smallDeleteButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Text style={styles.smallDeleteButtonText}>
-              {strings.actions.deleteIcon}
-            </Text>
-          </Pressable>
+          {isCollapsed ? null : (
+            <>
+              <Pressable
+                accessibilityLabel={strings.workouts.clearExerciseSets}
+                onPress={() => clearExerciseSets(exercise.id)}
+                style={({ pressed }) => [
+                  styles.smallIconButton,
+                  styles.smallClearButton,
+                  pressed && styles.pressedButton,
+                ]}
+              >
+                <Ionicons color={colors.primary} name="refresh" size={18} />
+              </Pressable>
+              <Pressable
+                accessibilityLabel={strings.workouts.deleteExercise}
+                onPress={() => deleteExercise(exercise.id)}
+                style={({ pressed }) => [
+                  styles.smallIconButton,
+                  styles.smallDeleteButton,
+                  pressed && styles.pressedButton,
+                ]}
+              >
+                <Text style={styles.smallDeleteButtonText}>
+                  {strings.actions.deleteIcon}
+                </Text>
+              </Pressable>
+            </>
+          )}
           <Pressable
             accessibilityLabel={
               isCollapsed
@@ -765,8 +765,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
   },
-  formField: {
-    gap: 4,
+  workoutTopRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
     marginBottom: 8,
   },
   formInput: {
@@ -775,6 +777,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
+    flex: 1,
     fontSize: 15,
     minHeight: 40,
     paddingHorizontal: 12,
@@ -790,22 +793,15 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: 76,
   },
-  addMachineButton: {
+  addMachineIconButton: {
     alignItems: 'center',
     backgroundColor: colors.panel,
     borderColor: colors.primary,
     borderRadius: 8,
     borderWidth: 1,
-    flexDirection: 'row',
-    gap: 8,
+    height: 40,
     justifyContent: 'center',
-    marginBottom: 8,
-    minHeight: 40,
-  },
-  addMachineButtonText: {
-    color: colors.primary,
-    fontSize: 15,
-    fontWeight: '700',
+    width: 44,
   },
   machinePickerList: {
     flex: 1,

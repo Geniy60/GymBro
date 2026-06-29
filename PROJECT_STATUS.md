@@ -26,6 +26,17 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Compacted workout top row and collapsed cards.
+
+Details:
+
+- Moved the add-machine action into the workout name row as a compact plus button.
+- Collapsed exercise cards now show only the title/meta block and expand button; clear/delete stay available in expanded cards.
+- Machine loading now sorts by name only.
+- TypeScript and test checks pass after the layout and sorting change.
+
+Previous step:
+
 Removed workout name field label.
 
 Details:

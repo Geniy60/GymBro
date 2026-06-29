@@ -11,7 +11,6 @@ export async function loadMachines(): Promise<Machine[]> {
   const { data: machineRows, error: machineError } = await supabase
     .from('gymbro_machines')
     .select('id, name, note')
-    .order('sort_order', { ascending: true })
     .order('name', { ascending: true });
 
   if (machineError) {
