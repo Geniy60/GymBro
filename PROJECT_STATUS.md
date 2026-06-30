@@ -11,7 +11,7 @@ The initial app shell is in place with a compact header, safe-area handling, and
 - Machines
 - Workouts
 
-The Machines tab supports list, search, add, edit, and delete. Machine data now loads from Supabase through a small service layer and TanStack Query.
+The Machines tab supports list, search, add, edit, and delete. Machine data now loads from Supabase through a small service layer and TanStack Query. The standard machine catalog currently contains 17 machines.
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
 
@@ -27,6 +27,25 @@ The selected user is stored locally on the phone with AsyncStorage. Machines sta
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
+
+Removed selected standard machines.
+
+Details:
+
+- Removed these standard machines from the current Supabase catalog:
+  - Incline chest press
+  - Torso rotation
+  - Machine pullover
+  - Triceps extension
+  - High row
+  - Abdominal crunch
+- Added and applied `supabase/migrations/20260630170000_gymbro_remove_standard_machines.sql`.
+- Removed the same machines from the initial schema seed so fresh setup uses the reduced catalog.
+- Removed their machine image mappings and unused PNG assets.
+- Existing workout history remains readable because workout exercises keep machine name snapshots and deleted machine IDs are set to null.
+- TypeScript and test checks pass after removing the machines.
+
+Previous step:
 
 Added quick machine suggestions for empty workouts.
 

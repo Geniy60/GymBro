@@ -116,20 +116,14 @@ insert into public.gymbro_machines (id, name, note, sort_order) values
   ('standard-calf-raise', 'Подъем на икры', 'Calf raise. Подъем на носки сидя или стоя.', 70),
   ('standard-glute-kickback', 'Отведение ноги назад', 'Glute kickback. Нога уходит назад, акцент на ягодицы.', 80),
   ('standard-chest-press', 'Жим от груди', 'Chest press. Жим рукоятей вперед сидя.', 90),
-  ('standard-incline-chest-press', 'Жим от груди в наклоне', 'Incline chest press. Жим вверх-вперед, акцент на верх груди.', 100),
   ('standard-pec-deck', 'Сведение рук / бабочка', 'Pec deck или butterfly. Сведение рук перед грудью.', 110),
   ('standard-shoulder-press', 'Жим плечами', 'Shoulder press. Жим рукоятей вверх сидя.', 120),
   ('standard-lateral-raise', 'Разведение рук в стороны', 'Lateral raise. Подъем рук в стороны, акцент на средние дельты.', 130),
   ('standard-lat-pulldown', 'Вертикальная тяга', 'Lat pulldown. Тяга рукояти сверху к груди.', 140),
   ('standard-seated-row', 'Горизонтальная тяга', 'Seated row. Тяга рукояти к животу сидя.', 150),
-  ('standard-high-row', 'Рычажная тяга сверху', 'High row. Рычажная тяга сверху-вниз на спину.', 160),
-  ('standard-machine-pullover', 'Пуловер в тренажере', 'Machine pullover. Движение прямыми или полусогнутыми руками сверху вниз.', 170),
   ('standard-back-extension', 'Гиперэкстензия', 'Back extension. Разгибание корпуса, акцент на поясницу и ягодицы.', 180),
   ('standard-biceps-curl', 'Сгибание рук на бицепс', 'Biceps curl machine. Сгибание локтей на тренажере.', 190),
-  ('standard-triceps-extension', 'Разгибание рук на трицепс', 'Triceps extension или pushdown. Разгибание локтей.', 200),
-  ('standard-assisted-pull-up-dip', 'Гравитрон', 'Assisted pull-up / dip. Подтягивания или отжимания с противовесом.', 210),
-  ('standard-abdominal-crunch', 'Скручивания в тренажере', 'Abdominal crunch. Сгибание корпуса на пресс.', 220),
-  ('standard-torso-rotation', 'Повороты корпуса', 'Torso rotation. Повороты корпуса сидя, акцент на косые мышцы пресса.', 230)
+  ('standard-assisted-pull-up-dip', 'Гравитрон', 'Assisted pull-up / dip. Подтягивания или отжимания с противовесом.', 210)
 on conflict (id) do nothing;
 
 insert into public.gymbro_machine_muscle_groups (machine_id, muscle_group) values
@@ -148,9 +142,6 @@ insert into public.gymbro_machine_muscle_groups (machine_id, muscle_group) value
   ('standard-chest-press', 'chest'),
   ('standard-chest-press', 'triceps'),
   ('standard-chest-press', 'shoulders'),
-  ('standard-incline-chest-press', 'chest'),
-  ('standard-incline-chest-press', 'shoulders'),
-  ('standard-incline-chest-press', 'triceps'),
   ('standard-pec-deck', 'chest'),
   ('standard-shoulder-press', 'shoulders'),
   ('standard-shoulder-press', 'triceps'),
@@ -159,20 +150,13 @@ insert into public.gymbro_machine_muscle_groups (machine_id, muscle_group) value
   ('standard-lat-pulldown', 'biceps'),
   ('standard-seated-row', 'back'),
   ('standard-seated-row', 'biceps'),
-  ('standard-high-row', 'back'),
-  ('standard-high-row', 'biceps'),
-  ('standard-high-row', 'traps'),
-  ('standard-machine-pullover', 'back'),
   ('standard-back-extension', 'lowerBack'),
   ('standard-back-extension', 'glutes'),
   ('standard-back-extension', 'hamstrings'),
   ('standard-biceps-curl', 'biceps'),
   ('standard-biceps-curl', 'forearms'),
-  ('standard-triceps-extension', 'triceps'),
   ('standard-assisted-pull-up-dip', 'back'),
   ('standard-assisted-pull-up-dip', 'biceps'),
   ('standard-assisted-pull-up-dip', 'chest'),
-  ('standard-assisted-pull-up-dip', 'triceps'),
-  ('standard-abdominal-crunch', 'abs'),
-  ('standard-torso-rotation', 'abs')
+  ('standard-assisted-pull-up-dip', 'triceps')
 on conflict (machine_id, muscle_group) do nothing;
