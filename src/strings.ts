@@ -29,7 +29,6 @@ export const strings = {
     cancel: 'Отмена',
     addIcon: '+',
     delete: 'Удалить',
-    deleteIcon: '×',
     dontSave: 'Не сохранять',
     editIcon: '✎',
     finish: 'Завершить',
@@ -109,7 +108,6 @@ export const strings = {
     deleteExercise: 'Удалить упражнение',
     deleteSet: 'Удалить подход',
     emptyExercises: 'Добавь тренажер выше, затем вноси подходы по одному.',
-    exerciseMeta: (setCount: number) => `${setCount} подх.`,
     expandExercise: 'Развернуть тренажер',
     machineAlreadyAdded: (exerciseCount: number, setCount: number) =>
       `${exerciseCount}× · ${setCount} подх.`,

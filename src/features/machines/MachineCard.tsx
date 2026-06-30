@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
@@ -40,9 +41,7 @@ export function MachineCard({ machine, onDelete, onEdit }: MachineCardProps) {
             pressed && styles.pressedButton,
           ]}
         >
-          <Text style={[styles.iconButtonText, styles.deleteButtonText]}>
-            {strings.actions.deleteIcon}
-          </Text>
+          <Ionicons name="trash-outline" size={20} color={colors.destructive} />
         </Pressable>
       </View>
     </Pressable>
@@ -90,17 +89,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 40,
   },
-  iconButtonText: {
-    color: colors.text,
-    fontSize: 20,
-    fontWeight: '700',
-    lineHeight: 22,
-  },
   destructiveActionButton: {
     borderColor: colors.destructiveBorder,
-  },
-  deleteButtonText: {
-    color: colors.destructive,
   },
   pressedButton: {
     opacity: 0.7,

@@ -26,6 +26,18 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Polished active workout card styling.
+
+Details:
+
+- Refined active workout exercise cards with tighter spacing and clearer visual hierarchy.
+- Turned exercise set counts into compact green metadata pills.
+- Made set rows feel more cohesive with calmer inputs, action buttons, and record styling.
+- Kept workout behavior unchanged; this was a visual polish pass only.
+- TypeScript and test checks pass after the workout session styling update.
+
+Previous step:
+
 Added polished loading states.
 
 Details:

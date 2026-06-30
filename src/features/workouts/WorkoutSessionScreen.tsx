@@ -475,9 +475,6 @@ function WorkoutExerciseCard({
       >
         <View style={styles.exerciseTitleBlock}>
           <Text style={styles.exerciseTitle}>{exercise.machineName}</Text>
-          <Text style={styles.exerciseMeta}>
-            {strings.workouts.exerciseMeta(exercise.sets.length)}
-          </Text>
         </View>
         <View style={styles.exerciseHeaderActions}>
           {isCollapsed ? null : (
@@ -502,9 +499,11 @@ function WorkoutExerciseCard({
                   pressed && styles.pressedButton,
                 ]}
               >
-                <Text style={styles.smallDeleteButtonText}>
-                  {strings.actions.deleteIcon}
-                </Text>
+                <Ionicons
+                  color={colors.destructive}
+                  name="trash-outline"
+                  size={18}
+                />
               </Pressable>
             </>
           )}
@@ -596,9 +595,11 @@ function WorkoutExerciseCard({
                         pressed && styles.pressedButton,
                       ]}
                     >
-                      <Text style={styles.smallDeleteButtonText}>
-                        {strings.actions.deleteIcon}
-                      </Text>
+                      <Ionicons
+                        color={colors.destructive}
+                        name="trash-outline"
+                        size={18}
+                      />
                     </Pressable>
                     <View
                       accessibilityLabel={strings.workouts.recordBadge}
@@ -921,67 +922,65 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
-    marginBottom: 8,
-    padding: 8,
+    marginBottom: 9,
+    paddingHorizontal: 10,
+    paddingVertical: 9,
   },
   collapsedExerciseCard: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    backgroundColor: '#FCFDFE',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
   exerciseHeader: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 6,
+    gap: 8,
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   collapsedExerciseHeader: {
     marginBottom: 0,
-    minHeight: 38,
+    minHeight: 40,
   },
   exerciseTitleBlock: {
-    justifyContent: 'center',
     flex: 1,
+    justifyContent: 'center',
+    minWidth: 0,
   },
   exerciseHeaderActions: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 6,
+    gap: 5,
   },
   exerciseTitle: {
     color: colors.text,
     fontSize: 16,
-    fontWeight: '700',
-  },
-  exerciseMeta: {
-    color: colors.muted,
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 1,
+    fontWeight: '800',
   },
   setRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 6,
+    gap: 5,
+    minHeight: 38,
   },
   setActions: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 6,
+    gap: 5,
     marginLeft: 'auto',
   },
   setBlock: {
-    gap: 6,
-    marginBottom: 7,
+    gap: 7,
+    marginBottom: 8,
   },
   setNumber: {
-    backgroundColor: '#F3F4F6',
-    borderColor: colors.border,
+    backgroundColor: '#EEF2F7',
+    borderColor: '#D9E0EA',
     borderRadius: 8,
     borderWidth: 1,
-    color: colors.muted,
+    color: colors.text,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
     height: 38,
     lineHeight: 36,
     overflow: 'hidden',
@@ -989,8 +988,8 @@ const styles = StyleSheet.create({
     width: 32,
   },
   smallInput: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#F8FAFC',
+    borderColor: '#CBD5E1',
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -1004,8 +1003,8 @@ const styles = StyleSheet.create({
     width: 74,
   },
   setNoteInput: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#F8FAFC',
+    borderColor: '#CBD5E1',
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -1015,7 +1014,7 @@ const styles = StyleSheet.create({
   },
   recordBadge: {
     alignItems: 'center',
-    backgroundColor: '#FEF3C7',
+    backgroundColor: '#FFF7D6',
     borderColor: '#F59E0B',
     borderRadius: 8,
     borderWidth: 1,
@@ -1036,39 +1035,33 @@ const styles = StyleSheet.create({
     width: 38,
   },
   collapseButton: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#F8FAFC',
+    borderColor: '#CBD5E1',
   },
   smallNoteButton: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#F8FAFC',
+    borderColor: '#CBD5E1',
   },
   activeSmallNoteButton: {
     backgroundColor: '#EDE9FE',
     borderColor: '#6D28D9',
   },
   smallClearButton: {
-    backgroundColor: colors.panel,
+    backgroundColor: '#F0FDF4',
     borderColor: colors.primary,
   },
   smallDeleteButton: {
-    backgroundColor: colors.panel,
+    backgroundColor: '#FFF7F7',
     borderColor: colors.destructiveBorder,
-  },
-  smallDeleteButtonText: {
-    color: colors.destructive,
-    fontSize: 18,
-    fontWeight: '700',
-    lineHeight: 20,
   },
   secondaryButton: {
     alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: colors.primary,
+    backgroundColor: '#F0FDF4',
+    borderColor: '#86CFA8',
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
-    minHeight: 36,
+    minHeight: 38,
   },
   secondaryButtonText: {
     color: colors.primary,
