@@ -86,7 +86,12 @@ function AppContent() {
     queryKey: queryKeys.users,
     queryFn: loadUsers,
   });
+  const shouldLoadMachines =
+    activeTab === 'machines' ||
+    screen === 'machineForm' ||
+    screen === 'workoutSession';
   const machinesQuery = useQuery({
+    enabled: shouldLoadMachines,
     queryKey: queryKeys.machines,
     queryFn: loadMachines,
   });
