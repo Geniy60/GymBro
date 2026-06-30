@@ -5,6 +5,7 @@ import {
   BackHandler,
   FlatList,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -23,7 +24,14 @@ import {
 } from '../../services/workoutsService';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import type { Machine, Workout, WorkoutExercise, WorkoutSet } from '../../types';
+import { muscleGroups } from '../../muscleGroups';
+import type {
+  Machine,
+  MuscleGroup,
+  Workout,
+  WorkoutExercise,
+  WorkoutSet,
+} from '../../types';
 
 type WorkoutSessionScreenProps = {
   backgroundColor: string;
@@ -47,6 +55,13 @@ export function WorkoutSessionScreen({
   const [draftWorkout, setDraftWorkout] = useState<Workout>(workout);
   const [machineSearchText, setMachineSearchText] = useState('');
   const [isMachinePickerOpen, setIsMachinePickerOpen] = useState(false);
+  const [isMachineSuggestOpen, setIsMachineSuggestOpen] = useState(false);
+  const [selectedSuggestMuscleGroups, setSelectedSuggestMuscleGroups] = useState<
+    MuscleGroup[]
+  >([]);
+  const [suggestMachineCount, setSuggestMachineCount] = useState(4);
+  const [suggestedMachines, setSuggestedMachines] = useState<Machine[]>([]);
+  const [hasSuggestAttempt, setHasSuggestAttempt] = useState(false);
   const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<string[]>([]);
   const [visibleSetNoteIds, setVisibleSetNoteIds] = useState<string[]>([]);
   const filteredMachines = filterMachines(machines, machineSearchText);
@@ -71,6 +86,11 @@ export function WorkoutSessionScreen({
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (isMachineSuggestOpen) {
+        closeMachineSuggest();
+        return true;
+      }
+
       if (isMachinePickerOpen) {
         closeMachinePicker();
         return true;
@@ -81,7 +101,7 @@ export function WorkoutSessionScreen({
     });
 
     return () => subscription.remove();
-  }, [draftWorkout, isMachinePickerOpen]);
+  }, [draftWorkout, isMachinePickerOpen, isMachineSuggestOpen]);
 
   useEffect(() => {
     if (previousMaxesQuery.isError) {
@@ -96,7 +116,7 @@ export function WorkoutSessionScreen({
     }));
   }
 
-  async function addExercise(machine: Machine) {
+  async function createExerciseForMachine(machine: Machine): Promise<WorkoutExercise> {
     let historySets: WorkoutSet[] = [];
 
     try {
@@ -109,12 +129,16 @@ export function WorkoutSessionScreen({
       showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
     }
 
-    const exercise: WorkoutExercise = {
+    return {
       id: createId(),
       machineId: machine.id,
       machineName: machine.name,
       sets: createSetsFromHistory(historySets),
     };
+  }
+
+  async function addExercise(machine: Machine) {
+    const exercise = await createExerciseForMachine(machine);
 
     setDraftWorkout((currentWorkout) => ({
       ...currentWorkout,
@@ -122,6 +146,21 @@ export function WorkoutSessionScreen({
     }));
     setCollapsedExerciseIds(draftWorkout.exercises.map((currentExercise) => currentExercise.id));
     closeMachinePicker();
+  }
+
+  async function addSuggestedMachinesToWorkout() {
+    if (suggestedMachines.length === 0) {
+      return;
+    }
+
+    const exercises = await Promise.all(suggestedMachines.map(createExerciseForMachine));
+
+    setDraftWorkout((currentWorkout) => ({
+      ...currentWorkout,
+      exercises: [...currentWorkout.exercises, ...exercises],
+    }));
+    setCollapsedExerciseIds(draftWorkout.exercises.map((currentExercise) => currentExercise.id));
+    closeMachineSuggest();
   }
 
   function confirmDeleteExercise(exerciseId: string) {
@@ -257,6 +296,46 @@ export function WorkoutSessionScreen({
     setIsMachinePickerOpen(false);
   }
 
+  function openMachineSuggest() {
+    setIsMachineSuggestOpen(true);
+    setSuggestedMachines([]);
+    setHasSuggestAttempt(false);
+  }
+
+  function closeMachineSuggest() {
+    setIsMachineSuggestOpen(false);
+  }
+
+  function toggleSuggestMuscleGroup(muscleGroup: MuscleGroup) {
+    setSelectedSuggestMuscleGroups((currentMuscleGroups) =>
+      currentMuscleGroups.includes(muscleGroup)
+        ? currentMuscleGroups.filter(
+            (currentMuscleGroup) => currentMuscleGroup !== muscleGroup,
+          )
+        : [...currentMuscleGroups, muscleGroup],
+    );
+    setSuggestedMachines([]);
+    setHasSuggestAttempt(false);
+  }
+
+  function changeSuggestMachineCount(count: number) {
+    setSuggestMachineCount(count);
+    setSuggestedMachines([]);
+    setHasSuggestAttempt(false);
+  }
+
+  function suggestMachines() {
+    setHasSuggestAttempt(true);
+    setSuggestedMachines(
+      pickSuggestedMachines({
+        count: suggestMachineCount,
+        machines,
+        selectedMuscleGroups: selectedSuggestMuscleGroups,
+        workout: draftWorkout,
+      }),
+    );
+  }
+
   function confirmExitWorkout() {
     if (!shouldConfirmExitWorkout(isNewWorkout, workout, draftWorkout)) {
       onBack();
@@ -354,6 +433,175 @@ export function WorkoutSessionScreen({
     );
   }
 
+  if (isMachineSuggestOpen) {
+    const canSuggest = selectedSuggestMuscleGroups.length > 0;
+
+    return (
+      <SafeAreaView
+        edges={['top', 'right', 'bottom', 'left']}
+        style={[styles.safeArea, { backgroundColor }]}
+      >
+        <View style={styles.content}>
+          <View style={styles.secondaryHeader}>
+            <Pressable
+              accessibilityLabel={strings.accessibility.back}
+              onPress={closeMachineSuggest}
+              style={({ pressed }) => [
+                styles.backButton,
+                pressed && styles.pressedButton,
+              ]}
+            >
+              <Ionicons name="arrow-back" size={22} color={colors.text} />
+            </Pressable>
+            <Text style={styles.secondaryTitle}>
+              {strings.workouts.suggestMachinesTitle}
+            </Text>
+          </View>
+
+          <ScrollView
+            contentContainerStyle={styles.suggestContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <Text style={styles.suggestSectionTitle}>
+              {strings.workouts.suggestMuscleGroupsTitle}
+            </Text>
+            <View style={styles.suggestChipGrid}>
+              {muscleGroups.map((muscleGroup) => {
+                const isSelected = selectedSuggestMuscleGroups.includes(muscleGroup);
+
+                return (
+                  <Pressable
+                    accessibilityLabel={strings.workouts.toggleSuggestMuscleGroup(
+                      strings.muscleGroups.labels[muscleGroup],
+                    )}
+                    key={muscleGroup}
+                    onPress={() => toggleSuggestMuscleGroup(muscleGroup)}
+                    style={({ pressed }) => [
+                      styles.suggestChip,
+                      isSelected && styles.selectedSuggestChip,
+                      pressed && styles.pressedButton,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.suggestChipText,
+                        isSelected && styles.selectedSuggestChipText,
+                      ]}
+                    >
+                      {strings.muscleGroups.labels[muscleGroup]}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <Text style={styles.suggestSectionTitle}>
+              {strings.workouts.suggestCountTitle}
+            </Text>
+            <View style={styles.suggestCountRow}>
+              {[3, 4, 5, 6].map((count) => {
+                const isSelected = suggestMachineCount === count;
+
+                return (
+                  <Pressable
+                    accessibilityLabel={strings.workouts.selectSuggestMachineCount(count)}
+                    key={count}
+                    onPress={() => changeSuggestMachineCount(count)}
+                    style={({ pressed }) => [
+                      styles.countButton,
+                      isSelected && styles.selectedCountButton,
+                      pressed && styles.pressedButton,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.countButtonText,
+                        isSelected && styles.selectedCountButtonText,
+                      ]}
+                    >
+                      {count}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <Pressable
+              accessibilityLabel={strings.workouts.suggestMachinesButton}
+              disabled={!canSuggest}
+              onPress={suggestMachines}
+              style={({ pressed }) => [
+                styles.suggestPrimaryButton,
+                !canSuggest && styles.disabledButton,
+                pressed && styles.pressedButton,
+              ]}
+            >
+              <Ionicons name="sparkles-outline" size={20} color={colors.panel} />
+              <Text style={styles.suggestPrimaryButtonText}>
+                {strings.workouts.suggestMachinesButton}
+              </Text>
+            </Pressable>
+
+            {suggestedMachines.length === 0 ? (
+              <Text style={styles.helperText}>
+                {getSuggestEmptyMessage({ canSuggest, hasSuggestAttempt })}
+              </Text>
+            ) : (
+              <View style={styles.suggestPreviewBlock}>
+                <Text style={styles.suggestSectionTitle}>
+                  {strings.workouts.suggestPreviewTitle}
+                </Text>
+                <View style={styles.suggestPreviewGrid}>
+                  {suggestedMachines.map((machine) => (
+                    <View key={machine.id} style={styles.suggestPreviewItem}>
+                      <MachineTile
+                        accessibilityLabel={strings.workouts.suggestedMachine(machine.name)}
+                        machine={machine}
+                        onPress={noop}
+                      />
+                    </View>
+                  ))}
+                  {suggestedMachines.length % 2 === 1 ? (
+                    <View style={styles.suggestPreviewItem} />
+                  ) : null}
+                </View>
+                <View style={styles.suggestActionsRow}>
+                  <Pressable
+                    accessibilityLabel={strings.workouts.resuggestMachines}
+                    onPress={suggestMachines}
+                    style={({ pressed }) => [
+                      styles.suggestSecondaryButton,
+                      pressed && styles.pressedButton,
+                    ]}
+                  >
+                    <Ionicons name="shuffle-outline" size={18} color={colors.primary} />
+                    <Text style={styles.suggestSecondaryButtonText}>
+                      {strings.workouts.resuggestMachines}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityLabel={strings.workouts.addSuggestedMachines}
+                    onPress={() => {
+                      void addSuggestedMachinesToWorkout();
+                    }}
+                    style={({ pressed }) => [
+                      styles.suggestAddButton,
+                      pressed && styles.pressedButton,
+                    ]}
+                  >
+                    <Text style={styles.suggestAddButtonText}>
+                      {strings.workouts.addSuggestedMachines}
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView
       edges={['top', 'right', 'bottom', 'left']}
@@ -402,7 +650,7 @@ export function WorkoutSessionScreen({
             keyboardShouldPersistTaps="handled"
             keyExtractor={(exercise) => exercise.id}
             ListEmptyComponent={
-              <Text style={styles.helperText}>{strings.workouts.emptyExercises}</Text>
+              <EmptyWorkoutExerciseList onSuggestMachines={openMachineSuggest} />
             }
             renderItem={({ item: exercise }) => (
               <WorkoutExerciseCard
@@ -677,9 +925,36 @@ function MachinePickerButton({
   );
 }
 
+function EmptyWorkoutExerciseList({
+  onSuggestMachines,
+}: {
+  onSuggestMachines: () => void;
+}) {
+  return (
+    <View style={styles.emptyExercisesBlock}>
+      <Text style={styles.helperText}>{strings.workouts.emptyExercises}</Text>
+      <Pressable
+        accessibilityLabel={strings.workouts.openSuggestMachines}
+        onPress={onSuggestMachines}
+        style={({ pressed }) => [
+          styles.emptySuggestButton,
+          pressed && styles.pressedButton,
+        ]}
+      >
+        <Ionicons name="sparkles-outline" size={20} color={colors.panel} />
+        <Text style={styles.emptySuggestButtonText}>
+          {strings.workouts.openSuggestMachines}
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
 function createId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
+
+function noop() {}
 
 function filterMachines(machines: Machine[], searchText: string) {
   const normalizedSearchText = searchText.trim().toLocaleLowerCase();
@@ -699,6 +974,56 @@ function filterMachines(machines: Machine[], searchText: string) {
 
     return searchableText.includes(normalizedSearchText);
   });
+}
+
+function pickSuggestedMachines({
+  count,
+  machines,
+  selectedMuscleGroups,
+  workout,
+}: {
+  count: number;
+  machines: Machine[];
+  selectedMuscleGroups: MuscleGroup[];
+  workout: Workout;
+}): Machine[] {
+  const workoutMachineIds = new Set(
+    workout.exercises.map((exercise) => exercise.machineId),
+  );
+  const candidates = machines.filter(
+    (machine) =>
+      !workoutMachineIds.has(machine.id) &&
+      machine.muscleGroups.some((muscleGroup) =>
+        selectedMuscleGroups.includes(muscleGroup),
+      ),
+  );
+
+  return shuffleMachines(candidates).slice(0, count);
+}
+
+function getSuggestEmptyMessage({
+  canSuggest,
+  hasSuggestAttempt,
+}: {
+  canSuggest: boolean;
+  hasSuggestAttempt: boolean;
+}): string {
+  if (!canSuggest) {
+    return strings.workouts.suggestPickMusclesHint;
+  }
+
+  if (hasSuggestAttempt) {
+    return strings.workouts.suggestNoMatches;
+  }
+
+  return strings.workouts.suggestPreviewEmpty;
+}
+
+function shuffleMachines(machines: Machine[]): Machine[] {
+  return machines
+    .map((machine) => ({ machine, sortKey: Math.random() }))
+    .sort((left, right) => left.sortKey - right.sortKey)
+    .map(({ machine }) => machine);
 }
 
 function isRecordSet(
@@ -878,6 +1203,152 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 15,
     lineHeight: 21,
+  },
+  emptyExercisesBlock: {
+    alignItems: 'stretch',
+    gap: 12,
+    paddingTop: 6,
+  },
+  emptySuggestButton: {
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  emptySuggestButtonText: {
+    color: colors.panel,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  suggestContent: {
+    gap: 14,
+    paddingBottom: 28,
+  },
+  suggestSectionTitle: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  suggestChipGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  suggestChip: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    minHeight: 38,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+  },
+  selectedSuggestChip: {
+    backgroundColor: '#EAF7EF',
+    borderColor: colors.primary,
+  },
+  suggestChipText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  selectedSuggestChipText: {
+    color: colors.primary,
+  },
+  suggestCountRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  countButton: {
+    alignItems: 'center',
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 42,
+    justifyContent: 'center',
+    width: 50,
+  },
+  selectedCountButton: {
+    backgroundColor: '#EAF7EF',
+    borderColor: colors.primary,
+  },
+  countButtonText: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  selectedCountButtonText: {
+    color: colors.primary,
+  },
+  suggestPrimaryButton: {
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  suggestPrimaryButtonText: {
+    color: colors.panel,
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  disabledButton: {
+    opacity: 0.45,
+  },
+  suggestPreviewBlock: {
+    gap: 8,
+  },
+  suggestPreviewGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  suggestPreviewItem: {
+    flexBasis: '48.5%',
+    flexGrow: 1,
+    maxWidth: '48.5%',
+  },
+  suggestActionsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 4,
+  },
+  suggestSecondaryButton: {
+    alignItems: 'center',
+    backgroundColor: '#F0FDF4',
+    borderColor: colors.primary,
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'center',
+    minHeight: 44,
+  },
+  suggestSecondaryButtonText: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  suggestAddButton: {
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: 44,
+  },
+  suggestAddButtonText: {
+    color: colors.panel,
+    fontSize: 14,
+    fontWeight: '800',
   },
   exerciseCard: {
     backgroundColor: colors.panel,

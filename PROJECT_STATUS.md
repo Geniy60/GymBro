@@ -15,6 +15,8 @@ The Machines tab supports list, search, add, edit, and delete. Machine data now 
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
 
+Empty workout drafts now offer a quick machine suggestion flow. From an empty workout, the user can choose target muscle groups and a machine count, preview a randomized set of matching machines, reshuffle it, and add the suggested machines to the workout using the same latest-set prefill behavior as manual machine selection.
+
 The app has a simple local user selector for the two seeded users:
 
 - Женя
@@ -25,6 +27,21 @@ The selected user is stored locally on the phone with AsyncStorage. Machines sta
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
+
+Added quick machine suggestions for empty workouts.
+
+Details:
+
+- Added a `Pick machines` entry point that appears only when a workout has no exercises.
+- Added a local machine suggestion screen inside the active workout flow.
+- The suggestion screen lets the user choose muscle groups and a target machine count.
+- Matching machines are selected from the existing machine list, excluding machines already in the draft workout.
+- The preview can be reshuffled before adding machines to the workout.
+- The suggestion preview now uses the same machine image tile style as the machine catalog and workout picker.
+- Adding suggested machines reuses the existing latest-set prefill behavior used by manual machine selection.
+- TypeScript and test checks pass after adding quick machine suggestions.
+
+Previous step:
 
 Generated standard machine reference images.
 
