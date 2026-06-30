@@ -28,6 +28,19 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Added people to all standard machine images.
+
+Details:
+
+- Regenerated all 16 remaining standard machine reference images with a person using each machine.
+- Kept the image files at 512x512 PNG under `assets/machines`.
+- The person-in-machine composition makes exercise direction and machine realism easier to verify in the app tiles.
+- Kept existing machine IDs and image mappings unchanged.
+- Generated a temporary contact sheet for visual QA and removed it after review.
+- TypeScript and test checks pass after replacing the image assets.
+
+Previous step:
+
 Redrew the glute kickback machine image.
 
 Details:
