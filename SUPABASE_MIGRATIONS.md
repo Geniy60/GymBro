@@ -6,15 +6,26 @@ Use the project migration runner:
 npm.cmd run db:apply -- supabase/migrations/<migration-file>.sql
 ```
 
-The runner reads the database connection string from one of these environment
-variables:
+To apply the latest migration file:
+
+```powershell
+npm.cmd run db:apply:latest
+```
+
+The runner reads `.env.local` first, then `.env`, and then uses the database
+connection string from one of these environment variables:
 
 - `SUPABASE_DATABASE_URL`
 - `DATABASE_URL`
 
-If neither variable is already set, set `SUPABASE_DATABASE_URL` temporarily in
-the same PowerShell session. Do not commit the real database password to the
-repository.
+For this local project, keep the real database connection string in
+`.env.local`. That file is ignored by git and lets future Codex sessions apply
+migrations without asking for the password again.
+
+Do not commit the real database password to the repository.
+
+If neither variable is already available, set `SUPABASE_DATABASE_URL`
+temporarily in the same PowerShell session.
 
 Example:
 

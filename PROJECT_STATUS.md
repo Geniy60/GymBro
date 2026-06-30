@@ -26,6 +26,62 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Simplified machine history rows.
+
+Details:
+
+- Removed the set-count line from machine history rows in the Statistics tab.
+- Kept each history row focused on workout date and max weight.
+- Removed the now-unused history set-count string.
+- TypeScript and test checks pass after the history row simplification.
+
+Previous step:
+
+Debounced workout search empty state.
+
+Details:
+
+- Added a short debounce before sending workout search text to the server.
+- Kept the search input responsive while avoiding empty-state flicker between typed characters.
+- TypeScript and test checks pass after the search flicker fix.
+
+Previous step:
+
+Added persistent local migration credentials.
+
+Details:
+
+- Added the shared Supabase database connection string to local `.env.local`, which is ignored by git.
+- Updated the migration runner to read `.env.local` and `.env` automatically.
+- Added `npm run db:apply:latest` for applying the newest migration without passing a filename.
+- Updated `SUPABASE_MIGRATIONS.md` with the local migration workflow.
+
+Previous step:
+
+Refactored workout loading for paged history.
+
+Details:
+
+- Added paged workout summary loading through TanStack Query infinite queries.
+- The Workouts tab now loads summaries page by page and fetches more on scroll.
+- Opening or repeating a workout now loads that workout's full exercises and sets only when needed.
+- Stats no longer depend on the loaded workout list; totals, month counts, machine maxes, and machine history now use separate Supabase queries/RPC functions.
+- The active workout screen no longer receives all previous workouts; it now loads latest sets for a selected machine and previous machine maxes through targeted queries.
+- Added `supabase/migrations/20260630103000_gymbro_paged_workout_queries.sql` with the required read-only SQL functions.
+- TypeScript and test checks pass after the workout data loading refactor.
+
+Previous step:
+
+Applied paged workout query migration.
+
+Details:
+
+- Applied `supabase/migrations/20260630103000_gymbro_paged_workout_queries.sql` to the shared Supabase database.
+- Verified the new `gymbro_*` SQL functions exist in the public schema.
+- TypeScript and test checks pass after applying the migration.
+
+Previous step:
+
 Compacted stats summary tiles.
 
 Details:

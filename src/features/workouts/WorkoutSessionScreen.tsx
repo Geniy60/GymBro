@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   BackHandler,
   FlatList,
@@ -14,6 +15,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { showAppAlert } from '../../appAlert';
 import { EmptyState } from '../../components/EmptyState';
 import { SearchInput } from '../../components/SearchInput';
+import { queryKeys } from '../../queryClient';
+import {
+  loadLatestSetsForMachine,
+  loadPreviousMaxesForMachines,
+} from '../../services/workoutsService';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { Machine, Workout, WorkoutExercise, WorkoutSet } from '../../types';
@@ -24,7 +30,7 @@ type WorkoutSessionScreenProps = {
   machines: Machine[];
   onBack: () => void;
   onSave: (workout: Workout) => void;
-  previousWorkouts: Workout[];
+  userId: string;
   workout: Workout;
 };
 
@@ -34,7 +40,7 @@ export function WorkoutSessionScreen({
   machines,
   onBack,
   onSave,
-  previousWorkouts,
+  userId,
   workout,
 }: WorkoutSessionScreenProps) {
   const [draftWorkout, setDraftWorkout] = useState<Workout>(workout);
@@ -43,14 +49,24 @@ export function WorkoutSessionScreen({
   const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<string[]>([]);
   const [visibleSetNoteIds, setVisibleSetNoteIds] = useState<string[]>([]);
   const filteredMachines = filterMachines(machines, machineSearchText);
-  const lastSetsByMachineId = useMemo(
-    () => buildLastSetsByMachineId(previousWorkouts, workout.id),
-    [previousWorkouts, workout.id],
+  const machineIds = useMemo(
+    () => [...new Set(draftWorkout.exercises.map((exercise) => exercise.machineId))],
+    [draftWorkout.exercises],
   );
-  const previousMaxByMachineId = useMemo(
-    () => buildPreviousMaxByMachineId(previousWorkouts, workout.id),
-    [previousWorkouts, workout.id],
-  );
+  const previousMaxesQuery = useQuery({
+    enabled: machineIds.length > 0,
+    queryFn: () =>
+      loadPreviousMaxesForMachines({
+        currentWorkoutId: workout.id,
+        machineIds,
+        userId,
+      }),
+    queryKey: queryKeys.previousMachineMaxes(
+      userId,
+      workout.id,
+      machineIds.slice().sort().join('|'),
+    ),
+  });
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -66,6 +82,12 @@ export function WorkoutSessionScreen({
     return () => subscription.remove();
   }, [draftWorkout, isMachinePickerOpen]);
 
+  useEffect(() => {
+    if (previousMaxesQuery.isError) {
+      showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+    }
+  }, [previousMaxesQuery.isError]);
+
   function updateWorkoutName(name: string) {
     setDraftWorkout((currentWorkout) => ({
       ...currentWorkout,
@@ -73,12 +95,24 @@ export function WorkoutSessionScreen({
     }));
   }
 
-  function addExercise(machine: Machine) {
+  async function addExercise(machine: Machine) {
+    let historySets: WorkoutSet[] = [];
+
+    try {
+      historySets = await loadLatestSetsForMachine({
+        currentWorkoutId: workout.id,
+        machineId: machine.id,
+        userId,
+      });
+    } catch {
+      showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+    }
+
     const exercise: WorkoutExercise = {
       id: createId(),
       machineId: machine.id,
       machineName: machine.name,
-      sets: createSetsFromHistory(lastSetsByMachineId.get(machine.id)),
+      sets: createSetsFromHistory(historySets),
     };
 
     setDraftWorkout((currentWorkout) => ({
@@ -298,7 +332,9 @@ export function WorkoutSessionScreen({
                   renderItem={({ item: machine }) => (
                     <MachinePickerButton
                       machine={machine}
-                      onPress={() => addExercise(machine)}
+                      onPress={() => {
+                        void addExercise(machine);
+                      }}
                       workout={draftWorkout}
                     />
                   )}
@@ -371,7 +407,7 @@ export function WorkoutSessionScreen({
                 deleteExercise={confirmDeleteExercise}
                 deleteSet={deleteSet}
                 exercise={exercise}
-                previousMaxWeightKg={previousMaxByMachineId.get(exercise.machineId)}
+                previousMaxWeightKg={previousMaxesQuery.data?.get(exercise.machineId)}
                 toggleExerciseCollapse={toggleExerciseCollapse}
                 toggleSetNote={toggleSetNote}
                 updateSet={updateSet}
@@ -678,69 +714,6 @@ function filterMachines(machines: Machine[], searchText: string) {
 
     return searchableText.includes(normalizedSearchText);
   });
-}
-
-function buildLastSetsByMachineId(
-  workouts: Workout[],
-  currentWorkoutId: string,
-): Map<string, WorkoutSet[]> {
-  const lastSetsByMachineId = new Map<string, WorkoutSet[]>();
-  const sortedWorkouts = [...workouts].sort(
-    (firstWorkout, secondWorkout) =>
-      new Date(secondWorkout.startedAt).getTime() -
-      new Date(firstWorkout.startedAt).getTime(),
-  );
-
-  for (const workoutItem of sortedWorkouts) {
-    if (workoutItem.id === currentWorkoutId) {
-      continue;
-    }
-
-    for (const exercise of workoutItem.exercises) {
-      if (
-        exercise.machineId.length === 0 ||
-        exercise.sets.length === 0 ||
-        lastSetsByMachineId.has(exercise.machineId)
-      ) {
-        continue;
-      }
-
-      lastSetsByMachineId.set(exercise.machineId, exercise.sets);
-    }
-  }
-
-  return lastSetsByMachineId;
-}
-
-function buildPreviousMaxByMachineId(
-  workouts: Workout[],
-  currentWorkoutId: string,
-): Map<string, number> {
-  const maxByMachineId = new Map<string, number>();
-
-  for (const workoutItem of workouts) {
-    if (workoutItem.id === currentWorkoutId) {
-      continue;
-    }
-
-    for (const exercise of workoutItem.exercises) {
-      for (const workoutSet of exercise.sets) {
-        const weightKg = parseWeightKg(workoutSet.weightKg);
-
-        if (weightKg === null) {
-          continue;
-        }
-
-        const currentMax = maxByMachineId.get(exercise.machineId);
-
-        if (currentMax === undefined || weightKg > currentMax) {
-          maxByMachineId.set(exercise.machineId, weightKg);
-        }
-      }
-    }
-  }
-
-  return maxByMachineId;
 }
 
 function isRecordSet(

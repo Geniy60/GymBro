@@ -3,13 +3,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import type { Workout } from '../../types';
+import type { WorkoutSummary } from '../../types';
 
 type WorkoutCardProps = {
   onDelete: () => void;
   onEdit: () => void;
   onRepeat: () => void;
-  workout: Workout;
+  workout: WorkoutSummary;
 };
 
 export function WorkoutCard({

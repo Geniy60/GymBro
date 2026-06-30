@@ -133,7 +133,70 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      gymbro_latest_sets_for_machine: {
+        Args: {
+          p_excluded_workout_id: string;
+          p_machine_id: string;
+          p_user_id: string;
+        };
+        Returns: {
+          exercise_id: string;
+          id: string;
+          note: string;
+          reps: string;
+          weight_kg: number | null;
+        }[];
+      };
+      gymbro_machine_history: {
+        Args: {
+          p_machine_id: string;
+          p_user_id: string;
+        };
+        Returns: {
+          id: string;
+          max_weight_kg: number | null;
+          set_count: number;
+          started_at: string;
+        }[];
+      };
+      gymbro_machine_maxes: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          machine_id: string | null;
+          machine_name: string;
+          started_at: string;
+          weight_kg: number;
+        }[];
+      };
+      gymbro_previous_machine_maxes: {
+        Args: {
+          p_excluded_workout_id: string;
+          p_machine_ids: string[];
+          p_user_id: string;
+        };
+        Returns: {
+          machine_id: string | null;
+          max_weight_kg: number;
+        }[];
+      };
+      gymbro_search_workout_summaries: {
+        Args: {
+          p_limit: number;
+          p_offset: number;
+          p_search: string | null;
+          p_user_id: string;
+        };
+        Returns: {
+          id: string;
+          name: string;
+          started_at: string;
+          user_id: string;
+        }[];
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, Json>;
   };

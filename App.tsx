@@ -27,7 +27,7 @@ import {
 import { loadUsers } from './src/services/usersService';
 import {
   deleteWorkout,
-  loadWorkouts,
+  loadWorkout,
   saveWorkout,
 } from './src/services/workoutsService';
 import {
@@ -36,7 +36,14 @@ import {
 } from './src/storage/selectedUserStorage';
 import { strings } from './src/strings';
 import { colors } from './src/theme/colors';
-import type { AppScreen, AppUser, Machine, MainTab, Workout } from './src/types';
+import type {
+  AppScreen,
+  AppUser,
+  Machine,
+  MainTab,
+  Workout,
+  WorkoutSummary,
+} from './src/types';
 
 type TabConfig = {
   key: MainTab;
@@ -71,6 +78,7 @@ function AppContent() {
   const [screen, setScreen] = useState<AppScreen>('home');
   const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
   const [editingWorkout, setEditingWorkout] = useState<Workout | null>(null);
+  const [isEditingWorkoutNew, setIsEditingWorkoutNew] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [hasLoadedSelectedUser, setHasLoadedSelectedUser] = useState(false);
   const queryClientInstance = useQueryClient();
@@ -82,16 +90,10 @@ function AppContent() {
     queryKey: queryKeys.machines,
     queryFn: loadMachines,
   });
-  const workoutsQuery = useQuery({
-    enabled: selectedUserId !== null,
-    queryKey: queryKeys.workouts(selectedUserId ?? 'none'),
-    queryFn: () => loadWorkouts(selectedUserId ?? ''),
-  });
   const users = usersQuery.data ?? [];
   const selectedUser =
     users.find((user) => user.id === selectedUserId) ?? null;
   const machines = machinesQuery.data ?? [];
-  const workouts = workoutsQuery.data ?? [];
   const appBackgroundColor = getUserBackgroundColor(selectedUserId);
 
   useEffect(() => {
@@ -99,11 +101,10 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
-    if (machinesQuery.isError || workoutsQuery.isError || usersQuery.isError) {
+    if (machinesQuery.isError || usersQuery.isError) {
       console.error('GymBro data load error', {
         machines: machinesQuery.error,
         users: usersQuery.error,
-        workouts: workoutsQuery.error,
       });
       showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
     }
@@ -112,8 +113,6 @@ function AppContent() {
     machinesQuery.isError,
     usersQuery.error,
     usersQuery.isError,
-    workoutsQuery.error,
-    workoutsQuery.isError,
   ]);
 
   useEffect(() => {
@@ -177,17 +176,32 @@ function AppContent() {
       startedAt: new Date().toISOString(),
       exercises: [],
     });
+    setIsEditingWorkoutNew(true);
     setScreen('workoutSession');
   }
 
-  function openWorkoutSession(workout: Workout) {
-    setEditingWorkout(workout);
-    setScreen('workoutSession');
+  async function openWorkoutSession(workout: WorkoutSummary) {
+    try {
+      setEditingWorkout(await loadWorkout(workout.id));
+      setIsEditingWorkoutNew(false);
+      setScreen('workoutSession');
+    } catch {
+      showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+    }
   }
 
-  function repeatWorkout(workout: Workout) {
+  async function repeatWorkout(workout: WorkoutSummary) {
     if (selectedUserId === null) {
       setScreen('userSelect');
+      return;
+    }
+
+    let sourceWorkout: Workout;
+
+    try {
+      sourceWorkout = await loadWorkout(workout.id);
+    } catch {
+      showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
       return;
     }
 
@@ -196,7 +210,7 @@ function AppContent() {
       userId: selectedUserId,
       name: createDefaultWorkoutName(),
       startedAt: new Date().toISOString(),
-      exercises: workout.exercises.map((exercise) => ({
+      exercises: sourceWorkout.exercises.map((exercise) => ({
         ...exercise,
         id: createId(),
         sets: exercise.sets.map((workoutSet) => ({
@@ -205,6 +219,7 @@ function AppContent() {
         })),
       })),
     });
+    setIsEditingWorkoutNew(true);
     setScreen('workoutSession');
   }
 
@@ -216,6 +231,7 @@ function AppContent() {
   function closeWorkoutForm() {
     setScreen('home');
     setEditingWorkout(null);
+    setIsEditingWorkoutNew(false);
   }
 
   function openSettings() {
@@ -233,9 +249,7 @@ function AppContent() {
   async function handleSelectUser(user: AppUser) {
     setSelectedUserId(user.id);
     setScreen('home');
-    void queryClientInstance.invalidateQueries({
-      queryKey: queryKeys.workouts(user.id),
-    });
+    void invalidateWorkoutData(user.id);
 
     try {
       await saveSelectedUserId(user.id);
@@ -262,9 +276,7 @@ function AppContent() {
 
     try {
       await saveWorkout(workout, selectedUserId);
-      await queryClientInstance.invalidateQueries({
-        queryKey: queryKeys.workouts(selectedUserId),
-      });
+      await invalidateWorkoutData(selectedUserId);
       closeWorkoutForm();
     } catch {
       showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
@@ -291,7 +303,7 @@ function AppContent() {
     );
   }
 
-  function confirmDeleteWorkout(workout: Workout) {
+  function confirmDeleteWorkout(workout: WorkoutSummary) {
     showAppAlert(
       strings.alerts.deleteWorkoutTitle,
       strings.alerts.deleteWorkoutMessage(workout.name),
@@ -324,13 +336,28 @@ function AppContent() {
     try {
       await deleteWorkout(workoutId);
       if (selectedUserId !== null) {
-        await queryClientInstance.invalidateQueries({
-          queryKey: queryKeys.workouts(selectedUserId),
-        });
+        await invalidateWorkoutData(selectedUserId);
       }
     } catch {
       showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
     }
+  }
+
+  async function invalidateWorkoutData(userId: string) {
+    await Promise.all([
+      queryClientInstance.invalidateQueries({
+        queryKey: ['workoutSummaries', userId],
+      }),
+      queryClientInstance.invalidateQueries({
+        queryKey: queryKeys.workoutStats(userId),
+      }),
+      queryClientInstance.invalidateQueries({
+        queryKey: ['machineHistory', userId],
+      }),
+      queryClientInstance.invalidateQueries({
+        queryKey: ['previousMachineMaxes', userId],
+      }),
+    ]);
   }
 
   if (screen === 'userSelect') {
@@ -387,15 +414,13 @@ function AppContent() {
       <SafeAreaProvider>
         <WorkoutSessionScreen
           backgroundColor={appBackgroundColor}
-          isNewWorkout={workouts.every(
-            (currentWorkout) => currentWorkout.id !== editingWorkout.id,
-          )}
+          isNewWorkout={isEditingWorkoutNew}
           machines={machines}
           onBack={closeWorkoutForm}
           onSave={(workout) => {
             void handleSaveWorkout(workout);
           }}
-          previousWorkouts={workouts}
+          userId={selectedUserId ?? editingWorkout.userId}
           workout={editingWorkout}
         />
         <StatusBar style="dark" />
@@ -467,14 +492,18 @@ function AppContent() {
             onEditMachine={openEditMachineForm}
           />
         ) : activeTab === 'stats' ? (
-          <StatsScreen workouts={workouts} />
+          <StatsScreen userId={selectedUserId} />
         ) : (
           <WorkoutsScreen
             onDeleteWorkout={confirmDeleteWorkout}
-            onEditWorkout={openWorkoutSession}
-            onRepeatWorkout={repeatWorkout}
+            onEditWorkout={(workout) => {
+              void openWorkoutSession(workout);
+            }}
+            onRepeatWorkout={(workout) => {
+              void repeatWorkout(workout);
+            }}
             onStartWorkout={startWorkout}
-            workouts={workouts}
+            userId={selectedUserId}
           />
         )}
 

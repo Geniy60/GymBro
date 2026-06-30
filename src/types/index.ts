@@ -50,6 +50,13 @@ export type Workout = {
   exercises: WorkoutExercise[];
 };
 
+export type WorkoutSummary = {
+  userId: string;
+  id: string;
+  name: string;
+  startedAt: string;
+};
+
 export type WorkoutExercise = {
   id: string;
   machineId: string;
@@ -62,4 +69,36 @@ export type WorkoutSet = {
   weightKg: string;
   reps: string;
   note: string;
+};
+
+export type WorkoutPage = {
+  items: WorkoutSummary[];
+  nextOffset: number | null;
+};
+
+export type MonthWorkoutStat = {
+  count: number;
+  key: string;
+  label: string;
+};
+
+export type MachineMax = {
+  dateLabel: string;
+  id: string;
+  machineName: string;
+  weightKg: number;
+};
+
+export type MachineHistoryItem = {
+  dateLabel: string;
+  id: string;
+  maxWeightKg: number | null;
+  setCount: number;
+};
+
+export type WorkoutStats = {
+  totalWorkouts: number;
+  monthWorkoutCount: number;
+  monthStats: MonthWorkoutStat[];
+  machineMaxes: MachineMax[];
 };

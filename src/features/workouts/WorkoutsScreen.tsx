@@ -1,11 +1,15 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { showAppAlert } from '../../appAlert';
 import { EmptyState } from '../../components/EmptyState';
 import { SearchInput } from '../../components/SearchInput';
+import { queryKeys } from '../../queryClient';
+import { loadWorkoutSummaries } from '../../services/workoutsService';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import type { Workout } from '../../types';
+import type { WorkoutPage, WorkoutSummary } from '../../types';
 import { WorkoutCard } from './WorkoutCard';
 
 type WorkoutListItem =
@@ -17,15 +21,15 @@ type WorkoutListItem =
   | {
       id: string;
       type: 'workout';
-      workout: Workout;
+      workout: WorkoutSummary;
     };
 
 type WorkoutsScreenProps = {
   onStartWorkout: () => void;
-  onDeleteWorkout: (workout: Workout) => void;
-  onEditWorkout: (workout: Workout) => void;
-  onRepeatWorkout: (workout: Workout) => void;
-  workouts: Workout[];
+  onDeleteWorkout: (workout: WorkoutSummary) => void;
+  onEditWorkout: (workout: WorkoutSummary) => void;
+  onRepeatWorkout: (workout: WorkoutSummary) => void;
+  userId: string | null;
 };
 
 export function WorkoutsScreen({
@@ -33,31 +37,54 @@ export function WorkoutsScreen({
   onEditWorkout,
   onRepeatWorkout,
   onStartWorkout,
-  workouts,
+  userId,
 }: WorkoutsScreenProps) {
   const [searchText, setSearchText] = useState('');
-
-  const filteredWorkouts = useMemo(() => {
-    const normalizedSearch = searchText.trim().toLocaleLowerCase();
-
-    if (normalizedSearch.length === 0) {
-      return workouts;
-    }
-
-    return workouts.filter((workout) => {
-      const searchableText = [
-        workout.name,
-        new Date(workout.startedAt).toLocaleDateString('ru-RU'),
-        ...workout.exercises.map((exercise) => exercise.machineName),
-      ].join(' ').toLocaleLowerCase();
-
-      return searchableText.includes(normalizedSearch);
-    });
-  }, [searchText, workouts]);
-  const workoutListItems = useMemo(
-    () => createWorkoutListItems(filteredWorkouts),
-    [filteredWorkouts],
+  const [debouncedSearchText, setDebouncedSearchText] = useState('');
+  const trimmedSearchText = debouncedSearchText.trim();
+  const workoutSummariesQuery = useInfiniteQuery({
+    enabled: userId !== null,
+    getNextPageParam: (lastPage: WorkoutPage) => lastPage.nextOffset,
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) =>
+      loadWorkoutSummaries({
+        offset: pageParam,
+        searchText: trimmedSearchText,
+        userId: userId ?? '',
+      }),
+    queryKey:
+      userId === null
+        ? queryKeys.workoutSummaries('none', trimmedSearchText)
+        : queryKeys.workoutSummaries(userId, trimmedSearchText),
+  });
+  const workouts = useMemo(
+    () =>
+      workoutSummariesQuery.data?.pages.flatMap((page: WorkoutPage) => page.items) ??
+      [],
+    [workoutSummariesQuery.data],
   );
+  const workoutListItems = useMemo(
+    () => createWorkoutListItems(workouts),
+    [workouts],
+  );
+  const hasSearch = trimmedSearchText.length > 0;
+  const isWaitingForWorkouts =
+    workouts.length === 0 &&
+    (searchText.trim() !== trimmedSearchText || workoutSummariesQuery.isFetching);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchText]);
+
+  useEffect(() => {
+    if (workoutSummariesQuery.isError) {
+      showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+    }
+  }, [workoutSummariesQuery.isError]);
 
   return (
     <View style={styles.content}>
@@ -74,21 +101,37 @@ export function WorkoutsScreen({
         data={workoutListItems}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
-          <EmptyState
-            message={
-              workouts.length === 0
-                ? strings.empty.workouts.message
-                : strings.empty.filtered.message
-            }
-            onReset={workouts.length > 0 ? () => setSearchText('') : undefined}
-            resetLabel={strings.actions.resetSearch}
-            title={
-              workouts.length === 0
-                ? strings.empty.workouts.title
-                : strings.empty.filtered.title
-            }
-          />
+          isWaitingForWorkouts ? null : (
+            <EmptyState
+              message={
+                !hasSearch
+                  ? strings.empty.workouts.message
+                  : strings.empty.filtered.message
+              }
+              onReset={hasSearch ? () => setSearchText('') : undefined}
+              resetLabel={strings.actions.resetSearch}
+              title={
+                !hasSearch
+                  ? strings.empty.workouts.title
+                  : strings.empty.filtered.title
+              }
+            />
+          )
         }
+        ListFooterComponent={
+          workoutSummariesQuery.isFetchingNextPage ? (
+            <Text style={styles.footerText}>{strings.workouts.loadingMore}</Text>
+          ) : null
+        }
+        onEndReached={() => {
+          if (
+            workoutSummariesQuery.hasNextPage &&
+            !workoutSummariesQuery.isFetchingNextPage
+          ) {
+            void workoutSummariesQuery.fetchNextPage();
+          }
+        }}
+        onEndReachedThreshold={0.6}
         renderItem={({ item }) =>
           item.type === 'month' ? (
             <Text style={styles.monthDivider}>{item.title}</Text>
@@ -120,7 +163,7 @@ export function WorkoutsScreen({
   );
 }
 
-function createWorkoutListItems(workouts: Workout[]): WorkoutListItem[] {
+function createWorkoutListItems(workouts: WorkoutSummary[]): WorkoutListItem[] {
   const listItems: WorkoutListItem[] = [];
   let currentMonthKey = '';
 
@@ -193,6 +236,13 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginTop: 4,
     textTransform: 'uppercase',
+  },
+  footerText: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '700',
+    paddingVertical: 8,
+    textAlign: 'center',
   },
   startWorkoutButton: {
     alignItems: 'center',

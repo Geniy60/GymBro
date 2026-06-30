@@ -25,6 +25,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "db:apply": "node scripts/applyMigration.mjs",
+    "db:apply:latest": "node scripts/applyMigration.mjs latest",
     "test": "tsc --noEmit"
   },
   "private": true

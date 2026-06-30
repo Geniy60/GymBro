@@ -50,7 +50,6 @@ export const strings = {
     maxesTitle: 'Максимумы по тренажерам',
     emptyMaxes: 'Пока нет подходов с весом.',
     historyEmpty: 'По этому тренажеру пока нет истории.',
-    historySetCount: (setCount: number) => `${setCount} подх.`,
     historyTitle: 'История тренажера',
     maxWeight: (weightKg: string, date: string) => `${weightKg} кг · ${date}`,
     noWeight: 'Без веса',
@@ -114,6 +113,7 @@ export const strings = {
     expandExercise: 'Развернуть тренажер',
     machineAlreadyAdded: (exerciseCount: number, setCount: number) =>
       `${exerciseCount}× · ${setCount} подх.`,
+    loadingMore: 'Загружаем еще...',
     machineSearchPlaceholder: 'Поиск тренажера',
     noMachinesTitle: 'Тренажеров пока нет',
     noMachinesMessage: 'Сначала добавь тренажеры во вкладке «Тренажеры».',

@@ -1,72 +1,80 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { BackHandler, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { showAppAlert } from '../../appAlert';
+import { queryKeys } from '../../queryClient';
+import {
+  loadMachineHistory,
+  loadWorkoutStats,
+} from '../../services/workoutsService';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import type { Workout } from '../../types';
+import type { MachineHistoryItem, MachineMax } from '../../types';
 
 type StatsScreenProps = {
-  workouts: Workout[];
+  userId: string | null;
 };
 
-type MonthStat = {
-  count: number;
-  key: string;
-  label: string;
-};
-
-type MachineMax = {
-  dateLabel: string;
-  id: string;
-  machineName: string;
-  weightKg: number;
-  workoutTime: number;
-};
-
-type MachineHistoryItem = {
-  dateLabel: string;
-  id: string;
-  maxWeightKg: number | null;
-  setCount: number;
-  workoutTime: number;
-};
-
-export function StatsScreen({ workouts }: StatsScreenProps) {
-  const [selectedMachineId, setSelectedMachineId] = useState<string | null>(null);
-  const totalWorkouts = workouts.length;
-  const monthWorkoutCount = countCurrentMonthWorkouts(workouts);
-  const monthStats = getLastSixMonthStats(workouts);
-  const maxMonthCount = Math.max(...monthStats.map((monthStat) => monthStat.count), 1);
-  const machineMaxes = getMachineMaxes(workouts);
-  const selectedMachine = machineMaxes.find(
-    (machineMax) => machineMax.id === selectedMachineId,
+export function StatsScreen({ userId }: StatsScreenProps) {
+  const [selectedMachine, setSelectedMachine] = useState<MachineMax | null>(null);
+  const statsQuery = useQuery({
+    enabled: userId !== null,
+    queryFn: () => loadWorkoutStats(userId ?? ''),
+    queryKey: queryKeys.workoutStats(userId ?? 'none'),
+  });
+  const historyQuery = useQuery({
+    enabled: userId !== null && selectedMachine !== null,
+    queryFn: () =>
+      loadMachineHistory({
+        machineId: selectedMachine?.id ?? '',
+        userId: userId ?? '',
+      }),
+    queryKey:
+      userId === null || selectedMachine === null
+        ? queryKeys.machineHistory('none', 'none')
+        : queryKeys.machineHistory(userId, selectedMachine.id),
+  });
+  const stats = statsQuery.data ?? {
+    machineMaxes: [],
+    monthStats: [],
+    monthWorkoutCount: 0,
+    totalWorkouts: 0,
+  };
+  const maxMonthCount = Math.max(
+    ...stats.monthStats.map((monthStat) => monthStat.count),
+    1,
   );
-  const selectedMachineHistory =
-    selectedMachine === undefined
-      ? []
-      : getMachineHistory(workouts, selectedMachine.id);
 
   useEffect(() => {
-    if (selectedMachineId === null) {
+    if (selectedMachine === null) {
       return undefined;
     }
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      setSelectedMachineId(null);
+      setSelectedMachine(null);
       return true;
     });
 
     return () => subscription.remove();
-  }, [selectedMachineId]);
+  }, [selectedMachine]);
 
-  if (selectedMachine !== undefined) {
+  useEffect(() => {
+    if (statsQuery.isError || historyQuery.isError) {
+      showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+    }
+  }, [historyQuery.isError, statsQuery.isError]);
+
+  if (selectedMachine !== null) {
+    const selectedMachineHistory = historyQuery.data ?? [];
+
     return (
       <View style={styles.content}>
         <View style={styles.detailHeader}>
           <Pressable
             accessibilityLabel={strings.accessibility.back}
-            onPress={() => setSelectedMachineId(null)}
+            onPress={() => setSelectedMachine(null)}
             style={({ pressed }) => [
               styles.backButton,
               pressed && styles.pressedButton,
@@ -87,21 +95,7 @@ export function StatsScreen({ workouts }: StatsScreenProps) {
           ListEmptyComponent={
             <Text style={styles.emptyText}>{strings.stats.historyEmpty}</Text>
           }
-          renderItem={({ item }) => (
-            <View style={styles.historyRow}>
-              <View style={styles.historyTextBlock}>
-                <Text style={styles.historyDate}>{item.dateLabel}</Text>
-                <Text style={styles.historyMeta}>
-                  {strings.stats.historySetCount(item.setCount)}
-                </Text>
-              </View>
-              <Text style={styles.historyMax}>
-                {item.maxWeightKg === null
-                  ? strings.stats.noWeight
-                  : strings.stats.workoutMax(formatWeight(item.maxWeightKg))}
-              </Text>
-            </View>
-          )}
+          renderItem={({ item }) => <MachineHistoryRow item={item} />}
           showsVerticalScrollIndicator={false}
         />
       </View>
@@ -111,17 +105,20 @@ export function StatsScreen({ workouts }: StatsScreenProps) {
   return (
     <View style={styles.content}>
       <View style={styles.summaryRow}>
-        <StatTile label={strings.stats.totalWorkouts} value={String(totalWorkouts)} />
+        <StatTile
+          label={strings.stats.totalWorkouts}
+          value={String(stats.totalWorkouts)}
+        />
         <StatTile
           label={strings.stats.monthWorkouts}
-          value={String(monthWorkoutCount)}
+          value={String(stats.monthWorkoutCount)}
         />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{strings.stats.chartTitle}</Text>
         <View style={styles.chartRow}>
-          {monthStats.map((monthStat) => (
+          {stats.monthStats.map((monthStat) => (
             <View key={monthStat.key} style={styles.chartItem}>
               <View style={styles.chartBarTrack}>
                 <View
@@ -144,14 +141,14 @@ export function StatsScreen({ workouts }: StatsScreenProps) {
         <Text style={styles.sectionTitle}>{strings.stats.maxesTitle}</Text>
         <FlatList
           contentContainerStyle={styles.maxesListContent}
-          data={machineMaxes}
+          data={stats.machineMaxes}
           keyExtractor={(machineMax) => machineMax.id}
           ListEmptyComponent={
             <Text style={styles.emptyText}>{strings.stats.emptyMaxes}</Text>
           }
           renderItem={({ item }) => (
             <Pressable
-              onPress={() => setSelectedMachineId(item.id)}
+              onPress={() => setSelectedMachine(item)}
               style={({ pressed }) => [
                 styles.maxRow,
                 pressed && styles.pressedButton,
@@ -181,135 +178,19 @@ function StatTile({ label, value }: { label: string; value: string }) {
   );
 }
 
-function countCurrentMonthWorkouts(workouts: Workout[]): number {
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-
-  return workouts.filter((workout) => {
-    const workoutDate = new Date(workout.startedAt);
-
-    return (
-      !Number.isNaN(workoutDate.getTime()) &&
-      workoutDate.getMonth() === currentMonth &&
-      workoutDate.getFullYear() === currentYear
-    );
-  }).length;
-}
-
-function getLastSixMonthStats(workouts: Workout[]): MonthStat[] {
-  const monthStarts = Array.from({ length: 6 }, (_, index) => {
-    const date = new Date();
-    date.setDate(1);
-    date.setHours(0, 0, 0, 0);
-    date.setMonth(date.getMonth() - (5 - index));
-
-    return date;
-  });
-
-  return monthStarts.map((monthStart) => {
-    const month = monthStart.getMonth();
-    const year = monthStart.getFullYear();
-
-    return {
-      count: workouts.filter((workout) => {
-        const workoutDate = new Date(workout.startedAt);
-
-        return (
-          !Number.isNaN(workoutDate.getTime()) &&
-          workoutDate.getMonth() === month &&
-          workoutDate.getFullYear() === year
-        );
-      }).length,
-      key: `${year}-${month}`,
-      label: monthStart.toLocaleDateString('ru-RU', { month: 'short' }),
-    };
-  });
-}
-
-function getMachineMaxes(workouts: Workout[]): MachineMax[] {
-  const maxesByMachine = new Map<string, MachineMax>();
-
-  for (const workout of workouts) {
-    const workoutDate = new Date(workout.startedAt);
-    const workoutTime = workoutDate.getTime();
-    const dateLabel = Number.isNaN(workoutTime)
-      ? strings.workouts.unknownMonth
-      : workoutDate.toLocaleDateString('ru-RU');
-
-    for (const exercise of workout.exercises) {
-      for (const workoutSet of exercise.sets) {
-        const weightKg = parseWeight(workoutSet.weightKg);
-
-        if (weightKg === null) {
-          continue;
-        }
-
-        const existingMax = maxesByMachine.get(exercise.machineId);
-        const shouldReplace =
-          existingMax === undefined ||
-          weightKg > existingMax.weightKg ||
-          (weightKg === existingMax.weightKg && workoutTime > existingMax.workoutTime);
-
-        if (shouldReplace) {
-          maxesByMachine.set(exercise.machineId, {
-            dateLabel,
-            id: exercise.machineId,
-            machineName: exercise.machineName,
-            weightKg,
-            workoutTime,
-          });
-        }
-      }
-    }
-  }
-
-  return [...maxesByMachine.values()].sort((firstMax, secondMax) =>
-    firstMax.machineName.localeCompare(secondMax.machineName, 'ru-RU'),
+function MachineHistoryRow({ item }: { item: MachineHistoryItem }) {
+  return (
+    <View style={styles.historyRow}>
+      <View style={styles.historyTextBlock}>
+        <Text style={styles.historyDate}>{item.dateLabel}</Text>
+      </View>
+      <Text style={styles.historyMax}>
+        {item.maxWeightKg === null
+          ? strings.stats.noWeight
+          : strings.stats.workoutMax(formatWeight(item.maxWeightKg))}
+      </Text>
+    </View>
   );
-}
-
-function getMachineHistory(
-  workouts: Workout[],
-  machineId: string,
-): MachineHistoryItem[] {
-  return workouts
-    .flatMap((workout) => {
-      const workoutDate = new Date(workout.startedAt);
-      const workoutTime = workoutDate.getTime();
-      const dateLabel = Number.isNaN(workoutTime)
-        ? strings.workouts.unknownMonth
-        : workoutDate.toLocaleDateString('ru-RU');
-
-      return workout.exercises
-        .filter((exercise) => exercise.machineId === machineId)
-        .map((exercise) => {
-          const weights = exercise.sets
-            .map((workoutSet) => parseWeight(workoutSet.weightKg))
-            .filter((weightKg): weightKg is number => weightKg !== null);
-
-          return {
-            dateLabel,
-            id: `${workout.id}-${exercise.id}`,
-            maxWeightKg: weights.length === 0 ? null : Math.max(...weights),
-            setCount: exercise.sets.length,
-            workoutTime: Number.isNaN(workoutTime) ? 0 : workoutTime,
-          };
-        });
-    })
-    .sort((firstItem, secondItem) => secondItem.workoutTime - firstItem.workoutTime);
-}
-
-function parseWeight(weightKg: string): number | null {
-  const normalizedWeight = weightKg.trim().replace(',', '.');
-
-  if (normalizedWeight.length === 0) {
-    return null;
-  }
-
-  const parsedWeight = Number(normalizedWeight);
-
-  return Number.isFinite(parsedWeight) ? parsedWeight : null;
 }
 
 function formatWeight(weightKg: number): string {
@@ -462,12 +343,6 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 15,
     fontWeight: '800',
-  },
-  historyMeta: {
-    color: colors.muted,
-    fontSize: 13,
-    fontWeight: '700',
-    marginTop: 3,
   },
   historyMax: {
     color: colors.primary,
