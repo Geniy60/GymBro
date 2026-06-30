@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -527,7 +528,11 @@ export function WorkoutSessionScreen({
             </View>
 
             <Pressable
-              accessibilityLabel={strings.workouts.suggestMachinesButton}
+              accessibilityLabel={
+                hasSuggestAttempt
+                  ? strings.workouts.resuggestMachines
+                  : strings.workouts.suggestMachinesButton
+              }
               disabled={!canSuggest}
               onPress={suggestMachines}
               style={({ pressed }) => [
@@ -536,10 +541,19 @@ export function WorkoutSessionScreen({
                 pressed && styles.pressedButton,
               ]}
             >
-              <Ionicons name="sparkles-outline" size={20} color={colors.panel} />
-              <Text style={styles.suggestPrimaryButtonText}>
-                {strings.workouts.suggestMachinesButton}
-              </Text>
+              <LinearGradient
+                colors={['#7C3AED', '#A855F7', '#EC4899']}
+                end={{ x: 1, y: 1 }}
+                start={{ x: 0, y: 0 }}
+                style={styles.suggestPrimaryGradient}
+              >
+                <Ionicons name="sparkles-outline" size={20} color={colors.panel} />
+                <Text style={styles.suggestPrimaryButtonText}>
+                  {hasSuggestAttempt
+                    ? strings.workouts.resuggestMachines
+                    : strings.workouts.suggestMachinesButton}
+                </Text>
+              </LinearGradient>
             </Pressable>
 
             {suggestedMachines.length === 0 ? (
@@ -565,35 +579,20 @@ export function WorkoutSessionScreen({
                     <View style={styles.suggestPreviewItem} />
                   ) : null}
                 </View>
-                <View style={styles.suggestActionsRow}>
-                  <Pressable
-                    accessibilityLabel={strings.workouts.resuggestMachines}
-                    onPress={suggestMachines}
-                    style={({ pressed }) => [
-                      styles.suggestSecondaryButton,
-                      pressed && styles.pressedButton,
-                    ]}
-                  >
-                    <Ionicons name="shuffle-outline" size={18} color={colors.primary} />
-                    <Text style={styles.suggestSecondaryButtonText}>
-                      {strings.workouts.resuggestMachines}
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    accessibilityLabel={strings.workouts.addSuggestedMachines}
-                    onPress={() => {
-                      void addSuggestedMachinesToWorkout();
-                    }}
-                    style={({ pressed }) => [
-                      styles.suggestAddButton,
-                      pressed && styles.pressedButton,
-                    ]}
-                  >
-                    <Text style={styles.suggestAddButtonText}>
-                      {strings.workouts.addSuggestedMachines}
-                    </Text>
-                  </Pressable>
-                </View>
+                <Pressable
+                  accessibilityLabel={strings.workouts.addSuggestedMachines}
+                  onPress={() => {
+                    void addSuggestedMachinesToWorkout();
+                  }}
+                  style={({ pressed }) => [
+                    styles.suggestAddButton,
+                    pressed && styles.pressedButton,
+                  ]}
+                >
+                  <Text style={styles.suggestAddButtonText}>
+                    {strings.workouts.addSuggestedMachines}
+                  </Text>
+                </Pressable>
               </View>
             )}
           </ScrollView>
@@ -941,10 +940,17 @@ function EmptyWorkoutExerciseList({
           pressed && styles.pressedButton,
         ]}
       >
-        <Ionicons name="sparkles-outline" size={20} color={colors.panel} />
-        <Text style={styles.emptySuggestButtonText}>
-          {strings.workouts.openSuggestMachines}
-        </Text>
+        <LinearGradient
+          colors={['#7C3AED', '#A855F7', '#EC4899']}
+          end={{ x: 1, y: 1 }}
+          start={{ x: 0, y: 0 }}
+          style={styles.suggestPrimaryGradient}
+        >
+          <Ionicons name="sparkles-outline" size={20} color={colors.panel} />
+          <Text style={styles.emptySuggestButtonText}>
+            {strings.workouts.openSuggestMachines}
+          </Text>
+        </LinearGradient>
       </Pressable>
     </View>
   );
@@ -1210,14 +1216,10 @@ const styles = StyleSheet.create({
     paddingTop: 6,
   },
   emptySuggestButton: {
-    alignItems: 'center',
     alignSelf: 'stretch',
-    backgroundColor: colors.primary,
     borderRadius: 8,
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
     minHeight: 48,
+    overflow: 'hidden',
   },
   emptySuggestButtonText: {
     color: colors.panel,
@@ -1286,9 +1288,12 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   suggestPrimaryButton: {
-    alignItems: 'center',
-    backgroundColor: colors.primary,
     borderRadius: 8,
+    minHeight: 48,
+    overflow: 'hidden',
+  },
+  suggestPrimaryGradient: {
+    alignItems: 'center',
     flexDirection: 'row',
     gap: 8,
     justifyContent: 'center',
@@ -1315,39 +1320,16 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     maxWidth: '48.5%',
   },
-  suggestActionsRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 4,
-  },
-  suggestSecondaryButton: {
-    alignItems: 'center',
-    backgroundColor: '#F0FDF4',
-    borderColor: colors.primary,
-    borderRadius: 8,
-    borderWidth: 1,
-    flex: 1,
-    flexDirection: 'row',
-    gap: 6,
-    justifyContent: 'center',
-    minHeight: 44,
-  },
-  suggestSecondaryButtonText: {
-    color: colors.primary,
-    fontSize: 14,
-    fontWeight: '800',
-  },
   suggestAddButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
     borderRadius: 8,
-    flex: 1,
     justifyContent: 'center',
     minHeight: 44,
   },
   suggestAddButtonText: {
     color: colors.panel,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '800',
   },
   exerciseCard: {

@@ -116,7 +116,7 @@ export const strings = {
     machineSearchPlaceholder: 'Поиск тренажера',
     noMachinesTitle: 'Тренажеров пока нет',
     noMachinesMessage: 'Сначала добавь тренажеры во вкладке «Тренажеры».',
-    addSuggestedMachines: 'Добавить',
+    addSuggestedMachines: 'К тренировке!',
     openSuggestMachines: 'Подобрать тренажеры',
     resuggestMachines: 'Подобрать заново',
     repsLabel: 'Повторения',

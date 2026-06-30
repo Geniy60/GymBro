@@ -38,6 +38,10 @@ Details:
 - Matching machines are selected from the existing machine list, excluding machines already in the draft workout.
 - The preview can be reshuffled before adding machines to the workout.
 - The suggestion preview now uses the same machine image tile style as the machine catalog and workout picker.
+- The top suggestion button now changes from `Pick` to `Pick again` after the first preview, and the preview action uses a single `To workout!` button.
+- Increased the `To workout!` button label size for better emphasis.
+- Styled the suggestion button with a purple-pink gradient using `expo-linear-gradient` to make the smart-pick action feel distinct.
+- Applied the same gradient style to the empty-workout `Pick machines` entry button.
 - Adding suggested machines reuses the existing latest-set prefill behavior used by manual machine selection.
 - TypeScript and test checks pass after adding quick machine suggestions.
 
