@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { showAppAlert } from '../../appAlert';
 import { EmptyState } from '../../components/EmptyState';
-import { MachineImageFrame } from '../../components/MachineImageFrame';
+import { MachineTile } from '../../components/MachineTile';
 import { SearchInput } from '../../components/SearchInput';
 import { queryKeys } from '../../queryClient';
 import {
@@ -333,13 +333,15 @@ export function WorkoutSessionScreen({
                   columnWrapperStyle={styles.machinePickerRow}
                   numColumns={2}
                   renderItem={({ item: machine }) => (
-                    <MachinePickerButton
-                      machine={machine}
-                      onPress={() => {
-                        void addExercise(machine);
-                      }}
-                      workout={draftWorkout}
-                    />
+                    <View style={styles.machinePickerItem}>
+                      <MachinePickerButton
+                        machine={machine}
+                        onPress={() => {
+                          void addExercise(machine);
+                        }}
+                        workout={draftWorkout}
+                      />
+                    </View>
                   )}
                   showsVerticalScrollIndicator={false}
                   style={styles.machinePickerList}
@@ -663,39 +665,15 @@ function MachinePickerButton({
   const matchingExercises = workout.exercises.filter(
     (exercise) => exercise.machineId === machine.id,
   );
-  const setCount = matchingExercises.reduce(
-    (total, exercise) => total + exercise.sets.length,
-    0,
-  );
   const isSelected = matchingExercises.length > 0;
 
   return (
-    <Pressable
+    <MachineTile
       accessibilityLabel={strings.workouts.addMachineToWorkout(machine.name)}
+      machine={machine}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.machineButton,
-        isSelected && styles.selectedMachineButton,
-        pressed && styles.pressedButton,
-      ]}
-    >
-      <MachineImageFrame machineId={machine.id} style={styles.machineButtonImage} />
-      <View style={styles.machineButtonTextBlock}>
-        <Text
-          style={[
-            styles.machineButtonText,
-            isSelected && styles.selectedMachineButtonText,
-          ]}
-        >
-          {machine.name}
-        </Text>
-        {isSelected ? (
-          <Text style={styles.machineButtonMeta}>
-            {strings.workouts.machineAlreadyAdded(matchingExercises.length, setCount)}
-          </Text>
-        ) : null}
-      </View>
-    </Pressable>
+      selected={isSelected}
+    />
   );
 }
 
@@ -888,44 +866,13 @@ const styles = StyleSheet.create({
   machinePickerRow: {
     gap: 10,
   },
+  machinePickerItem: {
+    flex: 1,
+    maxWidth: '48.5%',
+  },
   machineSearchRow: {
     flexDirection: 'row',
     marginBottom: 8,
-  },
-  machineButton: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    flex: 1,
-    maxWidth: '48.5%',
-    minHeight: 158,
-    padding: 8,
-  },
-  machineButtonImage: {
-    height: 96,
-    width: '100%',
-  },
-  selectedMachineButton: {
-    backgroundColor: '#DCFCE7',
-    borderColor: colors.primary,
-  },
-  machineButtonText: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  machineButtonTextBlock: {
-    paddingTop: 8,
-  },
-  selectedMachineButtonText: {
-    color: '#166534',
-  },
-  machineButtonMeta: {
-    color: '#166534',
-    fontSize: 12,
-    fontWeight: '700',
-    marginTop: 2,
   },
   helperText: {
     color: colors.muted,

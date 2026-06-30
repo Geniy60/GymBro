@@ -26,6 +26,30 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Matched workout machine picker tile content.
+
+Details:
+
+- Removed the `1x / set count` metadata from workout machine picker tiles.
+- Workout machine picker tiles now show the same muscle-group metadata as the Machines tab tiles.
+- Selected picker tiles keep only their selected tile background/border; text content stays identical.
+- Removed the now-unused workout selected-machine metadata string.
+- TypeScript and test checks pass after matching tile content.
+
+Previous step:
+
+Shared machine tile component across machine lists.
+
+Details:
+
+- Extracted the machine image tile into a shared `MachineTile` component.
+- The Machines tab and workout machine picker now use the same tile UI.
+- Removed the old machine-specific card component.
+- Preserved the selected state in the workout picker through the shared tile.
+- TypeScript and test checks pass after sharing the machine tile.
+
+Previous step:
+
 Moved machine deletion into the edit screen.
 
 Details:

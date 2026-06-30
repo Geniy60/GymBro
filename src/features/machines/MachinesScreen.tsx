@@ -3,11 +3,11 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '../../components/EmptyState';
 import { ListLoadingState } from '../../components/ListLoadingState';
+import { MachineTile } from '../../components/MachineTile';
 import { SearchInput } from '../../components/SearchInput';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { Machine } from '../../types';
-import { MachineCard } from './MachineCard';
 
 type MachinesScreenProps = {
   isLoading: boolean;
@@ -92,9 +92,10 @@ export function MachinesScreen({
         numColumns={2}
         renderItem={({ item }) => (
           <View style={styles.gridItem}>
-            <MachineCard
+            <MachineTile
+              accessibilityLabel={strings.accessibility.editMachine}
               machine={item}
-              onEdit={() => onEditMachine(item)}
+              onPress={() => onEditMachine(item)}
             />
           </View>
         )}

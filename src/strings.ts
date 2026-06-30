@@ -112,8 +112,6 @@ export const strings = {
     deleteSet: 'Удалить подход',
     emptyExercises: 'Добавь тренажер выше, затем вноси подходы по одному.',
     expandExercise: 'Развернуть тренажер',
-    machineAlreadyAdded: (exerciseCount: number, setCount: number) =>
-      `${exerciseCount}× · ${setCount} подх.`,
     loadingMore: 'Загружаем еще...',
     machineSearchPlaceholder: 'Поиск тренажера',
     noMachinesTitle: 'Тренажеров пока нет',
