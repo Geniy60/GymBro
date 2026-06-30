@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   summaryRow: {
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   statTile: {
     backgroundColor: colors.panel,
@@ -363,12 +363,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   statValue: {
     color: colors.text,
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: '800',
   },
   statLabel: {

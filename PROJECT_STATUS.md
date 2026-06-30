@@ -26,6 +26,16 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Compacted stats summary tiles.
+
+Details:
+
+- Reduced the height of the top Statistics summary tiles.
+- Lowered summary tile padding and value font size so the machine max list has more vertical space.
+- TypeScript and test checks pass after the stats density adjustment.
+
+Previous step:
+
 Reserved a stable record badge slot.
 
 Details:
