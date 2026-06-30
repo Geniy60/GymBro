@@ -26,6 +26,52 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Moved machine deletion into the edit screen.
+
+Details:
+
+- Removed the delete action from machine tiles.
+- Added a destructive delete button inside the machine edit screen for existing machines only.
+- Deleting the currently open machine now returns to the main screen after the confirmed delete completes.
+- TypeScript and test checks pass after moving machine deletion.
+
+Previous step:
+
+Changed machine lists to image tiles.
+
+Details:
+
+- Added a shared `MachineImageFrame` component that shows a machine image or a framed `Нет изображения` placeholder.
+- Converted the Machines tab from full-width rows to a two-column tile grid.
+- Converted the workout machine picker to the same two-column image tile style.
+- Kept existing machine edit/delete and picker behavior unchanged.
+- TypeScript and test checks pass after the machine tile layout update.
+
+Previous step:
+
+Enlarged machine reference thumbnails.
+
+Details:
+
+- Increased machine reference images in machine cards from 48x48 to 72x72.
+- Increased machine reference images in the workout machine picker from 42x42 to 64x64.
+- Allowed the affected rows to grow taller so the generated Gravitron image is easier to recognize.
+- TypeScript and test checks pass after the thumbnail sizing update.
+
+Previous step:
+
+Added first machine reference image.
+
+Details:
+
+- Generated a reference image for the standard assisted pull-up/dip machine (`standard-assisted-pull-up-dip` / Gravitron).
+- Added the image under `assets/machines/assisted-pull-up-dip.png`.
+- Added a small local `machineImages` mapping for machine-specific assets.
+- Machine cards and the workout machine picker now show the image when a machine has one.
+- TypeScript and test checks pass after the machine image test.
+
+Previous step:
+
 Polished active workout card styling.
 
 Details:

@@ -332,6 +332,9 @@ function AppContent() {
     try {
       await deleteMachine(machineId);
       await queryClientInstance.invalidateQueries({ queryKey: queryKeys.machines });
+      if (editingMachine?.id === machineId) {
+        closeMachineForm();
+      }
     } catch {
       showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
     }
@@ -404,6 +407,7 @@ function AppContent() {
           backgroundColor={appBackgroundColor}
           machine={editingMachine}
           onBack={closeMachineForm}
+          onDelete={confirmDeleteMachine}
           onSave={(machine) => {
             void handleSaveMachine(machine);
           }}
@@ -494,7 +498,6 @@ function AppContent() {
             isLoading={machinesQuery.isLoading}
             machines={machines}
             onAddMachine={openAddMachineForm}
-            onDeleteMachine={confirmDeleteMachine}
             onEditMachine={openEditMachineForm}
           />
         ) : activeTab === 'stats' ? (

@@ -19,6 +19,7 @@ type MachineFormScreenProps = {
   backgroundColor: string;
   machine: Machine | null;
   onBack: () => void;
+  onDelete?: (machine: Machine) => void;
   onSave: (machine: Machine) => void;
 };
 
@@ -32,6 +33,7 @@ export function MachineFormScreen({
   backgroundColor,
   machine,
   onBack,
+  onDelete,
   onSave,
 }: MachineFormScreenProps) {
   const [machineDraft, setMachineDraft] = useState<MachineDraft>(() =>
@@ -191,6 +193,20 @@ export function MachineFormScreen({
         >
           <Text style={styles.saveButtonText}>{strings.actions.save}</Text>
         </Pressable>
+
+        {machine !== null && onDelete !== undefined ? (
+          <Pressable
+            accessibilityLabel={strings.accessibility.deleteMachine}
+            onPress={() => onDelete(machine)}
+            style={({ pressed }) => [
+              styles.deleteButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Ionicons name="trash-outline" size={20} color={colors.destructive} />
+            <Text style={styles.deleteButtonText}>{strings.actions.delete}</Text>
+          </Pressable>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -297,6 +313,23 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: colors.panel,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  deleteButton: {
+    alignItems: 'center',
+    backgroundColor: colors.panel,
+    borderColor: colors.destructiveBorder,
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+    marginTop: 12,
+    minHeight: 48,
+  },
+  deleteButtonText: {
+    color: colors.destructive,
     fontSize: 16,
     fontWeight: '700',
   },

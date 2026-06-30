@@ -42,6 +42,9 @@ export const strings = {
     noUser: 'Не выбран',
     title: 'Настройки',
   },
+  machineImages: {
+    noImage: 'Нет изображения',
+  },
   stats: {
     totalWorkouts: 'Всего',
     monthWorkouts: 'За месяц',

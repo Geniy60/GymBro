@@ -13,7 +13,6 @@ type MachinesScreenProps = {
   isLoading: boolean;
   machines: Machine[];
   onAddMachine: () => void;
-  onDeleteMachine: (machine: Machine) => void;
   onEditMachine: (machine: Machine) => void;
 };
 
@@ -21,7 +20,6 @@ export function MachinesScreen({
   isLoading,
   machines,
   onAddMachine,
-  onDeleteMachine,
   onEditMachine,
 }: MachinesScreenProps) {
   const [searchText, setSearchText] = useState('');
@@ -67,6 +65,7 @@ export function MachinesScreen({
       </View>
 
       <FlatList
+        columnWrapperStyle={styles.gridRow}
         contentContainerStyle={styles.listContent}
         data={filteredMachines}
         keyExtractor={(item) => item.id}
@@ -90,12 +89,14 @@ export function MachinesScreen({
             />
           )
         }
+        numColumns={2}
         renderItem={({ item }) => (
-          <MachineCard
-            machine={item}
-            onDelete={() => onDeleteMachine(item)}
-            onEdit={() => onEditMachine(item)}
-          />
+          <View style={styles.gridItem}>
+            <MachineCard
+              machine={item}
+              onEdit={() => onEditMachine(item)}
+            />
+          </View>
         )}
         style={styles.list}
       />
@@ -135,6 +136,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     gap: 10,
     paddingBottom: 24,
+  },
+  gridItem: {
+    flex: 1,
+    maxWidth: '48.5%',
+  },
+  gridRow: {
+    gap: 10,
   },
   pressedButton: {
     opacity: 0.7,
