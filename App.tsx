@@ -486,6 +486,7 @@ function AppContent() {
 
         {activeTab === 'machines' ? (
           <MachinesScreen
+            isLoading={machinesQuery.isLoading}
             machines={machines}
             onAddMachine={openAddMachineForm}
             onDeleteMachine={confirmDeleteMachine}

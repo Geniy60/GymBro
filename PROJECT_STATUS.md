@@ -26,6 +26,17 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Added polished loading states.
+
+Details:
+
+- Added a shared `ListLoadingState` component with a compact activity indicator and stable skeleton rows.
+- Workouts, Machines, Stats, and machine history now show calm loading states instead of blank or misleading empty views.
+- Added centralized Russian loading messages.
+- TypeScript and test checks pass after the loading-state polish.
+
+Previous step:
+
 Generated dumbbell app icon assets.
 
 Details:

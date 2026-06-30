@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '../../components/EmptyState';
+import { ListLoadingState } from '../../components/ListLoadingState';
 import { SearchInput } from '../../components/SearchInput';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
@@ -9,6 +10,7 @@ import type { Machine } from '../../types';
 import { MachineCard } from './MachineCard';
 
 type MachinesScreenProps = {
+  isLoading: boolean;
   machines: Machine[];
   onAddMachine: () => void;
   onDeleteMachine: (machine: Machine) => void;
@@ -16,6 +18,7 @@ type MachinesScreenProps = {
 };
 
 export function MachinesScreen({
+  isLoading,
   machines,
   onAddMachine,
   onDeleteMachine,
@@ -68,20 +71,24 @@ export function MachinesScreen({
         data={filteredMachines}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
-          <EmptyState
-            message={
-              machines.length === 0
-                ? strings.empty.machines.message
-                : strings.empty.filtered.message
-            }
-            onReset={machines.length > 0 ? () => setSearchText('') : undefined}
-            resetLabel={strings.actions.resetSearch}
-            title={
-              machines.length === 0
-                ? strings.empty.machines.title
-                : strings.empty.filtered.title
-            }
-          />
+          isLoading ? (
+            <ListLoadingState />
+          ) : (
+            <EmptyState
+              message={
+                machines.length === 0
+                  ? strings.empty.machines.message
+                  : strings.empty.filtered.message
+              }
+              onReset={machines.length > 0 ? () => setSearchText('') : undefined}
+              resetLabel={strings.actions.resetSearch}
+              title={
+                machines.length === 0
+                  ? strings.empty.machines.title
+                  : strings.empty.filtered.title
+              }
+            />
+          )
         }
         renderItem={({ item }) => (
           <MachineCard

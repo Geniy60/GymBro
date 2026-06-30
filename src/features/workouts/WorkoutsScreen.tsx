@@ -4,6 +4,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { showAppAlert } from '../../appAlert';
 import { EmptyState } from '../../components/EmptyState';
+import { ListLoadingState } from '../../components/ListLoadingState';
 import { SearchInput } from '../../components/SearchInput';
 import { queryKeys } from '../../queryClient';
 import { loadWorkoutSummaries } from '../../services/workoutsService';
@@ -101,7 +102,9 @@ export function WorkoutsScreen({
         data={workoutListItems}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
-          isWaitingForWorkouts ? null : (
+          isWaitingForWorkouts ? (
+            <ListLoadingState />
+          ) : (
             <EmptyState
               message={
                 !hasSearch

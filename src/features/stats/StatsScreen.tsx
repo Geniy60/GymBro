@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { BackHandler, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { showAppAlert } from '../../appAlert';
+import { ListLoadingState } from '../../components/ListLoadingState';
 import { queryKeys } from '../../queryClient';
 import {
   loadMachineHistory,
@@ -68,6 +69,8 @@ export function StatsScreen({ userId }: StatsScreenProps) {
 
   if (selectedMachine !== null) {
     const selectedMachineHistory = historyQuery.data ?? [];
+    const isLoadingHistory =
+      selectedMachineHistory.length === 0 && historyQuery.isFetching;
 
     return (
       <View style={styles.content}>
@@ -93,11 +96,23 @@ export function StatsScreen({ userId }: StatsScreenProps) {
           data={selectedMachineHistory}
           keyExtractor={(historyItem) => historyItem.id}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>{strings.stats.historyEmpty}</Text>
+            isLoadingHistory ? (
+              <ListLoadingState rowCount={3} />
+            ) : (
+              <Text style={styles.emptyText}>{strings.stats.historyEmpty}</Text>
+            )
           }
           renderItem={({ item }) => <MachineHistoryRow item={item} />}
           showsVerticalScrollIndicator={false}
         />
+      </View>
+    );
+  }
+
+  if (statsQuery.isLoading && statsQuery.data === undefined) {
+    return (
+      <View style={styles.content}>
+        <ListLoadingState rowCount={5} />
       </View>
     );
   }
