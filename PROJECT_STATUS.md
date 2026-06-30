@@ -11,7 +11,7 @@ The initial app shell is in place with a compact header, safe-area handling, and
 - Machines
 - Workouts
 
-The Machines tab supports list, search, add, edit, and delete. Machine data now loads from Supabase through a small service layer and TanStack Query. The standard machine catalog currently contains 17 machines.
+The Machines tab supports list, search, add, edit, and delete. Machine data now loads from Supabase through a small service layer and TanStack Query. The standard machine catalog currently contains 16 machines.
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
 
@@ -27,6 +27,41 @@ The selected user is stored locally on the phone with AsyncStorage. Machines sta
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
+
+Redrew the glute kickback machine image.
+
+Details:
+
+- Generated a clearer reference image for `standard-glute-kickback`.
+- Replaced `assets/machines/glute-kickback.png` with a 512x512 optimized PNG showing the torso support and rear kickback roller in the same exercise plane.
+- Kept the existing machine ID and image mapping unchanged.
+- TypeScript and test checks pass after replacing the image asset.
+
+Previous step:
+
+Removed the shoulder press standard machine.
+
+Details:
+
+- Removed `standard-shoulder-press` / shoulder press from the current Supabase catalog.
+- Added and applied `supabase/migrations/20260630173000_gymbro_remove_shoulder_press.sql`.
+- Removed the same machine from the initial schema seed.
+- Removed its machine image mapping and unused PNG asset.
+- Existing workout history remains readable because workout exercises keep machine name snapshots and deleted machine IDs are set to null.
+- TypeScript and test checks pass after removing the machine.
+
+Previous step:
+
+Redrew the seated row machine image.
+
+Details:
+
+- Generated a clearer reference image for `standard-seated-row`.
+- Replaced `assets/machines/seated-row.png` with the new 512x512 optimized PNG.
+- Kept the existing machine ID and image mapping unchanged.
+- TypeScript and test checks pass after replacing the image asset.
+
+Previous step:
 
 Removed selected standard machines.
 
