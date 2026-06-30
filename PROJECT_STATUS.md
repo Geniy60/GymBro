@@ -26,6 +26,18 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Generated dumbbell app icon assets.
+
+Details:
+
+- Replaced the Expo app icon assets with a generated centered dumbbell icon.
+- Kept generous safe-area padding so the dumbbell fits inside circular and squircle phone masks without cropping.
+- Updated the Android adaptive icon foreground/background and a clean monochrome dumbbell silhouette.
+- Updated favicon and splash icon from the same generated source.
+- TypeScript and test checks pass after the icon asset update.
+
+Previous step:
+
 Simplified machine history rows.
 
 Details:
