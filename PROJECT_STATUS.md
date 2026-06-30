@@ -26,6 +26,18 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Generated standard machine reference images.
+
+Details:
+
+- Generated and added reference images for all 23 standard machines.
+- Resized each machine image to 512x512 and optimized the PNG files for app use.
+- Updated `machineImages.ts` so every standard `standard-*` machine now has an image.
+- Custom/user-created machines still use the framed `Нет изображения` placeholder.
+- TypeScript and test checks pass after adding the full standard machine image set.
+
+Previous step:
+
 Matched workout machine picker tile content.
 
 Details:
