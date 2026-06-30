@@ -1,4 +1,6 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
+import { BackHandler, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
@@ -22,12 +24,89 @@ type MachineMax = {
   workoutTime: number;
 };
 
+type MachineHistoryItem = {
+  dateLabel: string;
+  id: string;
+  maxWeightKg: number | null;
+  setCount: number;
+  workoutTime: number;
+};
+
 export function StatsScreen({ workouts }: StatsScreenProps) {
+  const [selectedMachineId, setSelectedMachineId] = useState<string | null>(null);
   const totalWorkouts = workouts.length;
   const monthWorkoutCount = countCurrentMonthWorkouts(workouts);
   const monthStats = getLastSixMonthStats(workouts);
   const maxMonthCount = Math.max(...monthStats.map((monthStat) => monthStat.count), 1);
   const machineMaxes = getMachineMaxes(workouts);
+  const selectedMachine = machineMaxes.find(
+    (machineMax) => machineMax.id === selectedMachineId,
+  );
+  const selectedMachineHistory =
+    selectedMachine === undefined
+      ? []
+      : getMachineHistory(workouts, selectedMachine.id);
+
+  useEffect(() => {
+    if (selectedMachineId === null) {
+      return undefined;
+    }
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      setSelectedMachineId(null);
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, [selectedMachineId]);
+
+  if (selectedMachine !== undefined) {
+    return (
+      <View style={styles.content}>
+        <View style={styles.detailHeader}>
+          <Pressable
+            accessibilityLabel={strings.accessibility.back}
+            onPress={() => setSelectedMachineId(null)}
+            style={({ pressed }) => [
+              styles.backButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Ionicons name="arrow-back" size={22} color={colors.text} />
+          </Pressable>
+          <View style={styles.detailTitleBlock}>
+            <Text style={styles.detailTitle}>{selectedMachine.machineName}</Text>
+            <Text style={styles.detailSubtitle}>{strings.stats.historyTitle}</Text>
+          </View>
+        </View>
+
+        <FlatList
+          contentContainerStyle={styles.historyListContent}
+          data={selectedMachineHistory}
+          keyExtractor={(historyItem) => historyItem.id}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>{strings.stats.historyEmpty}</Text>
+          }
+          renderItem={({ item }) => (
+            <View style={styles.historyRow}>
+              <View style={styles.historyTextBlock}>
+                <Text style={styles.historyDate}>{item.dateLabel}</Text>
+                <Text style={styles.historyMeta}>
+                  {strings.stats.historySetCount(item.setCount)}
+                </Text>
+              </View>
+              <Text style={styles.historyMax}>
+                {item.maxWeightKg === null
+                  ? strings.stats.noWeight
+                  : strings.stats.workoutMax(formatWeight(item.maxWeightKg))}
+              </Text>
+            </View>
+          )}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.content}>
@@ -71,14 +150,20 @@ export function StatsScreen({ workouts }: StatsScreenProps) {
             <Text style={styles.emptyText}>{strings.stats.emptyMaxes}</Text>
           }
           renderItem={({ item }) => (
-            <View style={styles.maxRow}>
+            <Pressable
+              onPress={() => setSelectedMachineId(item.id)}
+              style={({ pressed }) => [
+                styles.maxRow,
+                pressed && styles.pressedButton,
+              ]}
+            >
               <Text numberOfLines={1} style={styles.maxMachineName}>
                 {item.machineName}
               </Text>
               <Text style={styles.maxValue}>
                 {strings.stats.maxWeight(formatWeight(item.weightKg), item.dateLabel)}
               </Text>
-            </View>
+            </Pressable>
           )}
           showsVerticalScrollIndicator={false}
         />
@@ -184,8 +269,45 @@ function getMachineMaxes(workouts: Workout[]): MachineMax[] {
   );
 }
 
+function getMachineHistory(
+  workouts: Workout[],
+  machineId: string,
+): MachineHistoryItem[] {
+  return workouts
+    .flatMap((workout) => {
+      const workoutDate = new Date(workout.startedAt);
+      const workoutTime = workoutDate.getTime();
+      const dateLabel = Number.isNaN(workoutTime)
+        ? strings.workouts.unknownMonth
+        : workoutDate.toLocaleDateString('ru-RU');
+
+      return workout.exercises
+        .filter((exercise) => exercise.machineId === machineId)
+        .map((exercise) => {
+          const weights = exercise.sets
+            .map((workoutSet) => parseWeight(workoutSet.weightKg))
+            .filter((weightKg): weightKg is number => weightKg !== null);
+
+          return {
+            dateLabel,
+            id: `${workout.id}-${exercise.id}`,
+            maxWeightKg: weights.length === 0 ? null : Math.max(...weights),
+            setCount: exercise.sets.length,
+            workoutTime: Number.isNaN(workoutTime) ? 0 : workoutTime,
+          };
+        });
+    })
+    .sort((firstItem, secondItem) => secondItem.workoutTime - firstItem.workoutTime);
+}
+
 function parseWeight(weightKg: string): number | null {
-  const parsedWeight = Number(weightKg.replace(',', '.'));
+  const normalizedWeight = weightKg.trim().replace(',', '.');
+
+  if (normalizedWeight.length === 0) {
+    return null;
+  }
+
+  const parsedWeight = Number(normalizedWeight);
 
   return Number.isFinite(parsedWeight) ? parsedWeight : null;
 }
@@ -200,6 +322,35 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  backButton: {
+    alignItems: 'center',
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 37,
+    justifyContent: 'center',
+    width: 37,
+  },
+  detailHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 12,
+  },
+  detailTitleBlock: {
+    flex: 1,
+  },
+  detailTitle: {
+    color: colors.text,
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  detailSubtitle: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '700',
+    marginTop: 2,
   },
   summaryRow: {
     flexDirection: 'row',
@@ -288,6 +439,41 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  historyListContent: {
+    gap: 8,
+    paddingBottom: 24,
+  },
+  historyRow: {
+    alignItems: 'center',
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  historyTextBlock: {
+    flex: 1,
+  },
+  historyDate: {
+    color: colors.text,
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  historyMeta: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '700',
+    marginTop: 3,
+  },
+  historyMax: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '800',
+  },
   maxRow: {
     backgroundColor: '#F8FAFC',
     borderColor: colors.border,
@@ -306,5 +492,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     marginTop: 3,
+  },
+  pressedButton: {
+    opacity: 0.7,
   },
 });

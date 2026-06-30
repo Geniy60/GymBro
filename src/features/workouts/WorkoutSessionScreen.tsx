@@ -47,6 +47,10 @@ export function WorkoutSessionScreen({
     () => buildLastSetsByMachineId(previousWorkouts, workout.id),
     [previousWorkouts, workout.id],
   );
+  const previousMaxByMachineId = useMemo(
+    () => buildPreviousMaxByMachineId(previousWorkouts, workout.id),
+    [previousWorkouts, workout.id],
+  );
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -367,6 +371,7 @@ export function WorkoutSessionScreen({
                 deleteExercise={confirmDeleteExercise}
                 deleteSet={deleteSet}
                 exercise={exercise}
+                previousMaxWeightKg={previousMaxByMachineId.get(exercise.machineId)}
                 toggleExerciseCollapse={toggleExerciseCollapse}
                 toggleSetNote={toggleSetNote}
                 updateSet={updateSet}
@@ -399,6 +404,7 @@ function WorkoutExerciseCard({
   deleteExercise,
   deleteSet,
   exercise,
+  previousMaxWeightKg,
   toggleExerciseCollapse,
   toggleSetNote,
   updateSet,
@@ -410,6 +416,7 @@ function WorkoutExerciseCard({
   deleteExercise: (exerciseId: string) => void;
   deleteSet: (exerciseId: string, setId: string) => void;
   exercise: WorkoutExercise;
+  previousMaxWeightKg: number | undefined;
   toggleExerciseCollapse: (exerciseId: string) => void;
   toggleSetNote: (setId: string) => void;
   updateSet: (
@@ -489,86 +496,104 @@ function WorkoutExerciseCard({
 
       {isCollapsed ? null : (
         <>
-          {exercise.sets.map((workoutSet, index) => (
-            <View key={workoutSet.id} style={styles.setBlock}>
-              <View style={styles.setRow}>
-                <Text style={styles.setNumber}>
-                  {strings.workouts.setNumber(index + 1)}
-                </Text>
-                <TextInput
-                  accessibilityLabel={strings.workouts.weightLabel}
-                  keyboardType="decimal-pad"
-                  onChangeText={(value) =>
-                    updateSet(exercise.id, workoutSet.id, 'weightKg', value)
-                  }
-                  placeholder={strings.workouts.weightPlaceholder}
-                  placeholderTextColor={colors.muted}
-                  style={styles.smallInput}
-                  value={workoutSet.weightKg}
-                />
-                <TextInput
-                  accessibilityLabel={strings.workouts.repsLabel}
-                  keyboardType="number-pad"
-                  onChangeText={(value) =>
-                    updateSet(exercise.id, workoutSet.id, 'reps', value)
-                  }
-                  placeholder={strings.workouts.repsPlaceholder}
-                  placeholderTextColor={colors.muted}
-                  style={styles.smallInput}
-                  value={workoutSet.reps}
-                />
-                <Pressable
-                  accessibilityLabel={strings.workouts.toggleSetNote}
-                  onPress={() => toggleSetNote(workoutSet.id)}
-                  style={({ pressed }) => [
-                    styles.smallIconButton,
-                    styles.smallNoteButton,
-                    (visibleSetNoteIds.includes(workoutSet.id) ||
-                      workoutSet.note.length > 0) &&
-                      styles.activeSmallNoteButton,
-                    pressed && styles.pressedButton,
-                  ]}
-                >
-                  <Ionicons
-                    color={
-                      visibleSetNoteIds.includes(workoutSet.id) ||
-                      workoutSet.note.length > 0
-                        ? '#6D28D9'
-                        : colors.text
-                    }
-                    name="document-text-outline"
-                    size={18}
-                  />
-                </Pressable>
-                <Pressable
-                  accessibilityLabel={strings.workouts.deleteSet}
-                  onPress={() => deleteSet(exercise.id, workoutSet.id)}
-                  style={({ pressed }) => [
-                    styles.smallIconButton,
-                    styles.smallDeleteButton,
-                    pressed && styles.pressedButton,
-                  ]}
-                >
-                  <Text style={styles.smallDeleteButtonText}>
-                    {strings.actions.deleteIcon}
+          {exercise.sets.map((workoutSet, index) => {
+            const isRecord = isRecordSet(workoutSet, previousMaxWeightKg);
+
+            return (
+              <View key={workoutSet.id} style={styles.setBlock}>
+                <View style={styles.setRow}>
+                  <Text style={styles.setNumber}>
+                    {strings.workouts.setNumber(index + 1)}
                   </Text>
-                </Pressable>
+                  <TextInput
+                    accessibilityLabel={strings.workouts.weightLabel}
+                    keyboardType="decimal-pad"
+                    onChangeText={(value) =>
+                      updateSet(exercise.id, workoutSet.id, 'weightKg', value)
+                    }
+                    placeholder={strings.workouts.weightPlaceholder}
+                    placeholderTextColor={colors.muted}
+                    style={styles.smallInput}
+                    value={workoutSet.weightKg}
+                  />
+                  <TextInput
+                    accessibilityLabel={strings.workouts.repsLabel}
+                    keyboardType="number-pad"
+                    onChangeText={(value) =>
+                      updateSet(exercise.id, workoutSet.id, 'reps', value)
+                    }
+                    placeholder={strings.workouts.repsPlaceholder}
+                    placeholderTextColor={colors.muted}
+                    style={styles.smallInput}
+                    value={workoutSet.reps}
+                  />
+                  <View style={styles.setActions}>
+                    <Pressable
+                      accessibilityLabel={strings.workouts.toggleSetNote}
+                      onPress={() => toggleSetNote(workoutSet.id)}
+                      style={({ pressed }) => [
+                        styles.smallIconButton,
+                        styles.smallNoteButton,
+                        (visibleSetNoteIds.includes(workoutSet.id) ||
+                          workoutSet.note.length > 0) &&
+                          styles.activeSmallNoteButton,
+                        pressed && styles.pressedButton,
+                      ]}
+                    >
+                      <Ionicons
+                        color={
+                          visibleSetNoteIds.includes(workoutSet.id) ||
+                          workoutSet.note.length > 0
+                            ? '#6D28D9'
+                            : colors.text
+                        }
+                        name="document-text-outline"
+                        size={18}
+                      />
+                    </Pressable>
+                    <Pressable
+                      accessibilityLabel={strings.workouts.deleteSet}
+                      onPress={() => deleteSet(exercise.id, workoutSet.id)}
+                      style={({ pressed }) => [
+                        styles.smallIconButton,
+                        styles.smallDeleteButton,
+                        pressed && styles.pressedButton,
+                      ]}
+                    >
+                      <Text style={styles.smallDeleteButtonText}>
+                        {strings.actions.deleteIcon}
+                      </Text>
+                    </Pressable>
+                    <View
+                      accessibilityLabel={strings.workouts.recordBadge}
+                      accessible={isRecord}
+                      style={[
+                        styles.recordBadge,
+                        !isRecord && styles.hiddenRecordBadge,
+                      ]}
+                    >
+                      {isRecord ? (
+                        <Ionicons name="trophy-outline" size={17} color="#92400E" />
+                      ) : null}
+                    </View>
+                  </View>
+                </View>
+                {visibleSetNoteIds.includes(workoutSet.id) ||
+                workoutSet.note.length > 0 ? (
+                  <TextInput
+                    accessibilityLabel={strings.workouts.setNoteLabel}
+                    onChangeText={(value) =>
+                      updateSet(exercise.id, workoutSet.id, 'note', value)
+                    }
+                    placeholder={strings.workouts.setNotePlaceholder}
+                    placeholderTextColor={colors.muted}
+                    style={styles.setNoteInput}
+                    value={workoutSet.note}
+                  />
+                ) : null}
               </View>
-              {visibleSetNoteIds.includes(workoutSet.id) ||
-              workoutSet.note.length > 0 ? (
-                <TextInput
-                  accessibilityLabel={strings.workouts.setNoteLabel}
-                  onChangeText={(value) =>
-                    updateSet(exercise.id, workoutSet.id, 'note', value)
-                  }
-                  placeholder={strings.workouts.setNotePlaceholder}
-                  placeholderTextColor={colors.muted}
-                  style={styles.setNoteInput}
-                  value={workoutSet.note}
-                />
-              ) : null}
-            </View>
-          ))}
+            );
+          })}
 
           <Pressable
             accessibilityLabel={strings.workouts.addSet}
@@ -687,6 +712,50 @@ function buildLastSetsByMachineId(
   return lastSetsByMachineId;
 }
 
+function buildPreviousMaxByMachineId(
+  workouts: Workout[],
+  currentWorkoutId: string,
+): Map<string, number> {
+  const maxByMachineId = new Map<string, number>();
+
+  for (const workoutItem of workouts) {
+    if (workoutItem.id === currentWorkoutId) {
+      continue;
+    }
+
+    for (const exercise of workoutItem.exercises) {
+      for (const workoutSet of exercise.sets) {
+        const weightKg = parseWeightKg(workoutSet.weightKg);
+
+        if (weightKg === null) {
+          continue;
+        }
+
+        const currentMax = maxByMachineId.get(exercise.machineId);
+
+        if (currentMax === undefined || weightKg > currentMax) {
+          maxByMachineId.set(exercise.machineId, weightKg);
+        }
+      }
+    }
+  }
+
+  return maxByMachineId;
+}
+
+function isRecordSet(
+  workoutSet: WorkoutSet,
+  previousMaxWeightKg: number | undefined,
+): boolean {
+  if (previousMaxWeightKg === undefined) {
+    return false;
+  }
+
+  const weightKg = parseWeightKg(workoutSet.weightKg);
+
+  return weightKg !== null && weightKg > previousMaxWeightKg;
+}
+
 function createSetsFromHistory(historySets: WorkoutSet[] | undefined): WorkoutSet[] {
   if (historySets === undefined || historySets.length === 0) {
     return createEmptySets(4);
@@ -709,6 +778,18 @@ function createEmptySet(): WorkoutSet {
 
 function createEmptySets(count: number): WorkoutSet[] {
   return Array.from({ length: count }, createEmptySet);
+}
+
+function parseWeightKg(weightKg: string): number | null {
+  const normalizedWeightKg = weightKg.trim().replace(',', '.');
+
+  if (normalizedWeightKg.length === 0) {
+    return null;
+  }
+
+  const parsedWeightKg = Number(normalizedWeightKg);
+
+  return Number.isFinite(parsedWeightKg) ? parsedWeightKg : null;
 }
 
 function addSetToExercise(exercise: WorkoutExercise) {
@@ -908,7 +989,13 @@ const styles = StyleSheet.create({
   setRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 5,
+    gap: 6,
+  },
+  setActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6,
+    marginLeft: 'auto',
   },
   setBlock: {
     gap: 6,
@@ -941,7 +1028,7 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     paddingTop: 2,
     textAlignVertical: 'center',
-    width: 78,
+    width: 74,
   },
   setNoteInput: {
     backgroundColor: colors.panel,
@@ -952,6 +1039,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     minHeight: 34,
     paddingHorizontal: 8,
+  },
+  recordBadge: {
+    alignItems: 'center',
+    backgroundColor: '#FEF3C7',
+    borderColor: '#F59E0B',
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 38,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: 38,
+  },
+  hiddenRecordBadge: {
+    opacity: 0,
   },
   smallIconButton: {
     alignItems: 'center',

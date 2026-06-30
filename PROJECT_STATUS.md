@@ -26,6 +26,67 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Reserved a stable record badge slot.
+
+Details:
+
+- Set rows now always reserve a 38x38 slot for the record trophy badge.
+- Rows without a record keep the slot invisible, so note/delete/record columns no longer shift between sets.
+- TypeScript and test checks pass after the stable record slot adjustment.
+
+Previous step:
+
+Right-aligned set row actions.
+
+Details:
+
+- Grouped set note/delete/record controls into a right-aligned action row.
+- The set action gap now matches the exercise header action gap while the group aligns to the card's right edge.
+- TypeScript and test checks pass after the set action alignment update.
+
+Previous step:
+
+Aligned set-row control spacing.
+
+Details:
+
+- Matched the set-row control gap to the exercise header action gap.
+- Slightly narrowed the weight/reps inputs so the full set row fits with the 38x38 record trophy badge.
+- TypeScript and test checks pass after the set-row spacing adjustment.
+
+Previous step:
+
+Matched record trophy badge size.
+
+Details:
+
+- Changed the workout record trophy badge to the same 38x38 size as the other set-row controls.
+- TypeScript and test checks pass after the record badge sizing adjustment.
+
+Previous step:
+
+Fixed record badge layout and stats detail back behavior.
+
+Details:
+
+- Replaced the text `Рекорд` badge in workout set rows with a compact trophy icon badge.
+- Added Android hardware back handling for the Statistics machine history detail view.
+- TypeScript and test checks pass after the record badge and back behavior fix.
+
+Previous step:
+
+Added workout records and machine history.
+
+Details:
+
+- Workout set rows now show a `Рекорд` badge when the entered weight is greater than the previous max for that machine.
+- Record checks compare only against previous workouts, excluding the currently edited workout.
+- The Statistics max list now opens a local machine history detail view on tap.
+- Machine history shows each matching workout date, set count, and max weight for that workout.
+- TypeScript and test checks pass after the record and history update.
+
+Previous step:
+
 Adjusted main tab order.
 
 Details:
