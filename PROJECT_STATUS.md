@@ -28,6 +28,17 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Replaced the lateral raise machine image.
+
+Details:
+
+- Replaced `assets/machines/lateral-raise.png` with the approved corrected image.
+- The machine now follows the provided reference more closely, with separate forward-facing roller pads and lower handles.
+- Resized the generated source image to the existing 512x512 PNG asset format.
+- TypeScript and test checks pass after replacing the image asset.
+
+Previous step:
+
 Replaced the hip abduction machine image.
 
 Details:
@@ -35,6 +46,7 @@ Details:
 - Replaced `assets/machines/hip-abduction.png` with the approved corrected image.
 - The person now sits with both legs inside the machine and the resistance pads only outside the thighs.
 - Resized the generated source image to the existing 512x512 PNG asset format.
+- TypeScript and test checks pass after replacing the image asset.
 
 Previous step:
 
