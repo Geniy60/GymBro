@@ -28,6 +28,16 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Replaced the pec deck machine image.
+
+Details:
+
+- Replaced `assets/machines/pec-deck.png` with the approved corrected image.
+- The image now shows a front-facing butterfly / pec deck machine in the open wide-arm position, matching the provided reference direction.
+- Resized the generated source image to the existing 512x512 PNG asset format.
+
+Previous step:
+
 Replaced the lateral raise machine image.
 
 Details:
