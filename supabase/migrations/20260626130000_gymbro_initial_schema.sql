@@ -124,6 +124,7 @@ insert into public.gymbro_machines (id, name, note, sort_order) values
   ('standard-biceps-curl', 'Сгибание рук на бицепс', 'Biceps curl machine. Сгибание локтей на тренажере.', 190),
   ('standard-dumbbell-biceps-curl', 'Сгибание рук с гантелями', 'Dumbbell biceps curl. Сгибание рук с гантелями стоя.', 200),
   ('standard-cable-triceps-pushdown', 'Разгибание рук на блоке', 'Cable triceps pushdown. Разгибание рук вниз на верхнем блоке с канатной рукоятью.', 205),
+  ('standard-seated-triceps-press', 'Жим на трицепс сидя', 'Seated triceps press. Жим рукоятей вниз сидя, как машинные отжимания на трицепс.', 207),
   ('standard-assisted-pull-up-dip', 'Гравитрон', 'Assisted pull-up / dip. Подтягивания или отжимания с противовесом.', 210)
 on conflict (id) do nothing;
 
@@ -158,6 +159,9 @@ insert into public.gymbro_machine_muscle_groups (machine_id, muscle_group) value
   ('standard-dumbbell-biceps-curl', 'forearms'),
   ('standard-cable-triceps-pushdown', 'triceps'),
   ('standard-cable-triceps-pushdown', 'forearms'),
+  ('standard-seated-triceps-press', 'triceps'),
+  ('standard-seated-triceps-press', 'chest'),
+  ('standard-seated-triceps-press', 'shoulders'),
   ('standard-assisted-pull-up-dip', 'back'),
   ('standard-assisted-pull-up-dip', 'biceps'),
   ('standard-assisted-pull-up-dip', 'chest'),
