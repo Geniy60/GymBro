@@ -11,9 +11,9 @@ The initial app shell is in place with a compact header, safe-area handling, and
 - Exercises
 - Workouts
 
-The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. The standard exercise catalog currently contains 25 items.
+The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. The standard exercise catalog currently contains 26 items.
 
-The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
+The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
 
 Empty workout drafts now offer a quick exercise suggestion flow. From an empty workout, the user can choose target muscle groups and an exercise count, preview a randomized set of matching exercises, reshuffle it, and add the suggested exercises to the workout using the same latest-set prefill behavior as manual exercise selection.
 
@@ -27,6 +27,18 @@ The selected user is stored locally on the phone with AsyncStorage. Exercises st
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
+
+Added the dumbbell lunges exercise.
+
+Details:
+
+- Added `standard-dumbbell-lunges` / `Выпады с гантелями` to the standard catalog.
+- Added and applied `supabase/migrations/20260701144500_gymbro_add_dumbbell_lunges.sql`.
+- Updated the initial schema seed so fresh setup includes the exercise.
+- Added `assets/machines/dumbbell-lunges.png` as a 512x512 PNG and mapped it in `src/machineImages.ts`.
+- TypeScript and test checks pass after adding the exercise.
+
+Previous step:
 
 Renamed visible machine wording to exercise wording.
 
