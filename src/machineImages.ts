@@ -3,6 +3,7 @@ import type { ImageSourcePropType } from 'react-native';
 const machineImagesById: Partial<Record<string, ImageSourcePropType>> = {
   'standard-assisted-pull-up-dip': require('../assets/machines/assisted-pull-up-dip.png'),
   'standard-back-extension': require('../assets/machines/back-extension.png'),
+  'standard-barbell-hip-thrust': require('../assets/machines/barbell-hip-thrust.png'),
   'standard-bent-arm-pec-deck': require('../assets/machines/bent-arm-pec-deck.png'),
   'standard-biceps-curl': require('../assets/machines/biceps-curl.png'),
   'standard-calf-raise': require('../assets/machines/calf-raise.png'),
