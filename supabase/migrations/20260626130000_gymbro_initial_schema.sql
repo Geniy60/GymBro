@@ -122,6 +122,7 @@ insert into public.gymbro_machines (id, name, note, sort_order) values
   ('standard-seated-row', 'Горизонтальная тяга', 'Seated row. Тяга рукояти к животу сидя.', 150),
   ('standard-back-extension', 'Гиперэкстензия', 'Back extension. Разгибание корпуса, акцент на поясницу и ягодицы.', 180),
   ('standard-biceps-curl', 'Сгибание рук на бицепс', 'Biceps curl machine. Сгибание локтей на тренажере.', 190),
+  ('standard-dumbbell-biceps-curl', 'Сгибание рук с гантелями', 'Dumbbell biceps curl. Сгибание рук с гантелями стоя.', 200),
   ('standard-assisted-pull-up-dip', 'Гравитрон', 'Assisted pull-up / dip. Подтягивания или отжимания с противовесом.', 210)
 on conflict (id) do nothing;
 
@@ -152,6 +153,8 @@ insert into public.gymbro_machine_muscle_groups (machine_id, muscle_group) value
   ('standard-back-extension', 'hamstrings'),
   ('standard-biceps-curl', 'biceps'),
   ('standard-biceps-curl', 'forearms'),
+  ('standard-dumbbell-biceps-curl', 'biceps'),
+  ('standard-dumbbell-biceps-curl', 'forearms'),
   ('standard-assisted-pull-up-dip', 'back'),
   ('standard-assisted-pull-up-dip', 'biceps'),
   ('standard-assisted-pull-up-dip', 'chest'),

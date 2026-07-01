@@ -6,6 +6,7 @@ const machineImagesById: Partial<Record<string, ImageSourcePropType>> = {
   'standard-biceps-curl': require('../assets/machines/biceps-curl.png'),
   'standard-calf-raise': require('../assets/machines/calf-raise.png'),
   'standard-chest-press': require('../assets/machines/chest-press.png'),
+  'standard-dumbbell-biceps-curl': require('../assets/machines/dumbbell-biceps-curl.png'),
   'standard-glute-kickback': require('../assets/machines/glute-kickback.png'),
   'standard-hip-abduction': require('../assets/machines/hip-abduction.png'),
   'standard-hip-adduction': require('../assets/machines/hip-adduction.png'),
