@@ -18,6 +18,7 @@ const machineImagesById: Partial<Record<string, ImageSourcePropType>> = {
   'standard-lying-leg-curl': require('../assets/machines/lying-leg-curl.png'),
   'standard-pec-deck': require('../assets/machines/pec-deck.png'),
   'standard-seated-leg-curl': require('../assets/machines/seated-leg-curl.png'),
+  'standard-seated-overhead-triceps-extension': require('../assets/machines/seated-overhead-triceps-extension.png'),
   'standard-seated-row': require('../assets/machines/seated-row.png'),
   'standard-seated-triceps-press': require('../assets/machines/seated-triceps-press.png'),
 };
