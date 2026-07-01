@@ -11,7 +11,7 @@ The initial app shell is in place with a compact header, safe-area handling, and
 - Machines
 - Workouts
 
-The Machines tab supports list, search, add, edit, and delete. Machine data now loads from Supabase through a small service layer and TanStack Query. The standard machine catalog currently contains 23 machines/exercises.
+The Machines tab supports list, search, add, edit, and delete. Machine data now loads from Supabase through a small service layer and TanStack Query. The standard machine catalog currently contains 24 machines/exercises.
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
 
@@ -27,6 +27,18 @@ The selected user is stored locally on the phone with AsyncStorage. Machines sta
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
+
+Added the barbell Romanian deadlift exercise.
+
+Details:
+
+- Added `standard-barbell-romanian-deadlift` / `Румынская тяга` to the standard catalog.
+- Added and applied `supabase/migrations/20260701142000_gymbro_add_barbell_romanian_deadlift.sql`.
+- Updated the initial schema seed so fresh setup includes the exercise.
+- Added `assets/machines/barbell-romanian-deadlift.png` as a 512x512 PNG and mapped it in `src/machineImages.ts`.
+- TypeScript and test checks pass after adding the exercise.
+
+Previous step:
 
 Added the barbell hip thrust exercise.
 
