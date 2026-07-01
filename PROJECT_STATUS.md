@@ -11,7 +11,7 @@ The initial app shell is in place with a compact header, safe-area handling, and
 - Exercises
 - Workouts
 
-The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. The standard exercise catalog currently contains 26 items.
+The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. The standard exercise catalog currently contains 27 items.
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
 
@@ -26,7 +26,36 @@ The selected user is stored locally on the phone with AsyncStorage. Exercises st
 
 User-facing app text is centralized in `src/strings.ts`.
 
+The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
+
 ## Last Completed Step
+
+Prepared the first Android APK build configuration.
+
+Details:
+
+- Added the Expo owner and Android application id `com.evgeniy.gymbro`.
+- Added Android `versionCode` 1 for the first APK version.
+- Added `eas.json` with an `apk` profile using internal distribution and Android `buildType: apk`, matching the sibling Fridge project pattern.
+- Linked the project to EAS project id `0ea9c50c-1bca-409d-8b72-e43529475e2b`.
+- Added `expo-font` as the Expo SDK 54 compatible direct dependency required by `@expo/vector-icons` for standalone builds.
+- Added the `build:apk` npm script for submitting the Android APK build.
+- Verified Expo Doctor passes 18/18 checks.
+- Verified `npx tsc --noEmit` and `npm test` pass.
+
+Previous step:
+
+Added the downward pec fly exercise.
+
+Details:
+
+- Added `standard-downward-pec-fly` / `Сведение рук вниз` to the standard catalog.
+- Added and applied `supabase/migrations/20260701145000_gymbro_add_downward_pec_fly.sql`.
+- Updated the initial schema seed so fresh setup includes the exercise.
+- Added `assets/machines/downward-pec-fly.png` as a 512x512 PNG and mapped it in `src/machineImages.ts`.
+- TypeScript and test checks pass after adding the exercise.
+
+Previous step:
 
 Added the dumbbell lunges exercise.
 
@@ -1202,7 +1231,7 @@ Verified:
 
 ## Next Proposed Step
 
-Manually launch `Start Expo Go Tunnel.cmd`, scan the Expo QR code with Expo Go, and verify first-run user selection, settings user switching, and separate workout lists for `Женя` and `Настя`.
+Submit the first EAS Android APK build with `npm run build:apk`, wait for the cloud build to finish, then install the APK on the phone for manual verification.
 
 ## Important Decisions
 
