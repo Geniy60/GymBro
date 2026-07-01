@@ -28,6 +28,17 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Neutralized two machine image backgrounds.
+
+Details:
+
+- Updated `assets/machines/leg-press.png` so the background is neutral grey instead of blue-tinted.
+- Updated `assets/machines/seated-leg-curl.png` so the background is neutral grey instead of blue-tinted.
+- Kept both images at the existing 512x512 PNG asset format.
+- TypeScript and test checks pass after replacing the image assets.
+
+Previous step:
+
 Added the Bulgarian split squat exercise.
 
 Details:
