@@ -121,16 +121,16 @@ insert into public.gymbro_machines (id, name, note, sort_order) values
   ('standard-chest-press', 'Жим от груди', 'Chest press. Жим рукоятей вперед сидя.', 90),
   ('standard-incline-chest-press', 'Жим от груди под наклоном', 'Incline chest press. Жим рукоятей вверх-вперед полулежа на наклонной спинке.', 100),
   ('standard-pec-deck', 'Сведение рук / бабочка', 'Pec deck или butterfly. Сведение рук перед грудью.', 110),
-  ('standard-bent-arm-pec-deck', 'Сведение рук с согнутыми локтями', 'Bent-arm pec deck. Сведение рук на тренажере с упором предплечьями в вертикальные подушки.', 120),
+  ('standard-bent-arm-pec-deck', 'Сведение рук с согнутыми локтями', 'Bent-arm pec deck. Сведение рук с упором предплечьями в вертикальные подушки.', 120),
   ('standard-lateral-raise', 'Разведение рук в стороны', 'Lateral raise. Подъем рук в стороны, акцент на средние дельты.', 130),
   ('standard-lat-pulldown', 'Вертикальная тяга', 'Lat pulldown. Тяга рукояти сверху к груди.', 140),
   ('standard-seated-row', 'Горизонтальная тяга', 'Seated row. Тяга рукояти к животу сидя.', 150),
   ('standard-back-extension', 'Гиперэкстензия', 'Back extension. Разгибание корпуса, акцент на поясницу и ягодицы.', 180),
-  ('standard-biceps-curl', 'Сгибание рук на бицепс', 'Biceps curl machine. Сгибание локтей на тренажере.', 190),
+  ('standard-biceps-curl', 'Сгибание рук на бицепс', 'Biceps curl machine. Сгибание локтей на бицепс сидя.', 190),
   ('standard-dumbbell-biceps-curl', 'Сгибание рук с гантелями', 'Dumbbell biceps curl. Сгибание рук с гантелями стоя.', 200),
   ('standard-cable-triceps-pushdown', 'Разгибание рук на блоке', 'Cable triceps pushdown. Разгибание рук вниз на верхнем блоке с канатной рукоятью.', 205),
   ('standard-seated-triceps-press', 'Жим на трицепс сидя', 'Seated triceps press. Жим рукоятей вниз сидя, как машинные отжимания на трицепс.', 207),
-  ('standard-seated-overhead-triceps-extension', 'Разгибание рук из-за головы сидя', 'Seated overhead triceps extension. Разгибание рук из-за головы на тренажере сидя.', 208),
+  ('standard-seated-overhead-triceps-extension', 'Разгибание рук из-за головы сидя', 'Seated overhead triceps extension. Разгибание рук из-за головы сидя.', 208),
   ('standard-assisted-pull-up-dip', 'Гравитрон', 'Assisted pull-up / dip. Подтягивания или отжимания с противовесом.', 210)
 on conflict (id) do nothing;
 

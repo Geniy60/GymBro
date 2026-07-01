@@ -8,25 +8,38 @@ The app now uses the shared Supabase project used by the sibling Vacation app.
 
 The initial app shell is in place with a compact header, safe-area handling, and two main tabs:
 
-- Machines
+- Exercises
 - Workouts
 
-The Machines tab supports list, search, add, edit, and delete. Machine data now loads from Supabase through a small service layer and TanStack Query. The standard machine catalog currently contains 25 machines/exercises.
+The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. The standard exercise catalog currently contains 25 items.
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Machines list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
 
-Empty workout drafts now offer a quick machine suggestion flow. From an empty workout, the user can choose target muscle groups and a machine count, preview a randomized set of matching machines, reshuffle it, and add the suggested machines to the workout using the same latest-set prefill behavior as manual machine selection.
+Empty workout drafts now offer a quick exercise suggestion flow. From an empty workout, the user can choose target muscle groups and an exercise count, preview a randomized set of matching exercises, reshuffle it, and add the suggested exercises to the workout using the same latest-set prefill behavior as manual exercise selection.
 
 The app has a simple local user selector for the two seeded users:
 
 - Женя
 - Настя
 
-The selected user is stored locally on the phone with AsyncStorage. Machines stay shared; workouts are scoped by `user_id`.
+The selected user is stored locally on the phone with AsyncStorage. Exercises stay shared; workouts are scoped by `user_id`.
 
 User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
+
+Renamed visible machine wording to exercise wording.
+
+Details:
+
+- Updated Russian UI strings so the app now says exercise/exercises instead of machine/machines in tabs, search, empty states, forms, alerts, stats, workout picker, suggestion flow, and accessibility labels.
+- Updated standard catalog notes that still used the old Russian machine wording.
+- Added and applied `supabase/migrations/20260701144000_gymbro_rename_machine_wording_to_exercises.sql` so the current Supabase data matches the app wording.
+- Kept internal `machine` identifiers, Supabase table names, and service names unchanged to avoid a broad non-user-facing refactor.
+- Added a small Russian exercise-count label helper for the suggestion count accessibility text.
+- TypeScript and test checks pass after the wording update.
+
+Previous step:
 
 Neutralized two machine image backgrounds.
 

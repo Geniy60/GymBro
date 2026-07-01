@@ -2,7 +2,7 @@ insert into public.gymbro_machines (id, name, note, sort_order)
 values (
   'standard-seated-overhead-triceps-extension',
   'Разгибание рук из-за головы сидя',
-  'Seated overhead triceps extension. Разгибание рук из-за головы на тренажере сидя.',
+  'Seated overhead triceps extension. Разгибание рук из-за головы сидя.',
   208
 )
 on conflict (id) do nothing;

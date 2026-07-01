@@ -1,20 +1,32 @@
+function exerciseCountLabel(count: number) {
+  if (count % 10 === 1 && count % 100 !== 11) {
+    return `${count} упражнение`;
+  }
+
+  if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) {
+    return `${count} упражнения`;
+  }
+
+  return `${count} упражнений`;
+}
+
 export const strings = {
   app: {
     title: 'GymBro',
   },
   tabs: {
-    machines: 'Тренажеры',
+    machines: 'Упражнения',
     stats: 'Статистика',
     workouts: 'Тренировки',
   },
   search: {
-    machines: 'Поиск тренажера',
+    machines: 'Поиск упражнения',
     workouts: 'Поиск тренировки',
   },
   empty: {
     machines: {
-      title: 'Тренажеров пока нет',
-      message: 'Здесь появятся тренажеры, которые ты добавишь для своих занятий.',
+      title: 'Упражнений пока нет',
+      message: 'Здесь появятся упражнения, которые ты добавишь для своих занятий.',
     },
     workouts: {
       title: 'Тренировок пока нет',
@@ -49,10 +61,10 @@ export const strings = {
     totalWorkouts: 'Всего',
     monthWorkouts: 'За месяц',
     chartTitle: 'Последние 6 месяцев',
-    maxesTitle: 'Максимумы по тренажерам',
+    maxesTitle: 'Максимумы по упражнениям',
     emptyMaxes: 'Пока нет подходов с весом.',
-    historyEmpty: 'По этому тренажеру пока нет истории.',
-    historyTitle: 'История тренажера',
+    historyEmpty: 'По этому упражнению пока нет истории.',
+    historyTitle: 'История упражнения',
     maxWeight: (weightKg: string, date: string) => `${weightKg} кг · ${date}`,
     noWeight: 'Без веса',
     workoutMax: (weightKg: string) => `Макс. ${weightKg} кг`,
@@ -63,9 +75,9 @@ export const strings = {
     selectUser: (name: string) => `Выбрать пользователя ${name}`,
   },
   alerts: {
-    deleteMachineTitle: 'Удалить тренажер?',
+    deleteMachineTitle: 'Удалить упражнение?',
     deleteMachineMessage: (name: string) =>
-      `Тренажер «${name}» будет удален из списка.`,
+      `Упражнение «${name}» будет удалено из списка.`,
     deleteWorkoutTitle: 'Удалить тренировку?',
     deleteWorkoutMessage: (name: string) =>
       `Тренировка «${name}» будет удалена из списка.`,
@@ -83,8 +95,8 @@ export const strings = {
   },
   forms: {
     machine: {
-      addTitle: 'Новый тренажер',
-      editTitle: 'Редактировать тренажер',
+      addTitle: 'Новое упражнение',
+      editTitle: 'Редактировать упражнение',
       nameLabel: 'Название',
       namePlaceholder: 'Например, жим ногами',
       muscleGroupLabel: 'Группы мышц',
@@ -92,7 +104,7 @@ export const strings = {
       noteLabel: 'Заметка',
       notePlaceholder: 'Посадка, настройки, важные ощущения',
       errors: {
-        nameRequired: 'Введите название тренажера.',
+        nameRequired: 'Введите название упражнения.',
       },
     },
     workout: {
@@ -101,23 +113,23 @@ export const strings = {
     },
   },
   workouts: {
-    addExerciseTitle: 'Добавить тренажер',
+    addExerciseTitle: 'Добавить упражнение',
     addMachineToWorkout: (name: string) => `Добавить ${name} в тренировку`,
     addSet: 'Добавить подход',
     clearExerciseSets: 'Очистить подходы',
-    collapseExercise: 'Свернуть тренажер',
+    collapseExercise: 'Свернуть упражнение',
     defaultName: 'Тренировка',
     defaultNameWithDate: (weekday: string, date: string) => `${weekday} ${date}`,
     deleteExercise: 'Удалить упражнение',
     deleteSet: 'Удалить подход',
-    emptyExercises: 'Добавь тренажер выше, затем вноси подходы по одному.',
-    expandExercise: 'Развернуть тренажер',
+    emptyExercises: 'Добавь упражнение выше, затем вноси подходы по одному.',
+    expandExercise: 'Развернуть упражнение',
     loadingMore: 'Загружаем еще...',
-    machineSearchPlaceholder: 'Поиск тренажера',
-    noMachinesTitle: 'Тренажеров пока нет',
-    noMachinesMessage: 'Сначала добавь тренажеры во вкладке «Тренажеры».',
+    machineSearchPlaceholder: 'Поиск упражнения',
+    noMachinesTitle: 'Упражнений пока нет',
+    noMachinesMessage: 'Сначала добавь упражнения во вкладке «Упражнения».',
     addSuggestedMachines: 'К тренировке!',
-    openSuggestMachines: 'Подобрать тренажеры',
+    openSuggestMachines: 'Подобрать упражнения',
     resuggestMachines: 'Подобрать заново',
     repsLabel: 'Повторения',
     repsPlaceholder: 'Повт.',
@@ -126,16 +138,16 @@ export const strings = {
     setNoteLabel: 'Заметка к подходу',
     setNotePlaceholder: 'Заметка к подходу',
     setNumber: (number: number) => `${number}.`,
-    suggestCountTitle: 'Сколько тренажеров?',
+    suggestCountTitle: 'Сколько упражнений?',
     suggestMachinesButton: 'Подобрать',
-    suggestMachinesTitle: 'Подбор тренажеров',
+    suggestMachinesTitle: 'Подбор упражнений',
     suggestMuscleGroupsTitle: 'Что тренируем?',
-    suggestNoMatches: 'Подходящих тренажеров не нашлось. Попробуй выбрать другие группы.',
+    suggestNoMatches: 'Подходящих упражнений не нашлось. Попробуй выбрать другие группы.',
     suggestPickMusclesHint: 'Выбери одну или несколько групп мышц.',
     suggestPreviewEmpty: 'Нажми «Подобрать», чтобы собрать варианты.',
     suggestPreviewTitle: 'Подойдет сейчас',
-    suggestedMachine: (name: string) => `Подобранный тренажер ${name}`,
-    selectSuggestMachineCount: (count: number) => `Выбрать ${count} тренажера`,
+    suggestedMachine: (name: string) => `Подобранное упражнение ${name}`,
+    selectSuggestMachineCount: (count: number) => `Выбрать ${exerciseCountLabel(count)}`,
     startWorkout: 'Начать тренировку',
     toggleSetNote: 'Показать заметку к подходу',
     toggleSuggestMuscleGroup: (name: string) => `Выбрать группу мышц ${name}`,
@@ -144,21 +156,21 @@ export const strings = {
     weightPlaceholder: 'кг',
   },
   accessibility: {
-    addMachine: 'Добавить тренажер',
+    addMachine: 'Добавить упражнение',
     addWorkout: 'Добавить тренировку',
     back: 'Назад',
-    deleteMachine: 'Удалить тренажер',
+    deleteMachine: 'Удалить упражнение',
     deleteWorkout: 'Удалить тренировку',
-    editMachine: 'Редактировать тренажер',
+    editMachine: 'Редактировать упражнение',
     editWorkout: 'Редактировать тренировку',
     finishWorkout: 'Завершить тренировку',
-    openMachinePicker: 'Открыть выбор тренажера',
+    openMachinePicker: 'Открыть выбор упражнения',
     repeatWorkout: 'Повторить тренировку',
     settings: 'Открыть настройки',
     search: 'Поиск',
     clearSearch: 'Очистить поиск',
     changeUser: 'Сменить пользователя',
-    saveMachine: 'Сохранить тренажер',
+    saveMachine: 'Сохранить упражнение',
     saveWorkout: 'Сохранить тренировку',
     startWorkout: 'Начать тренировку',
   },
