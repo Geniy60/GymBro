@@ -28,6 +28,16 @@ User-facing app text is centralized in `src/strings.ts`.
 
 ## Last Completed Step
 
+Replaced the hip abduction machine image.
+
+Details:
+
+- Replaced `assets/machines/hip-abduction.png` with the approved corrected image.
+- The person now sits with both legs inside the machine and the resistance pads only outside the thighs.
+- Resized the generated source image to the existing 512x512 PNG asset format.
+
+Previous step:
+
 Added people to all standard machine images.
 
 Details:
