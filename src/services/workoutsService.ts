@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient';
+import type { Json } from '../databaseTypes';
 import type {
   MachineHistoryItem,
   MachineMax,
@@ -52,6 +53,23 @@ type MachineHistoryRow = {
 type PreviousMachineMaxRow = {
   machine_id: string | null;
   max_weight_kg: number;
+};
+
+type WorkoutSavePayload = {
+  exercises: {
+    id: string;
+    machineId: string;
+    machineName: string;
+    sets: {
+      id: string;
+      note: string;
+      reps: string;
+      weightKg: number | null;
+    }[];
+  }[];
+  id: string;
+  name: string;
+  startedAt: string;
 };
 
 export async function loadWorkoutSummaries({
@@ -207,67 +225,13 @@ export async function loadPreviousMaxesForMachines({
 }
 
 export async function saveWorkout(workout: Workout, userId: string): Promise<void> {
-  const { error: workoutError } = await supabase.from('gymbro_workouts').upsert({
-    id: workout.id,
-    name: workout.name,
-    started_at: workout.startedAt,
-    user_id: userId,
+  const { error } = await supabase.rpc('gymbro_save_workout', {
+    p_user_id: userId,
+    p_workout: createWorkoutSavePayload(workout),
   });
 
-  if (workoutError) {
-    throw workoutError;
-  }
-
-  const { error: deleteExercisesError } = await supabase
-    .from('gymbro_workout_exercises')
-    .delete()
-    .eq('workout_id', workout.id);
-
-  if (deleteExercisesError) {
-    throw deleteExercisesError;
-  }
-
-  if (workout.exercises.length === 0) {
-    return;
-  }
-
-  const { error: insertExercisesError } = await supabase
-    .from('gymbro_workout_exercises')
-    .insert(
-      workout.exercises.map((exercise, index) => ({
-        id: exercise.id,
-        machine_id: exercise.machineId.length > 0 ? exercise.machineId : null,
-        machine_name_snapshot: exercise.machineName,
-        sort_order: index,
-        workout_id: workout.id,
-      })),
-    );
-
-  if (insertExercisesError) {
-    throw insertExercisesError;
-  }
-
-  const workoutSets = workout.exercises.flatMap((exercise) =>
-    exercise.sets.map((workoutSet, index) => ({
-      exercise_id: exercise.id,
-      id: workoutSet.id,
-      note: workoutSet.note,
-      reps: workoutSet.reps,
-      sort_order: index,
-      weight_kg: parseWeightKg(workoutSet.weightKg),
-    })),
-  );
-
-  if (workoutSets.length === 0) {
-    return;
-  }
-
-  const { error: insertSetsError } = await supabase
-    .from('gymbro_workout_sets')
-    .insert(workoutSets);
-
-  if (insertSetsError) {
-    throw insertSetsError;
+  if (error) {
+    throw error;
   }
 }
 
@@ -456,6 +420,25 @@ function parseWeightKg(weightKg: string): number | null {
 
 function formatWeightKg(weightKg: number | null): string {
   return weightKg === null ? '' : String(weightKg);
+}
+
+function createWorkoutSavePayload(workout: Workout): WorkoutSavePayload & Json {
+  return {
+    exercises: workout.exercises.map((exercise) => ({
+      id: exercise.id,
+      machineId: exercise.machineId,
+      machineName: exercise.machineName,
+      sets: exercise.sets.map((workoutSet) => ({
+        id: workoutSet.id,
+        note: workoutSet.note,
+        reps: workoutSet.reps,
+        weightKg: parseWeightKg(workoutSet.weightKg),
+      })),
+    })),
+    id: workout.id,
+    name: workout.name,
+    startedAt: workout.startedAt,
+  };
 }
 
 function getLastSixMonthStarts(): Date[] {

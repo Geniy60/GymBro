@@ -1,6 +1,12 @@
 import type { MuscleGroup } from './types';
 
-type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json }
+  | Json[];
 
 export type Database = {
   public: {
@@ -195,6 +201,13 @@ export type Database = {
           started_at: string;
           user_id: string;
         }[];
+      };
+      gymbro_save_workout: {
+        Args: {
+          p_user_id: string;
+          p_workout: Json;
+        };
+        Returns: undefined;
       };
     };
     Enums: Record<string, never>;

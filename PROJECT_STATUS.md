@@ -13,7 +13,7 @@ The initial app shell is in place with a compact header, safe-area handling, and
 
 The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. The standard exercise catalog currently contains 27 items.
 
-The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query.
+The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically.
 
 Empty workout drafts now offer a quick exercise suggestion flow. From an empty workout, the user can choose target muscle groups and an exercise count, preview a randomized set of matching exercises, reshuffle it, and add the suggested exercises to the workout using the same latest-set prefill behavior as manual exercise selection.
 
@@ -29,6 +29,21 @@ User-facing app text is centralized in `src/strings.ts`.
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Added transactional workout saving and split dense workout-session UI pieces.
+
+Details:
+
+- Added and applied `supabase/migrations/20260702110000_gymbro_save_workout_rpc.sql`.
+- Added `public.gymbro_save_workout(jsonb, text)` so a workout save happens inside one database transaction instead of separate client-side upsert/delete/insert calls.
+- Updated `src/services/workoutsService.ts` to call the new RPC with a normalized JSON payload.
+- Updated Supabase function typings in `src/databaseTypes.ts`.
+- Extracted active workout exercise cards, the empty workout suggestion prompt, and workout picker machine buttons from `WorkoutSessionScreen.tsx` into focused local components.
+- Reduced `WorkoutSessionScreen.tsx` from about 1416 lines to about 971 lines without changing the visible workflow.
+- Applied the migration to the project database.
+- Verified `npx tsc --noEmit` and `npm test` pass.
+
+Previous step:
 
 Added safer padding to the app launcher icon.
 
