@@ -6,11 +6,19 @@ import {
 } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  BackHandler,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { showAppAlert } from './src/appAlert';
 import { AppAlertHost } from './src/components/AppAlertHost';
+import { createId } from './src/createId';
 import { MachineFormScreen } from './src/features/machines/MachineFormScreen';
 import { MachinesScreen } from './src/features/machines/MachinesScreen';
 import { SettingsScreen } from './src/features/settings/SettingsScreen';
@@ -54,6 +62,8 @@ type TabConfig = {
   label: string;
 };
 
+const MIN_REFRESH_FEEDBACK_MS = 600;
+
 const tabs: TabConfig[] = [
   {
     key: 'workouts',
@@ -85,6 +95,7 @@ function AppContent() {
   const [isEditingWorkoutNew, setIsEditingWorkoutNew] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [hasLoadedSelectedUser, setHasLoadedSelectedUser] = useState(false);
+  const [isRefreshingAllData, setIsRefreshingAllData] = useState(false);
   const [checkedWorkoutDraftUserId, setCheckedWorkoutDraftUserId] = useState<
     string | null
   >(null);
@@ -261,6 +272,29 @@ function AppContent() {
 
   function openSettings() {
     setScreen('settings');
+  }
+
+  async function refreshAllData() {
+    if (isRefreshingAllData) {
+      return;
+    }
+
+    setIsRefreshingAllData(true);
+    const refreshStartedAt = Date.now();
+
+    try {
+      await queryClientInstance.invalidateQueries();
+    } finally {
+      const elapsedMs = Date.now() - refreshStartedAt;
+      const remainingFeedbackMs = Math.max(
+        0,
+        MIN_REFRESH_FEEDBACK_MS - elapsedMs,
+      );
+
+      setTimeout(() => {
+        setIsRefreshingAllData(false);
+      }, remainingFeedbackMs);
+    }
   }
 
   function closeSettings() {
@@ -505,16 +539,35 @@ function AppContent() {
       >
         <View style={styles.header}>
           <Text style={styles.appTitle}>{strings.app.title}</Text>
-          <Pressable
-            accessibilityLabel={strings.accessibility.settings}
-            onPress={openSettings}
-            style={({ pressed }) => [
-              styles.settingsButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Ionicons name="settings-outline" size={26} color={colors.text} />
-          </Pressable>
+          <View style={styles.headerActions}>
+            <Pressable
+              accessibilityLabel={strings.accessibility.refreshData}
+              disabled={isRefreshingAllData}
+              onPress={() => {
+                void refreshAllData();
+              }}
+              style={({ pressed }) => [
+                styles.headerIconButton,
+                pressed && styles.pressedButton,
+              ]}
+            >
+              {isRefreshingAllData ? (
+                <ActivityIndicator color={colors.text} size="small" />
+              ) : (
+                <Ionicons name="refresh-outline" size={25} color={colors.text} />
+              )}
+            </Pressable>
+            <Pressable
+              accessibilityLabel={strings.accessibility.settings}
+              onPress={openSettings}
+              style={({ pressed }) => [
+                styles.headerIconButton,
+                pressed && styles.pressedButton,
+              ]}
+            >
+              <Ionicons name="settings-outline" size={26} color={colors.text} />
+            </Pressable>
+          </View>
         </View>
 
         <View style={styles.tabRow}>
@@ -599,7 +652,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
   },
-  settingsButton: {
+  headerActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  headerIconButton: {
     alignItems: 'center',
     height: 48,
     justifyContent: 'center',
@@ -659,10 +716,6 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
 });
-
-function createId() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
 
 function createDefaultWorkoutName() {
   const today = new Date();

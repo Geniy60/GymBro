@@ -174,6 +174,7 @@ export const strings = {
     finishWorkout: 'Завершить тренировку',
     openMachinePicker: 'Открыть выбор упражнения',
     repeatWorkout: 'Повторить тренировку',
+    refreshData: 'Обновить данные',
     settings: 'Открыть настройки',
     search: 'Поиск',
     clearSearch: 'Очистить поиск',

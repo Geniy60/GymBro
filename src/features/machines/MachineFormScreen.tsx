@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { createId } from '../../createId';
 import { muscleGroups } from '../../muscleGroups';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
@@ -84,7 +85,7 @@ export function MachineFormScreen({
     }
 
     onSave({
-      id: machine?.id ?? String(Date.now()),
+      id: machine?.id ?? createId(),
       ...nextDraft,
     });
   }

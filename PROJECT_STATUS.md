@@ -26,9 +26,28 @@ The selected user is stored locally on the phone with AsyncStorage. Exercises st
 
 User-facing app text is centralized in `src/strings.ts`.
 
+New app-generated exercise, workout, workout-exercise, and set IDs are created through a shared UUID helper backed by `expo-crypto`.
+
+The main header has a manual refresh action next to settings. It invalidates the TanStack Query cache and shows short spinner feedback, matching the sibling Fridge app pattern.
+
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Improved reliability and workout-screen maintainability.
+
+Details:
+
+- Added `expo-crypto` and a shared `src/createId.ts` UUID helper.
+- Replaced local timestamp/random ID generation for app-created workouts, workout exercises, sets, and custom exercises.
+- Kept randomized exercise suggestions unchanged because that logic is deliberate shuffling, not ID generation.
+- Split the active workout footer into `src/features/workouts/WorkoutSessionFooter.tsx`.
+- Split the workout exercise suggestion flow into `src/features/workouts/MachineSuggestScreen.tsx`.
+- Reduced `WorkoutSessionScreen.tsx` from about 971 lines to 759 lines.
+- Added a Fridge-style header refresh button next to settings with spinner feedback and TanStack Query invalidation.
+- Verified `npx tsc --noEmit` and `npm test` pass.
+
+Previous step:
 
 Added the standing calf raise exercise.
 
@@ -1327,8 +1346,6 @@ When ready to check the icon on the phone, increment Android `versionCode`, subm
 
 ## Known Rough Edges
 
-- Machine IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
-- Workout IDs currently use a timestamp string, which is sufficient for this local personal MVP but can be replaced later if needed.
 - Workout set values are stored as strings for simple mobile input; validation and numeric summaries can be added later.
 - Local AsyncStorage data is no longer used by the app. Existing phone-local data will not automatically appear in Supabase unless a migration/import step is added later.
 - `npm audit` reports moderate vulnerabilities from the generated Expo and tunnel dependency tree; no remediation was applied because automatic fixes could affect Expo SDK compatibility.

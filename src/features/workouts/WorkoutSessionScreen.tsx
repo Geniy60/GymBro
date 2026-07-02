@@ -1,12 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   BackHandler,
   FlatList,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -16,8 +14,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { showAppAlert } from '../../appAlert';
 import { EmptyState } from '../../components/EmptyState';
-import { MachineTile } from '../../components/MachineTile';
 import { SearchInput } from '../../components/SearchInput';
+import { createId } from '../../createId';
 import { queryKeys } from '../../queryClient';
 import {
   loadLatestSetsForMachine,
@@ -29,7 +27,6 @@ import {
 } from '../../storage/workoutDraftStorage';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import { muscleGroups } from '../../muscleGroups';
 import type {
   Machine,
   MuscleGroup,
@@ -38,8 +35,13 @@ import type {
   WorkoutSet,
 } from '../../types';
 import { EmptyWorkoutExerciseList } from './EmptyWorkoutExerciseList';
+import { MachineSuggestScreen } from './MachineSuggestScreen';
 import { MachinePickerButton } from './MachinePickerButton';
 import { WorkoutExerciseCard } from './WorkoutExerciseCard';
+import {
+  type SaveStatus,
+  WorkoutSessionFooter,
+} from './WorkoutSessionFooter';
 
 type WorkoutSessionScreenProps = {
   backgroundColor: string;
@@ -53,8 +55,6 @@ type WorkoutSessionScreenProps = {
   userId: string;
   workout: Workout;
 };
-
-type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 export function WorkoutSessionScreen({
   backgroundColor,
@@ -520,169 +520,21 @@ export function WorkoutSessionScreen({
   }
 
   if (isMachineSuggestOpen) {
-    const canSuggest = selectedSuggestMuscleGroups.length > 0;
-
     return (
-      <SafeAreaView
-        edges={['top', 'right', 'bottom', 'left']}
-        style={[styles.safeArea, { backgroundColor }]}
-      >
-        <View style={styles.content}>
-          <View style={styles.secondaryHeader}>
-            <Pressable
-              accessibilityLabel={strings.accessibility.back}
-              onPress={closeMachineSuggest}
-              style={({ pressed }) => [
-                styles.backButton,
-                pressed && styles.pressedButton,
-              ]}
-            >
-              <Ionicons name="arrow-back" size={22} color={colors.text} />
-            </Pressable>
-            <Text style={styles.secondaryTitle}>
-              {strings.workouts.suggestMachinesTitle}
-            </Text>
-          </View>
-
-          <ScrollView
-            contentContainerStyle={styles.suggestContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <Text style={styles.suggestSectionTitle}>
-              {strings.workouts.suggestMuscleGroupsTitle}
-            </Text>
-            <View style={styles.suggestChipGrid}>
-              {muscleGroups.map((muscleGroup) => {
-                const isSelected = selectedSuggestMuscleGroups.includes(muscleGroup);
-
-                return (
-                  <Pressable
-                    accessibilityLabel={strings.workouts.toggleSuggestMuscleGroup(
-                      strings.muscleGroups.labels[muscleGroup],
-                    )}
-                    key={muscleGroup}
-                    onPress={() => toggleSuggestMuscleGroup(muscleGroup)}
-                    style={({ pressed }) => [
-                      styles.suggestChip,
-                      isSelected && styles.selectedSuggestChip,
-                      pressed && styles.pressedButton,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.suggestChipText,
-                        isSelected && styles.selectedSuggestChipText,
-                      ]}
-                    >
-                      {strings.muscleGroups.labels[muscleGroup]}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-
-            <Text style={styles.suggestSectionTitle}>
-              {strings.workouts.suggestCountTitle}
-            </Text>
-            <View style={styles.suggestCountRow}>
-              {[3, 4, 5, 6].map((count) => {
-                const isSelected = suggestMachineCount === count;
-
-                return (
-                  <Pressable
-                    accessibilityLabel={strings.workouts.selectSuggestMachineCount(count)}
-                    key={count}
-                    onPress={() => changeSuggestMachineCount(count)}
-                    style={({ pressed }) => [
-                      styles.countButton,
-                      isSelected && styles.selectedCountButton,
-                      pressed && styles.pressedButton,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.countButtonText,
-                        isSelected && styles.selectedCountButtonText,
-                      ]}
-                    >
-                      {count}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-
-            <Pressable
-              accessibilityLabel={
-                hasSuggestAttempt
-                  ? strings.workouts.resuggestMachines
-                  : strings.workouts.suggestMachinesButton
-              }
-              disabled={!canSuggest}
-              onPress={suggestMachines}
-              style={({ pressed }) => [
-                styles.suggestPrimaryButton,
-                !canSuggest && styles.disabledButton,
-                pressed && styles.pressedButton,
-              ]}
-            >
-              <LinearGradient
-                colors={['#7C3AED', '#A855F7', '#EC4899']}
-                end={{ x: 1, y: 1 }}
-                start={{ x: 0, y: 0 }}
-                style={styles.suggestPrimaryGradient}
-              >
-                <Ionicons name="sparkles-outline" size={20} color={colors.panel} />
-                <Text style={styles.suggestPrimaryButtonText}>
-                  {hasSuggestAttempt
-                    ? strings.workouts.resuggestMachines
-                    : strings.workouts.suggestMachinesButton}
-                </Text>
-              </LinearGradient>
-            </Pressable>
-
-            {suggestedMachines.length === 0 ? (
-              <Text style={styles.helperText}>
-                {getSuggestEmptyMessage({ canSuggest, hasSuggestAttempt })}
-              </Text>
-            ) : (
-              <View style={styles.suggestPreviewBlock}>
-                <Text style={styles.suggestSectionTitle}>
-                  {strings.workouts.suggestPreviewTitle}
-                </Text>
-                <View style={styles.suggestPreviewGrid}>
-                  {suggestedMachines.map((machine) => (
-                    <View key={machine.id} style={styles.suggestPreviewItem}>
-                      <MachineTile
-                        accessibilityLabel={strings.workouts.suggestedMachine(machine.name)}
-                        machine={machine}
-                        onPress={noop}
-                      />
-                    </View>
-                  ))}
-                  {suggestedMachines.length % 2 === 1 ? (
-                    <View style={styles.suggestPreviewItem} />
-                  ) : null}
-                </View>
-                <Pressable
-                  accessibilityLabel={strings.workouts.addSuggestedMachines}
-                  onPress={() => {
-                    void addSuggestedMachinesToWorkout();
-                  }}
-                  style={({ pressed }) => [
-                    styles.suggestAddButton,
-                    pressed && styles.pressedButton,
-                  ]}
-                >
-                  <Text style={styles.suggestAddButtonText}>
-                    {strings.workouts.addSuggestedMachines}
-                  </Text>
-                </Pressable>
-              </View>
-            )}
-          </ScrollView>
-        </View>
-      </SafeAreaView>
+      <MachineSuggestScreen
+        backgroundColor={backgroundColor}
+        hasSuggestAttempt={hasSuggestAttempt}
+        onAddSuggestedMachines={() => {
+          void addSuggestedMachinesToWorkout();
+        }}
+        onBack={closeMachineSuggest}
+        onChangeSuggestMachineCount={changeSuggestMachineCount}
+        onSuggestMachines={suggestMachines}
+        onToggleSuggestMuscleGroup={toggleSuggestMuscleGroup}
+        selectedSuggestMuscleGroups={selectedSuggestMuscleGroups}
+        suggestMachineCount={suggestMachineCount}
+        suggestedMachines={suggestedMachines}
+      />
     );
   }
 
@@ -755,60 +607,19 @@ export function WorkoutSessionScreen({
           />
         </View>
 
-        {saveStatus !== 'idle' ? (
-          <Text
-            accessibilityRole={saveStatus === 'error' ? 'alert' : undefined}
-            style={[
-              styles.saveStatusText,
-              saveStatus === 'error' && styles.saveErrorText,
-            ]}
-          >
-            {getSaveStatusText(saveStatus)}
-          </Text>
-        ) : null}
-
-        <View style={styles.footerActions}>
-          <Pressable
-            accessibilityLabel={strings.accessibility.saveWorkout}
-            disabled={saveStatus === 'saving'}
-            onPress={() => {
-              void saveWorkout(false);
-            }}
-            style={({ pressed }) => [
-              styles.footerButton,
-              styles.saveDraftButton,
-              saveStatus === 'saving' && styles.disabledButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Text style={styles.saveDraftButtonText}>{strings.actions.save}</Text>
-          </Pressable>
-          <Pressable
-            accessibilityLabel={strings.accessibility.finishWorkout}
-            disabled={saveStatus === 'saving'}
-            onPress={() => {
-              void saveWorkout(true);
-            }}
-            style={({ pressed }) => [
-              styles.footerButton,
-              styles.finishButton,
-              saveStatus === 'saving' && styles.disabledButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Text style={styles.finishButtonText}>{strings.actions.finish}</Text>
-          </Pressable>
-        </View>
+        <WorkoutSessionFooter
+          onFinish={() => {
+            void saveWorkout(true);
+          }}
+          onSave={() => {
+            void saveWorkout(false);
+          }}
+          saveStatus={saveStatus}
+        />
       </View>
     </SafeAreaView>
   );
 }
-
-function createId() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
-
-function noop() {}
 
 function filterMachines(machines: Machine[], searchText: string) {
   const normalizedSearchText = searchText.trim().toLocaleLowerCase();
@@ -853,40 +664,6 @@ function pickSuggestedMachines({
   );
 
   return shuffleMachines(candidates).slice(0, count);
-}
-
-function getSuggestEmptyMessage({
-  canSuggest,
-  hasSuggestAttempt,
-}: {
-  canSuggest: boolean;
-  hasSuggestAttempt: boolean;
-}): string {
-  if (!canSuggest) {
-    return strings.workouts.suggestPickMusclesHint;
-  }
-
-  if (hasSuggestAttempt) {
-    return strings.workouts.suggestNoMatches;
-  }
-
-  return strings.workouts.suggestPreviewEmpty;
-}
-
-function getSaveStatusText(saveStatus: SaveStatus): string {
-  if (saveStatus === 'saving') {
-    return strings.workouts.saving;
-  }
-
-  if (saveStatus === 'saved') {
-    return strings.workouts.saved;
-  }
-
-  if (saveStatus === 'error') {
-    return strings.workouts.saveFailed;
-  }
-
-  return '';
 }
 
 function shuffleMachines(machines: Machine[]): Machine[] {
@@ -1048,167 +825,6 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 15,
     lineHeight: 21,
-  },
-  suggestContent: {
-    gap: 14,
-    paddingBottom: 28,
-  },
-  suggestSectionTitle: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  suggestChipGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  suggestChip: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    minHeight: 38,
-    paddingHorizontal: 12,
-    justifyContent: 'center',
-  },
-  selectedSuggestChip: {
-    backgroundColor: '#EAF7EF',
-    borderColor: colors.primary,
-  },
-  suggestChipText: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  selectedSuggestChipText: {
-    color: colors.primary,
-  },
-  suggestCountRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  countButton: {
-    alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 42,
-    justifyContent: 'center',
-    width: 50,
-  },
-  selectedCountButton: {
-    backgroundColor: '#EAF7EF',
-    borderColor: colors.primary,
-  },
-  countButtonText: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  selectedCountButtonText: {
-    color: colors.primary,
-  },
-  suggestPrimaryButton: {
-    borderRadius: 8,
-    minHeight: 48,
-    overflow: 'hidden',
-  },
-  suggestPrimaryGradient: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-    minHeight: 48,
-  },
-  suggestPrimaryButtonText: {
-    color: colors.panel,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  disabledButton: {
-    opacity: 0.45,
-  },
-  suggestPreviewBlock: {
-    gap: 8,
-  },
-  suggestPreviewGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  suggestPreviewItem: {
-    flexBasis: '48.5%',
-    flexGrow: 1,
-    maxWidth: '48.5%',
-  },
-  suggestAddButton: {
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    justifyContent: 'center',
-    minHeight: 44,
-  },
-  suggestAddButtonText: {
-    color: colors.panel,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  saveStatusText: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    bottom: 68,
-    color: colors.muted,
-    fontSize: 13,
-    fontWeight: '700',
-    left: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    position: 'absolute',
-    right: 20,
-    textAlign: 'center',
-  },
-  saveErrorText: {
-    borderColor: colors.destructiveBorder,
-    color: colors.destructive,
-  },
-  footerActions: {
-    alignItems: 'center',
-    bottom: 12,
-    flexDirection: 'row',
-    gap: 10,
-    left: 20,
-    position: 'absolute',
-    minHeight: 48,
-    right: 20,
-  },
-  footerButton: {
-    alignItems: 'center',
-    borderRadius: 8,
-    flex: 1,
-    justifyContent: 'center',
-    minHeight: 48,
-  },
-  saveDraftButton: {
-    backgroundColor: colors.panel,
-    borderColor: colors.primary,
-    borderWidth: 1,
-  },
-  saveDraftButtonText: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  finishButton: {
-    backgroundColor: colors.primary,
-  },
-  finishButtonText: {
-    color: colors.panel,
-    fontSize: 16,
-    fontWeight: '700',
   },
   pressedButton: {
     opacity: 0.7,
