@@ -85,6 +85,22 @@ export function normalizeWorkoutForSave(workout: Workout): Workout {
   };
 }
 
+export function findWorkoutInputError(workout: Workout): string | null {
+  for (const exercise of workout.exercises) {
+    for (const workoutSet of exercise.sets) {
+      if (!isValidWeightInput(workoutSet.weightKg)) {
+        return strings.workouts.invalidWeightMessage;
+      }
+
+      if (!isValidRepsInput(workoutSet.reps)) {
+        return strings.workouts.invalidRepsMessage;
+      }
+    }
+  }
+
+  return null;
+}
+
 export function hasWorkoutChanged(
   initialWorkout: Workout,
   draftWorkout: Workout,
@@ -121,4 +137,28 @@ function createEmptySet(): WorkoutSet {
     reps: '',
     note: '',
   };
+}
+
+function isValidWeightInput(weightKg: string): boolean {
+  const normalizedWeightKg = weightKg.trim().replace(',', '.');
+
+  if (normalizedWeightKg.length === 0) {
+    return true;
+  }
+
+  const parsedWeightKg = Number(normalizedWeightKg);
+
+  return Number.isFinite(parsedWeightKg) && parsedWeightKg >= 0;
+}
+
+function isValidRepsInput(reps: string): boolean {
+  const normalizedReps = reps.trim();
+
+  if (normalizedReps.length === 0) {
+    return true;
+  }
+
+  const parsedReps = Number(normalizedReps);
+
+  return Number.isInteger(parsedReps) && parsedReps > 0;
 }

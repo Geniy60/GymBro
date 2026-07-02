@@ -21,6 +21,7 @@ import {
   createEmptySets,
   createSetsFromHistory,
   filterMachines,
+  findWorkoutInputError,
   hasWorkoutChanged,
   normalizeWorkoutForSave,
   pickSuggestedMachines,
@@ -145,6 +146,52 @@ describe('workoutSessionModel', () => {
       .toBe(false);
     expect(hasWorkoutChanged(savedWorkout, { ...savedWorkout, name: 'Leg day' }))
       .toBe(true);
+  });
+
+  it('finds invalid set weight and reps before saving', () => {
+    const workout: Workout = {
+      exercises: [
+        {
+          id: 'exercise',
+          machineId: 'machine',
+          machineName: 'Machine',
+          sets: [
+            { id: 'set-1', note: '', reps: '10', weightKg: '42,5' },
+            { id: 'set-2', note: '', reps: '', weightKg: '' },
+          ],
+        },
+      ],
+      id: 'workout',
+      name: 'Workout',
+      startedAt: '2026-01-01T00:00:00.000Z',
+      userId: 'user',
+    };
+
+    expect(findWorkoutInputError(workout)).toBeNull();
+    expect(
+      findWorkoutInputError({
+        ...workout,
+        exercises: [
+          {
+            ...workout.exercises[0],
+            sets: [{ id: 'set-1', note: '', reps: '10', weightKg: '-1' }],
+          },
+        ],
+      }),
+    ).toBe('Проверь вес: если поле заполнено, там должно быть число 0 или больше.');
+    expect(
+      findWorkoutInputError({
+        ...workout,
+        exercises: [
+          {
+            ...workout.exercises[0],
+            sets: [{ id: 'set-1', note: '', reps: '3.5', weightKg: '10' }],
+          },
+        ],
+      }),
+    ).toBe(
+      'Проверь повторы: если поле заполнено, там должно быть целое число больше нуля.',
+    );
   });
 
   it('confirms exit only for meaningful workout drafts', () => {

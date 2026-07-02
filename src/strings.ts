@@ -87,6 +87,7 @@ export const strings = {
     deleteExerciseMessage: 'Все подходы этого упражнения будут удалены.',
     exitWorkoutTitle: 'Сохранить тренировку?',
     exitWorkoutMessage: 'Перед выходом можно сохранить введенные подходы.',
+    invalidWorkoutTitle: 'Проверь подходы',
     restoreWorkoutDraftTitle: 'Восстановить тренировку?',
     restoreWorkoutDraftMessage:
       'Найден незавершенный черновик. Можно продолжить с последними введенными подходами.',
@@ -143,6 +144,10 @@ export const strings = {
     saved: 'Тренировка сохранена.',
     saveFailed: 'Не удалось сохранить. Проверь интернет и повтори.',
     saving: 'Сохраняем тренировку...',
+    invalidRepsMessage:
+      'Проверь повторы: если поле заполнено, там должно быть целое число больше нуля.',
+    invalidWeightMessage:
+      'Проверь вес: если поле заполнено, там должно быть число 0 или больше.',
     setNoteLabel: 'Заметка к подходу',
     setNotePlaceholder: 'Заметка к подходу',
     setNumber: (number: number) => `${number}.`,

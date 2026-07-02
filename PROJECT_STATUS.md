@@ -34,6 +34,26 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Improved workout reliability, validation, cache invalidation, and test coverage.
+
+Details:
+
+- Added `src/features/workouts/workoutSessionReducer.ts` for active workout draft state changes.
+- Moved workout name updates, exercise add/delete, set add/delete/update, set clearing, note toggling, and exercise collapse toggling through the reducer.
+- Added pre-save validation for set weight and reps input.
+- Empty weight/reps fields remain allowed, but filled weight must be a number 0 or greater and filled reps must be a positive integer.
+- Added centralized Russian validation messages for invalid workout inputs.
+- Added shared query invalidation helpers in `src/queryClient.ts`.
+- Replaced raw workout and machine invalidation arrays in `App.tsx` with the shared helpers.
+- Added unit tests for active workout reducer actions.
+- Added unit tests for AsyncStorage workout draft recovery, draft clearing, and selected-user storage.
+- Expanded Supabase service tests to cover read mapping for workout summaries, workout detail, latest sets, previous maxes, and machines.
+- Expanded query key tests to cover shared invalidation helpers.
+- Current unit test count: 32 tests across 8 test files.
+- Verified `npm test` passes.
+
+Previous step:
+
 Added the first real unit test coverage for core behavior.
 
 Details:

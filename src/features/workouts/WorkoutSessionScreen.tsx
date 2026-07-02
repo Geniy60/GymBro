@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useReducer, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   BackHandler,
@@ -42,15 +42,18 @@ import {
   WorkoutSessionFooter,
 } from './WorkoutSessionFooter';
 import {
-  addSetToExercise,
-  createEmptySets,
   createSetsFromHistory,
   filterMachines,
+  findWorkoutInputError,
   hasWorkoutChanged,
   normalizeWorkoutForSave,
   pickSuggestedMachines,
   shouldConfirmExitWorkout,
 } from './workoutSessionModel';
+import {
+  createWorkoutSessionDraftState,
+  workoutSessionDraftReducer,
+} from './workoutSessionReducer';
 
 type WorkoutSessionScreenProps = {
   backgroundColor: string;
@@ -74,7 +77,11 @@ export function WorkoutSessionScreen({
   userId,
   workout,
 }: WorkoutSessionScreenProps) {
-  const [draftWorkout, setDraftWorkout] = useState<Workout>(workout);
+  const [sessionState, dispatchSession] = useReducer(
+    workoutSessionDraftReducer,
+    workout,
+    createWorkoutSessionDraftState,
+  );
   const [savedWorkout, setSavedWorkout] = useState<Workout>(workout);
   const [isSavedWorkoutNew, setIsSavedWorkoutNew] = useState(isNewWorkout);
   const [machineSearchText, setMachineSearchText] = useState('');
@@ -86,9 +93,12 @@ export function WorkoutSessionScreen({
   const [suggestMachineCount, setSuggestMachineCount] = useState(4);
   const [suggestedMachines, setSuggestedMachines] = useState<Machine[]>([]);
   const [hasSuggestAttempt, setHasSuggestAttempt] = useState(false);
-  const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<string[]>([]);
-  const [visibleSetNoteIds, setVisibleSetNoteIds] = useState<string[]>([]);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const {
+    collapsedExerciseIds,
+    draftWorkout,
+    visibleSetNoteIds,
+  } = sessionState;
   const filteredMachines = filterMachines(machines, machineSearchText);
   const machineIds = useMemo(
     () => [...new Set(draftWorkout.exercises.map((exercise) => exercise.machineId))],
@@ -180,10 +190,7 @@ export function WorkoutSessionScreen({
   }, [saveStatus]);
 
   function updateWorkoutName(name: string) {
-    setDraftWorkout((currentWorkout) => ({
-      ...currentWorkout,
-      name,
-    }));
+    dispatchSession({ name, type: 'updateWorkoutName' });
   }
 
   async function createExerciseForMachine(machine: Machine): Promise<WorkoutExercise> {
@@ -210,11 +217,7 @@ export function WorkoutSessionScreen({
   async function addExercise(machine: Machine) {
     const exercise = await createExerciseForMachine(machine);
 
-    setDraftWorkout((currentWorkout) => ({
-      ...currentWorkout,
-      exercises: [...currentWorkout.exercises, exercise],
-    }));
-    setCollapsedExerciseIds(draftWorkout.exercises.map((currentExercise) => currentExercise.id));
+    dispatchSession({ exercises: [exercise], type: 'addExercises' });
     closeMachinePicker();
   }
 
@@ -225,11 +228,7 @@ export function WorkoutSessionScreen({
 
     const exercises = await Promise.all(suggestedMachines.map(createExerciseForMachine));
 
-    setDraftWorkout((currentWorkout) => ({
-      ...currentWorkout,
-      exercises: [...currentWorkout.exercises, ...exercises],
-    }));
-    setCollapsedExerciseIds(draftWorkout.exercises.map((currentExercise) => currentExercise.id));
+    dispatchSession({ exercises, type: 'addExercises' });
     closeMachineSuggest();
   }
 
@@ -252,47 +251,15 @@ export function WorkoutSessionScreen({
   }
 
   function deleteExercise(exerciseId: string) {
-    setDraftWorkout((currentWorkout) => ({
-      ...currentWorkout,
-      exercises: currentWorkout.exercises.filter(
-        (exercise) => exercise.id !== exerciseId,
-      ),
-    }));
-    setCollapsedExerciseIds((currentIds) =>
-      currentIds.filter((currentId) => currentId !== exerciseId),
-    );
+    dispatchSession({ exerciseId, type: 'deleteExercise' });
   }
 
   function addSet(exerciseId: string) {
-    setDraftWorkout((currentWorkout) => ({
-      ...currentWorkout,
-      exercises: currentWorkout.exercises.map((exercise) =>
-        exercise.id === exerciseId ? addSetToExercise(exercise) : exercise,
-      ),
-    }));
+    dispatchSession({ exerciseId, type: 'addSet' });
   }
 
   function clearExerciseSets(exerciseId: string) {
-    const exerciseToClear = draftWorkout.exercises.find(
-      (exercise) => exercise.id === exerciseId,
-    );
-    const setCount = exerciseToClear?.sets.length ?? 0;
-    const clearedSetIds = exerciseToClear?.sets.map((workoutSet) => workoutSet.id) ?? [];
-
-    setDraftWorkout((currentWorkout) => ({
-      ...currentWorkout,
-      exercises: currentWorkout.exercises.map((exercise) =>
-        exercise.id === exerciseId
-          ? {
-              ...exercise,
-              sets: createEmptySets(setCount > 0 ? setCount : 4),
-            }
-          : exercise,
-      ),
-    }));
-    setVisibleSetNoteIds((currentIds) =>
-      currentIds.filter((currentId) => !clearedSetIds.includes(currentId)),
-    );
+    dispatchSession({ exerciseId, type: 'clearExerciseSets' });
   }
 
   function updateSet(
@@ -301,57 +268,25 @@ export function WorkoutSessionScreen({
     field: keyof WorkoutSet,
     value: string,
   ) {
-    setDraftWorkout((currentWorkout) => ({
-      ...currentWorkout,
-      exercises: currentWorkout.exercises.map((exercise) =>
-        exercise.id === exerciseId
-          ? {
-              ...exercise,
-              sets: exercise.sets.map((workoutSet) =>
-                workoutSet.id === setId
-                  ? {
-                      ...workoutSet,
-                      [field]: value,
-                    }
-                  : workoutSet,
-              ),
-            }
-          : exercise,
-      ),
-    }));
+    dispatchSession({
+      exerciseId,
+      field,
+      setId,
+      type: 'updateSet',
+      value,
+    });
   }
 
   function deleteSet(exerciseId: string, setId: string) {
-    setDraftWorkout((currentWorkout) => ({
-      ...currentWorkout,
-      exercises: currentWorkout.exercises.map((exercise) =>
-        exercise.id === exerciseId
-          ? {
-              ...exercise,
-              sets: exercise.sets.filter((workoutSet) => workoutSet.id !== setId),
-            }
-          : exercise,
-      ),
-    }));
-    setVisibleSetNoteIds((currentIds) =>
-      currentIds.filter((currentId) => currentId !== setId),
-    );
+    dispatchSession({ exerciseId, setId, type: 'deleteSet' });
   }
 
   function toggleSetNote(setId: string) {
-    setVisibleSetNoteIds((currentIds) =>
-      currentIds.includes(setId)
-        ? currentIds.filter((currentId) => currentId !== setId)
-        : [...currentIds, setId],
-    );
+    dispatchSession({ setId, type: 'toggleSetNote' });
   }
 
   function toggleExerciseCollapse(exerciseId: string) {
-    setCollapsedExerciseIds((currentIds) =>
-      currentIds.includes(exerciseId)
-        ? currentIds.filter((currentId) => currentId !== exerciseId)
-        : [...currentIds, exerciseId],
-    );
+    dispatchSession({ exerciseId, type: 'toggleExerciseCollapse' });
   }
 
   async function saveWorkout(closeAfterSave: boolean) {
@@ -360,12 +295,19 @@ export function WorkoutSessionScreen({
     }
 
     const normalizedWorkout = normalizeWorkoutForSave(draftWorkout);
+    const inputError = findWorkoutInputError(normalizedWorkout);
+
+    if (inputError !== null) {
+      showAppAlert(strings.alerts.invalidWorkoutTitle, inputError);
+      return;
+    }
+
     setSaveStatus('saving');
 
     const didSave = await onSave(normalizedWorkout, { closeAfterSave });
 
     if (didSave) {
-      setDraftWorkout(normalizedWorkout);
+      dispatchSession({ type: 'replaceWorkout', workout: normalizedWorkout });
       setSavedWorkout(normalizedWorkout);
       setIsSavedWorkoutNew(false);
       await clearWorkoutDraft(normalizedWorkout.id);

@@ -24,7 +24,12 @@ import { StatsScreen } from './src/features/stats/StatsScreen';
 import { UserSelectScreen } from './src/features/users/UserSelectScreen';
 import { WorkoutSessionScreen } from './src/features/workouts/WorkoutSessionScreen';
 import { WorkoutsScreen } from './src/features/workouts/WorkoutsScreen';
-import { queryClient, queryKeys } from './src/queryClient';
+import {
+  invalidateMachineQueries,
+  invalidateWorkoutQueries,
+  queryClient,
+  queryKeys,
+} from './src/queryClient';
 import {
   deleteMachine,
   loadMachines,
@@ -283,7 +288,7 @@ function AppContent() {
   async function handleSaveMachine(machine: Machine) {
     try {
       await saveMachine(machine);
-      await queryClientInstance.invalidateQueries({ queryKey: queryKeys.machines });
+      await invalidateMachineQueries(queryClientInstance);
       closeMachineForm();
     } catch {
       showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
@@ -358,7 +363,7 @@ function AppContent() {
   async function handleDeleteMachine(machineId: string) {
     try {
       await deleteMachine(machineId);
-      await queryClientInstance.invalidateQueries({ queryKey: queryKeys.machines });
+      await invalidateMachineQueries(queryClientInstance);
       if (editingMachine?.id === machineId) {
         closeMachineForm();
       }
@@ -410,20 +415,7 @@ function AppContent() {
   }
 
   async function invalidateWorkoutData(userId: string) {
-    await Promise.all([
-      queryClientInstance.invalidateQueries({
-        queryKey: ['workoutSummaries', userId],
-      }),
-      queryClientInstance.invalidateQueries({
-        queryKey: queryKeys.workoutStats(userId),
-      }),
-      queryClientInstance.invalidateQueries({
-        queryKey: ['machineHistory', userId],
-      }),
-      queryClientInstance.invalidateQueries({
-        queryKey: ['previousMachineMaxes', userId],
-      }),
-    ]);
+    await invalidateWorkoutQueries(queryClientInstance, userId);
   }
 
   if (screen === 'userSelect') {
