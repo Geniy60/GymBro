@@ -140,6 +140,7 @@ export const strings = {
     repsPlaceholder: 'Повт.',
     recordBadge: 'Рекорд',
     sessionTitle: 'Тренировка',
+    saved: 'Тренировка сохранена.',
     saveFailed: 'Не удалось сохранить. Проверь интернет и повтори.',
     saving: 'Сохраняем тренировку...',
     setNoteLabel: 'Заметка к подходу',

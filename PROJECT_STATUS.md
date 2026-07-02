@@ -13,7 +13,7 @@ The initial app shell is in place with a compact header, safe-area handling, and
 
 The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. Exercise saves now go through one transactional Supabase RPC so exercise rows and muscle-group rows are updated atomically. The standard exercise catalog currently contains 27 items.
 
-The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically. Active workout drafts are autosaved locally on the phone and can be restored after app restart before they are saved to Supabase.
+The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically. Active workout drafts are autosaved locally on the phone and can be restored after app restart before they are saved to Supabase. The active workout screen has separate Save and Finish actions: Save persists without closing the workout, while Finish saves and returns to the workout list.
 
 Empty workout drafts now offer a quick exercise suggestion flow. From an empty workout, the user can choose target muscle groups and an exercise count, preview a randomized set of matching exercises, reshuffle it, and add the suggested exercises to the workout using the same latest-set prefill behavior as manual exercise selection.
 
@@ -29,6 +29,19 @@ User-facing app text is centralized in `src/strings.ts`.
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Added a non-closing Save action to the active workout screen.
+
+Details:
+
+- Replaced the single active-workout bottom action with two side-by-side buttons: Save and Finish.
+- Save writes the current workout through the existing save flow and keeps the workout screen open.
+- Finish keeps the previous behavior: save and close the workout screen.
+- After a successful non-closing Save, the current workout draft becomes the saved baseline so leaving the screen does not show an unnecessary unsaved-changes prompt until the next edit.
+- Added a short saved status message after non-closing saves.
+- Verified `npx tsc --noEmit` and `npm test` pass.
+
+Previous step:
 
 Added active workout draft recovery, save retry status, and transactional exercise saving.
 

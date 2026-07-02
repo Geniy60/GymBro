@@ -46,12 +46,15 @@ type WorkoutSessionScreenProps = {
   isNewWorkout: boolean;
   machines: Machine[];
   onBack: () => void;
-  onSave: (workout: Workout) => Promise<boolean>;
+  onSave: (
+    workout: Workout,
+    options: { closeAfterSave: boolean },
+  ) => Promise<boolean>;
   userId: string;
   workout: Workout;
 };
 
-type SaveStatus = 'idle' | 'saving' | 'error';
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 export function WorkoutSessionScreen({
   backgroundColor,
@@ -63,6 +66,8 @@ export function WorkoutSessionScreen({
   workout,
 }: WorkoutSessionScreenProps) {
   const [draftWorkout, setDraftWorkout] = useState<Workout>(workout);
+  const [savedWorkout, setSavedWorkout] = useState<Workout>(workout);
+  const [isSavedWorkoutNew, setIsSavedWorkoutNew] = useState(isNewWorkout);
   const [machineSearchText, setMachineSearchText] = useState('');
   const [isMachinePickerOpen, setIsMachinePickerOpen] = useState(false);
   const [isMachineSuggestOpen, setIsMachineSuggestOpen] = useState(false);
@@ -112,7 +117,13 @@ export function WorkoutSessionScreen({
     });
 
     return () => subscription.remove();
-  }, [draftWorkout, isMachinePickerOpen, isMachineSuggestOpen]);
+  }, [
+    draftWorkout,
+    isMachinePickerOpen,
+    isMachineSuggestOpen,
+    isSavedWorkoutNew,
+    savedWorkout,
+  ]);
 
   useEffect(() => {
     if (previousMaxesQuery.isError) {
@@ -122,8 +133,8 @@ export function WorkoutSessionScreen({
 
   useEffect(() => {
     const shouldStoreDraft = shouldConfirmExitWorkout(
-      isNewWorkout,
-      workout,
+      isSavedWorkoutNew,
+      savedWorkout,
       draftWorkout,
     );
     const timeoutId = setTimeout(() => {
@@ -141,7 +152,23 @@ export function WorkoutSessionScreen({
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [draftWorkout, isNewWorkout, userId, workout]);
+  }, [draftWorkout, isSavedWorkoutNew, savedWorkout, userId]);
+
+  useEffect(() => {
+    if (saveStatus === 'saved' && hasWorkoutChanged(savedWorkout, draftWorkout)) {
+      setSaveStatus('idle');
+    }
+  }, [draftWorkout, savedWorkout, saveStatus]);
+
+  useEffect(() => {
+    if (saveStatus !== 'saved') {
+      return undefined;
+    }
+
+    const timeoutId = setTimeout(() => setSaveStatus('idle'), 1800);
+
+    return () => clearTimeout(timeoutId);
+  }, [saveStatus]);
 
   function updateWorkoutName(name: string) {
     setDraftWorkout((currentWorkout) => ({
@@ -318,7 +345,7 @@ export function WorkoutSessionScreen({
     );
   }
 
-  async function saveWorkout() {
+  async function saveWorkout(closeAfterSave: boolean) {
     if (saveStatus === 'saving') {
       return;
     }
@@ -326,10 +353,16 @@ export function WorkoutSessionScreen({
     const normalizedWorkout = normalizeWorkoutForSave(draftWorkout);
     setSaveStatus('saving');
 
-    const didSave = await onSave(normalizedWorkout);
+    const didSave = await onSave(normalizedWorkout, { closeAfterSave });
 
     if (didSave) {
+      setDraftWorkout(normalizedWorkout);
+      setSavedWorkout(normalizedWorkout);
+      setIsSavedWorkoutNew(false);
       await clearWorkoutDraft(normalizedWorkout.id);
+      if (!closeAfterSave) {
+        setSaveStatus('saved');
+      }
       return;
     }
 
@@ -385,7 +418,7 @@ export function WorkoutSessionScreen({
   }
 
   function confirmExitWorkout() {
-    if (!shouldConfirmExitWorkout(isNewWorkout, workout, draftWorkout)) {
+    if (!shouldConfirmExitWorkout(isSavedWorkoutNew, savedWorkout, draftWorkout)) {
       onBack();
       return;
     }
@@ -409,7 +442,7 @@ export function WorkoutSessionScreen({
         {
           text: strings.actions.save,
           onPress: () => {
-            void saveWorkout();
+            void saveWorkout(true);
           },
         },
       ],
@@ -730,28 +763,42 @@ export function WorkoutSessionScreen({
               saveStatus === 'error' && styles.saveErrorText,
             ]}
           >
-            {saveStatus === 'saving'
-              ? strings.workouts.saving
-              : strings.workouts.saveFailed}
+            {getSaveStatusText(saveStatus)}
           </Text>
         ) : null}
 
-        <Pressable
-          accessibilityLabel={strings.accessibility.finishWorkout}
-          disabled={saveStatus === 'saving'}
-          onPress={() => {
-            void saveWorkout();
-          }}
-          style={({ pressed }) => [
-            styles.saveButton,
-            saveStatus === 'saving' && styles.disabledButton,
-            pressed && styles.pressedButton,
-          ]}
-        >
-          <Text style={styles.saveButtonText}>
-            {saveStatus === 'error' ? strings.actions.retry : strings.actions.finish}
-          </Text>
-        </Pressable>
+        <View style={styles.footerActions}>
+          <Pressable
+            accessibilityLabel={strings.accessibility.saveWorkout}
+            disabled={saveStatus === 'saving'}
+            onPress={() => {
+              void saveWorkout(false);
+            }}
+            style={({ pressed }) => [
+              styles.footerButton,
+              styles.saveDraftButton,
+              saveStatus === 'saving' && styles.disabledButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Text style={styles.saveDraftButtonText}>{strings.actions.save}</Text>
+          </Pressable>
+          <Pressable
+            accessibilityLabel={strings.accessibility.finishWorkout}
+            disabled={saveStatus === 'saving'}
+            onPress={() => {
+              void saveWorkout(true);
+            }}
+            style={({ pressed }) => [
+              styles.footerButton,
+              styles.finishButton,
+              saveStatus === 'saving' && styles.disabledButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Text style={styles.finishButtonText}>{strings.actions.finish}</Text>
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -824,6 +871,22 @@ function getSuggestEmptyMessage({
   }
 
   return strings.workouts.suggestPreviewEmpty;
+}
+
+function getSaveStatusText(saveStatus: SaveStatus): string {
+  if (saveStatus === 'saving') {
+    return strings.workouts.saving;
+  }
+
+  if (saveStatus === 'saved') {
+    return strings.workouts.saved;
+  }
+
+  if (saveStatus === 'error') {
+    return strings.workouts.saveFailed;
+  }
+
+  return '';
 }
 
 function shuffleMachines(machines: Machine[]): Machine[] {
@@ -1112,18 +1175,37 @@ const styles = StyleSheet.create({
     borderColor: colors.destructiveBorder,
     color: colors.destructive,
   },
-  saveButton: {
+  footerActions: {
     alignItems: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: 8,
     bottom: 12,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 10,
     left: 20,
-    minHeight: 48,
     position: 'absolute',
+    minHeight: 48,
     right: 20,
   },
-  saveButtonText: {
+  footerButton: {
+    alignItems: 'center',
+    borderRadius: 8,
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  saveDraftButton: {
+    backgroundColor: colors.panel,
+    borderColor: colors.primary,
+    borderWidth: 1,
+  },
+  saveDraftButtonText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  finishButton: {
+    backgroundColor: colors.primary,
+  },
+  finishButtonText: {
     color: colors.panel,
     fontSize: 16,
     fontWeight: '700',

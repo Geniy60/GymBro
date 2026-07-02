@@ -293,7 +293,10 @@ function AppContent() {
     }
   }
 
-  async function handleSaveWorkout(workout: Workout): Promise<boolean> {
+  async function handleSaveWorkout(
+    workout: Workout,
+    options: { closeAfterSave: boolean },
+  ): Promise<boolean> {
     if (selectedUserId === null) {
       setScreen('userSelect');
       return false;
@@ -303,7 +306,12 @@ function AppContent() {
       await saveWorkout(workout, selectedUserId);
       await invalidateWorkoutData(selectedUserId);
       await clearWorkoutDraft(workout.id);
-      closeWorkoutForm();
+      if (options.closeAfterSave) {
+        closeWorkoutForm();
+      } else {
+        setEditingWorkout(workout);
+        setIsEditingWorkoutNew(false);
+      }
       return true;
     } catch {
       return false;
