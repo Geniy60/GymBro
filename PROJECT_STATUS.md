@@ -34,6 +34,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Submitted a new Android APK build.
+
+Details:
+
+- Incremented Android `versionCode` from 1 to 2 for the new APK.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 32 tests across 8 test files.
+- Submitted the EAS Android APK build with profile `apk` and `--no-wait`.
+- EAS build logs: https://expo.dev/accounts/geniy60/projects/gymbro/builds/f5b63b8f-3c86-49c2-8f6d-65ed538b35e8
+
+Previous step:
+
 Replaced the app icon artwork.
 
 Details:
@@ -1411,7 +1423,7 @@ Verified:
 
 ## Next Proposed Step
 
-When ready to check the icon on the phone, increment Android `versionCode`, submit a new EAS Android APK build, wait for it to finish, then install the APK for manual verification.
+When the EAS build finishes, download and install the APK on the phone to verify the updated launcher icon and startup assets.
 
 ## Important Decisions
 

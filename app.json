@@ -17,7 +17,7 @@
     },
     "android": {
       "package": "com.evgeniy.gymbro",
-      "versionCode": 1,
+      "versionCode": 2,
       "adaptiveIcon": {
         "backgroundColor": "#FDE5B2",
         "foregroundImage": "./assets/android-icon-foreground-arms.png",
