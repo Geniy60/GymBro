@@ -1,9 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyState } from '../../components/EmptyState';
 import { SearchInput } from '../../components/SearchInput';
+import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { Machine, Workout } from '../../types';
@@ -36,21 +36,11 @@ export function MachinePickerScreen({
       style={[styles.safeArea, { backgroundColor }]}
     >
       <View style={styles.content}>
-        <View style={styles.secondaryHeader}>
-          <Pressable
-            accessibilityLabel={strings.accessibility.back}
-            onPress={onBack}
-            style={({ pressed }) => [
-              styles.backButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Ionicons name="arrow-back" size={22} color={colors.text} />
-          </Pressable>
-          <Text style={styles.secondaryTitle}>
-            {strings.workouts.addExerciseTitle}
-          </Text>
-        </View>
+        <SecondaryScreenHeader
+          marginBottom={8}
+          onBack={onBack}
+          title={strings.workouts.addExerciseTitle}
+        />
 
         {machines.length === 0 ? (
           <EmptyState
@@ -105,27 +95,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 4,
-  },
-  secondaryHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 8,
-  },
-  backButton: {
-    alignItems: 'center',
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 37,
-    justifyContent: 'center',
-    width: 37,
-  },
-  secondaryTitle: {
-    color: colors.text,
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '700',
   },
   machineSearchRow: {
     flexDirection: 'row',

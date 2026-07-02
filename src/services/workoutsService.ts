@@ -277,7 +277,7 @@ function formatWeightKg(weightKg: number | null): string {
   return weightKg === null ? '' : String(weightKg);
 }
 
-function createWorkoutSavePayload(workout: Workout): WorkoutSavePayload & Json {
+export function createWorkoutSavePayload(workout: Workout): WorkoutSavePayload & Json {
   return {
     exercises: workout.exercises.map((exercise) => ({
       id: exercise.id,

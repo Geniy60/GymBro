@@ -34,6 +34,40 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Added the first real unit test coverage for core behavior.
+
+Details:
+
+- Added `vitest` as the unit test runner because it runs TypeScript tests with minimal setup.
+- Changed `npm test` to run both `npm run typecheck` and `npm run test:unit`.
+- Added `npm run typecheck` for the explicit TypeScript check.
+- Added unit tests for app-level workout creation, workout repeat copying, and user background selection.
+- Added unit tests for active workout helpers: exercise filtering, suggestion picking, set creation, history copying, add-set behavior, workout normalization, dirty checking, and exit confirmation.
+- Added unit tests for workout and exercise RPC payload mapping.
+- Added unit tests for shared TanStack Query keys.
+- Current unit test count: 13 tests across 5 test files.
+- Verified `npm test` passes.
+
+Previous step:
+
+Continued focused refactoring of large UI files.
+
+Details:
+
+- Split the workout suggestion screen into focused components for muscle-group selection, exercise count selection, and suggested exercise preview.
+- Extracted reusable `src/components/SecondaryScreenHeader.tsx` for simple back-button screen headers.
+- Reused the shared secondary header in the active workout screen, machine picker, machine suggestion screen, and exercise form.
+- Split the exercise form muscle-group picker into `src/features/machines/MachineMuscleGroupPicker.tsx`.
+- Split exercise form save/delete actions into `src/features/machines/MachineFormActions.tsx`.
+- Moved app-level workout object creation and user background selection into `src/appModel.ts`.
+- Reduced `MachineSuggestScreen.tsx` from about 350 lines to 135 lines.
+- Reduced `MachineFormScreen.tsx` from about 321 lines to 185 lines.
+- Reduced `App.tsx` from about 521 lines to 492 lines.
+- Reduced `WorkoutSessionScreen.tsx` from about 594 lines to 566 lines.
+- Verified `npx tsc --noEmit` passes.
+
+Previous step:
+
 Refactored the largest app files into smaller focused modules.
 
 Details:

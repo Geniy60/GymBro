@@ -1,7 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,11 +8,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { createId } from '../../createId';
-import { muscleGroups } from '../../muscleGroups';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { Machine, MachineDraft, MuscleGroup } from '../../types';
+import { MachineFormActions } from './MachineFormActions';
+import { MachineMuscleGroupPicker } from './MachineMuscleGroupPicker';
 
 type MachineFormScreenProps = {
   backgroundColor: string;
@@ -99,23 +99,15 @@ export function MachineFormScreen({
         contentContainerStyle={styles.formContent}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.secondaryHeader}>
-          <Pressable
-            accessibilityLabel={strings.accessibility.back}
-            onPress={onBack}
-            style={({ pressed }) => [
-              styles.backButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Ionicons name="arrow-back" size={22} color={colors.text} />
-          </Pressable>
-          <Text style={styles.secondaryTitle}>
-            {isEditingMachine
+        <SecondaryScreenHeader
+          marginBottom={18}
+          onBack={onBack}
+          title={
+            isEditingMachine
               ? strings.forms.machine.editTitle
-              : strings.forms.machine.addTitle}
-          </Text>
-        </View>
+              : strings.forms.machine.addTitle
+          }
+        />
 
         <View style={styles.formField}>
           <Text style={styles.fieldLabel}>{strings.forms.machine.nameLabel}</Text>
@@ -136,39 +128,10 @@ export function MachineFormScreen({
           ) : null}
         </View>
 
-        <View style={styles.formField}>
-          <Text style={styles.fieldLabel}>{strings.forms.machine.muscleGroupLabel}</Text>
-          <Text style={styles.fieldHint}>{strings.forms.machine.muscleGroupHint}</Text>
-          <View style={styles.tagGrid}>
-            {muscleGroups.map((muscleGroup) => {
-              const isSelected = machineDraft.muscleGroups.includes(muscleGroup);
-
-              return (
-                <Pressable
-                  accessibilityLabel={strings.muscleGroups.labels[muscleGroup]}
-                  accessibilityRole="checkbox"
-                  accessibilityState={{ checked: isSelected }}
-                  key={muscleGroup}
-                  onPress={() => toggleMuscleGroup(muscleGroup)}
-                  style={({ pressed }) => [
-                    styles.tagButton,
-                    isSelected && styles.selectedTagButton,
-                    pressed && styles.pressedButton,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.tagButtonText,
-                      isSelected && styles.selectedTagButtonText,
-                    ]}
-                  >
-                    {strings.muscleGroups.labels[muscleGroup]}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+        <MachineMuscleGroupPicker
+          onToggleMuscleGroup={toggleMuscleGroup}
+          selectedMuscleGroups={machineDraft.muscleGroups}
+        />
 
         <View style={styles.formField}>
           <Text style={styles.fieldLabel}>{strings.forms.machine.noteLabel}</Text>
@@ -184,30 +147,11 @@ export function MachineFormScreen({
           />
         </View>
 
-        <Pressable
-          accessibilityLabel={strings.accessibility.saveMachine}
-          onPress={saveMachine}
-          style={({ pressed }) => [
-            styles.saveButton,
-            pressed && styles.pressedButton,
-          ]}
-        >
-          <Text style={styles.saveButtonText}>{strings.actions.save}</Text>
-        </Pressable>
-
-        {machine !== null && onDelete !== undefined ? (
-          <Pressable
-            accessibilityLabel={strings.accessibility.deleteMachine}
-            onPress={() => onDelete(machine)}
-            style={({ pressed }) => [
-              styles.deleteButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Ionicons name="trash-outline" size={20} color={colors.destructive} />
-            <Text style={styles.deleteButtonText}>{strings.actions.delete}</Text>
-          </Pressable>
-        ) : null}
+        <MachineFormActions
+          machine={machine}
+          onDelete={onDelete}
+          onSave={saveMachine}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -222,27 +166,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 8,
   },
-  secondaryHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 18,
-  },
-  backButton: {
-    alignItems: 'center',
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 37,
-    justifyContent: 'center',
-    width: 37,
-  },
-  secondaryTitle: {
-    color: colors.text,
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '700',
-  },
   formField: {
     gap: 8,
     marginBottom: 16,
@@ -251,11 +174,6 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 15,
     fontWeight: '600',
-  },
-  fieldHint: {
-    color: colors.muted,
-    fontSize: 13,
-    lineHeight: 18,
   },
   formInput: {
     backgroundColor: colors.panel,
@@ -271,68 +189,12 @@ const styles = StyleSheet.create({
     minHeight: 104,
     paddingTop: 12,
   },
-  tagGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  tagButton: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    minHeight: 36,
-    justifyContent: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  selectedTagButton: {
-    backgroundColor: '#DCFCE7',
-    borderColor: colors.primary,
-  },
-  tagButtonText: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  selectedTagButtonText: {
-    color: '#166534',
-  },
   inputError: {
     borderColor: colors.destructive,
   },
   errorText: {
     color: colors.destructive,
     fontSize: 13,
-  },
-  saveButton: {
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    justifyContent: 'center',
-    minHeight: 48,
-  },
-  saveButtonText: {
-    color: colors.panel,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  deleteButton: {
-    alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: colors.destructiveBorder,
-    borderRadius: 8,
-    borderWidth: 1,
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-    marginTop: 12,
-    minHeight: 48,
-  },
-  deleteButtonText: {
-    color: colors.destructive,
-    fontSize: 16,
-    fontWeight: '700',
   },
   pressedButton: {
     opacity: 0.7,

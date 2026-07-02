@@ -73,7 +73,7 @@ function mapMachineRow(
   };
 }
 
-function createMachineSavePayload(machine: Machine): MachineSavePayload & Json {
+export function createMachineSavePayload(machine: Machine): MachineSavePayload & Json {
   return {
     id: machine.id,
     muscleGroups: machine.muscleGroups,

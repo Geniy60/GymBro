@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { showAppAlert } from '../../appAlert';
+import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { createId } from '../../createId';
 import { queryKeys } from '../../queryClient';
 import {
@@ -499,19 +500,11 @@ export function WorkoutSessionScreen({
       style={[styles.safeArea, { backgroundColor }]}
     >
       <View style={styles.content}>
-        <View style={styles.secondaryHeader}>
-          <Pressable
-            accessibilityLabel={strings.accessibility.back}
-            onPress={confirmExitWorkout}
-            style={({ pressed }) => [
-              styles.backButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Ionicons name="arrow-back" size={22} color={colors.text} />
-          </Pressable>
-          <Text style={styles.secondaryTitle}>{strings.workouts.sessionTitle}</Text>
-        </View>
+        <SecondaryScreenHeader
+          marginBottom={8}
+          onBack={confirmExitWorkout}
+          title={strings.workouts.sessionTitle}
+        />
 
         <View style={styles.workoutTopRow}>
           <TextInput
@@ -584,27 +577,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 4,
-  },
-  secondaryHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 8,
-  },
-  backButton: {
-    alignItems: 'center',
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 37,
-    justifyContent: 'center',
-    width: 37,
-  },
-  secondaryTitle: {
-    color: colors.text,
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '700',
   },
   workoutTopRow: {
     alignItems: 'center',
