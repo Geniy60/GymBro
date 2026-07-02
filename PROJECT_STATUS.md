@@ -34,6 +34,26 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Refactored the largest app files into smaller focused modules.
+
+Details:
+
+- Extracted the root app header into `src/components/AppHeader.tsx`.
+- Extracted the root tab row into `src/components/MainTabs.tsx`.
+- Extracted the workout machine picker into `src/features/workouts/MachinePickerScreen.tsx`.
+- Moved active workout helper logic into `src/features/workouts/workoutSessionModel.ts`.
+- Extracted set-row editing into `src/features/workouts/WorkoutSetInputRow.tsx`.
+- Split workout statistics UI into `src/features/stats/StatsOverview.tsx` and `src/features/stats/MachineHistoryScreen.tsx`.
+- Moved statistics Supabase calls into `src/services/workoutStatsService.ts`.
+- Reduced `WorkoutSessionScreen.tsx` from about 759 lines to 594 lines.
+- Reduced `App.tsx` from about 678 lines to 521 lines.
+- Reduced `WorkoutExerciseCard.tsx` from about 390 lines to 210 lines.
+- Reduced `StatsScreen.tsx` from about 371 lines to 96 lines.
+- Reduced `workoutsService.ts` from about 391 lines to 253 lines.
+- Verified `npx tsc --noEmit` passes.
+
+Previous step:
+
 Improved reliability and workout-screen maintainability.
 
 Details:

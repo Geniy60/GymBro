@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import {
   QueryClientProvider,
   useQuery,
@@ -6,18 +5,13 @@ import {
 } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  BackHandler,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { BackHandler, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { showAppAlert } from './src/appAlert';
+import { AppHeader } from './src/components/AppHeader';
 import { AppAlertHost } from './src/components/AppAlertHost';
+import { MainTabs } from './src/components/MainTabs';
 import { createId } from './src/createId';
 import { MachineFormScreen } from './src/features/machines/MachineFormScreen';
 import { MachinesScreen } from './src/features/machines/MachinesScreen';
@@ -57,27 +51,7 @@ import type {
   WorkoutSummary,
 } from './src/types';
 
-type TabConfig = {
-  key: MainTab;
-  label: string;
-};
-
 const MIN_REFRESH_FEEDBACK_MS = 600;
-
-const tabs: TabConfig[] = [
-  {
-    key: 'workouts',
-    label: strings.tabs.workouts,
-  },
-  {
-    key: 'stats',
-    label: strings.tabs.stats,
-  },
-  {
-    key: 'machines',
-    label: strings.tabs.machines,
-  },
-];
 
 export default function App() {
   return (
@@ -537,73 +511,15 @@ function AppContent() {
         edges={['top', 'right', 'bottom', 'left']}
         style={[styles.safeArea, { backgroundColor: appBackgroundColor }]}
       >
-        <View style={styles.header}>
-          <Text style={styles.appTitle}>{strings.app.title}</Text>
-          <View style={styles.headerActions}>
-            <Pressable
-              accessibilityLabel={strings.accessibility.refreshData}
-              disabled={isRefreshingAllData}
-              onPress={() => {
-                void refreshAllData();
-              }}
-              style={({ pressed }) => [
-                styles.headerIconButton,
-                pressed && styles.pressedButton,
-              ]}
-            >
-              {isRefreshingAllData ? (
-                <ActivityIndicator color={colors.text} size="small" />
-              ) : (
-                <Ionicons name="refresh-outline" size={25} color={colors.text} />
-              )}
-            </Pressable>
-            <Pressable
-              accessibilityLabel={strings.accessibility.settings}
-              onPress={openSettings}
-              style={({ pressed }) => [
-                styles.headerIconButton,
-                pressed && styles.pressedButton,
-              ]}
-            >
-              <Ionicons name="settings-outline" size={26} color={colors.text} />
-            </Pressable>
-          </View>
-        </View>
+        <AppHeader
+          isRefreshingAllData={isRefreshingAllData}
+          onOpenSettings={openSettings}
+          onRefreshAllData={() => {
+            void refreshAllData();
+          }}
+        />
 
-        <View style={styles.tabRow}>
-          {tabs.map((tab) => {
-            const isActive = tab.key === activeTab;
-
-            return (
-              <Pressable
-                accessibilityRole="tab"
-                accessibilityState={{ selected: isActive }}
-                key={tab.key}
-                onPress={() => setActiveTab(tab.key)}
-                style={({ pressed }) => [
-                  styles.tab,
-                  tab.key === 'machines' && styles.machinesTab,
-                  tab.key === 'stats' && styles.statsTab,
-                  tab.key === 'workouts' && styles.workoutsTab,
-                  isActive && styles.activeTab,
-                  pressed && styles.pressedButton,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.tabLabel,
-                    tab.key === 'machines' && styles.machinesTabLabel,
-                    tab.key === 'stats' && styles.statsTabLabel,
-                    tab.key === 'workouts' && styles.workoutsTabLabel,
-                    isActive && styles.activeTabLabel,
-                  ]}
-                >
-                  {tab.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <MainTabs activeTab={activeTab} onSelectTab={setActiveTab} />
 
         {activeTab === 'machines' ? (
           <MachinesScreen
@@ -638,82 +554,6 @@ function AppContent() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-  },
-  header: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 5,
-  },
-  appTitle: {
-    color: colors.text,
-    flex: 1,
-    fontSize: 24,
-    fontWeight: '700',
-  },
-  headerActions: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  headerIconButton: {
-    alignItems: 'center',
-    height: 48,
-    justifyContent: 'center',
-    width: 44,
-  },
-  pressedButton: {
-    opacity: 0.7,
-  },
-  tabRow: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    flexDirection: 'row',
-    gap: 4,
-    marginBottom: 12,
-    marginHorizontal: 20,
-    marginTop: 6,
-    padding: 4,
-  },
-  tab: {
-    alignItems: 'center',
-    borderColor: 'transparent',
-    borderRadius: 6,
-    borderWidth: 2,
-    flex: 1,
-    justifyContent: 'center',
-    minHeight: 44,
-  },
-  machinesTab: {
-    backgroundColor: '#CFF7D3',
-  },
-  workoutsTab: {
-    backgroundColor: '#DDD6FE',
-  },
-  statsTab: {
-    backgroundColor: '#FEF3C7',
-  },
-  activeTab: {
-    borderColor: colors.text,
-  },
-  tabLabel: {
-    fontSize: 15,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  machinesTabLabel: {
-    color: '#166534',
-  },
-  workoutsTabLabel: {
-    color: '#6D28D9',
-  },
-  statsTabLabel: {
-    color: '#92400E',
-  },
-  activeTabLabel: {
-    color: colors.text,
   },
 });
 

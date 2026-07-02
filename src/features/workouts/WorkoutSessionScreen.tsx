@@ -13,8 +13,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { showAppAlert } from '../../appAlert';
-import { EmptyState } from '../../components/EmptyState';
-import { SearchInput } from '../../components/SearchInput';
 import { createId } from '../../createId';
 import { queryKeys } from '../../queryClient';
 import {
@@ -35,13 +33,23 @@ import type {
   WorkoutSet,
 } from '../../types';
 import { EmptyWorkoutExerciseList } from './EmptyWorkoutExerciseList';
+import { MachinePickerScreen } from './MachinePickerScreen';
 import { MachineSuggestScreen } from './MachineSuggestScreen';
-import { MachinePickerButton } from './MachinePickerButton';
 import { WorkoutExerciseCard } from './WorkoutExerciseCard';
 import {
   type SaveStatus,
   WorkoutSessionFooter,
 } from './WorkoutSessionFooter';
+import {
+  addSetToExercise,
+  createEmptySets,
+  createSetsFromHistory,
+  filterMachines,
+  hasWorkoutChanged,
+  normalizeWorkoutForSave,
+  pickSuggestedMachines,
+  shouldConfirmExitWorkout,
+} from './workoutSessionModel';
 
 type WorkoutSessionScreenProps = {
   backgroundColor: string;
@@ -451,71 +459,18 @@ export function WorkoutSessionScreen({
 
   if (isMachinePickerOpen) {
     return (
-      <SafeAreaView
-        edges={['top', 'right', 'bottom', 'left']}
-        style={[styles.safeArea, { backgroundColor }]}
-      >
-        <View style={styles.content}>
-          <View style={styles.secondaryHeader}>
-            <Pressable
-              accessibilityLabel={strings.accessibility.back}
-              onPress={closeMachinePicker}
-              style={({ pressed }) => [
-                styles.backButton,
-                pressed && styles.pressedButton,
-              ]}
-            >
-              <Ionicons name="arrow-back" size={22} color={colors.text} />
-            </Pressable>
-            <Text style={styles.secondaryTitle}>
-              {strings.workouts.addExerciseTitle}
-            </Text>
-          </View>
-
-          {machines.length === 0 ? (
-            <EmptyState
-              message={strings.workouts.noMachinesMessage}
-              title={strings.workouts.noMachinesTitle}
-            />
-          ) : (
-            <>
-              <View style={styles.machineSearchRow}>
-                <SearchInput
-                  onChangeText={setMachineSearchText}
-                  placeholder={strings.workouts.machineSearchPlaceholder}
-                  value={machineSearchText}
-                />
-              </View>
-
-              {filteredMachines.length === 0 ? (
-                <Text style={styles.helperText}>{strings.empty.filtered.title}</Text>
-              ) : (
-                <FlatList
-                  contentContainerStyle={styles.machinePickerListContent}
-                  data={filteredMachines}
-                  keyboardShouldPersistTaps="handled"
-                  keyExtractor={(machine) => machine.id}
-                  columnWrapperStyle={styles.machinePickerRow}
-                  numColumns={2}
-                  renderItem={({ item: machine }) => (
-                    <View style={styles.machinePickerItem}>
-                      <MachinePickerButton
-                        machine={machine}
-                        onPress={() => {
-                          void addExercise(machine);
-                        }}
-                        workout={draftWorkout}
-                      />
-                    </View>
-                  )}
-                  showsVerticalScrollIndicator={false}
-                  style={styles.machinePickerList}
-                />
-              )}
-            </>
-          )}
-        </View>
-      </SafeAreaView>
+      <MachinePickerScreen
+        backgroundColor={backgroundColor}
+        filteredMachines={filteredMachines}
+        machineSearchText={machineSearchText}
+        machines={machines}
+        onAddExercise={(machine) => {
+          void addExercise(machine);
+        }}
+        onBack={closeMachinePicker}
+        onChangeSearchText={setMachineSearchText}
+        workout={draftWorkout}
+      />
     );
   }
 
@@ -621,122 +576,6 @@ export function WorkoutSessionScreen({
   );
 }
 
-function filterMachines(machines: Machine[], searchText: string) {
-  const normalizedSearchText = searchText.trim().toLocaleLowerCase();
-
-  if (normalizedSearchText.length === 0) {
-    return machines;
-  }
-
-  return machines.filter((machine) => {
-    const searchableText = [
-      machine.name,
-      ...machine.muscleGroups.map(
-        (muscleGroup) => strings.muscleGroups.labels[muscleGroup],
-      ),
-      machine.note,
-    ].join(' ').toLocaleLowerCase();
-
-    return searchableText.includes(normalizedSearchText);
-  });
-}
-
-function pickSuggestedMachines({
-  count,
-  machines,
-  selectedMuscleGroups,
-  workout,
-}: {
-  count: number;
-  machines: Machine[];
-  selectedMuscleGroups: MuscleGroup[];
-  workout: Workout;
-}): Machine[] {
-  const workoutMachineIds = new Set(
-    workout.exercises.map((exercise) => exercise.machineId),
-  );
-  const candidates = machines.filter(
-    (machine) =>
-      !workoutMachineIds.has(machine.id) &&
-      machine.muscleGroups.some((muscleGroup) =>
-        selectedMuscleGroups.includes(muscleGroup),
-      ),
-  );
-
-  return shuffleMachines(candidates).slice(0, count);
-}
-
-function shuffleMachines(machines: Machine[]): Machine[] {
-  return machines
-    .map((machine) => ({ machine, sortKey: Math.random() }))
-    .sort((left, right) => left.sortKey - right.sortKey)
-    .map(({ machine }) => machine);
-}
-
-function createSetsFromHistory(historySets: WorkoutSet[] | undefined): WorkoutSet[] {
-  if (historySets === undefined || historySets.length === 0) {
-    return createEmptySets(4);
-  }
-
-  return historySets.map((historySet) => ({
-    ...historySet,
-    id: createId(),
-  }));
-}
-
-function createEmptySet(): WorkoutSet {
-  return {
-    id: createId(),
-    weightKg: '',
-    reps: '',
-    note: '',
-  };
-}
-
-function createEmptySets(count: number): WorkoutSet[] {
-  return Array.from({ length: count }, createEmptySet);
-}
-
-function addSetToExercise(exercise: WorkoutExercise) {
-  const previousSet = exercise.sets[exercise.sets.length - 1];
-  const workoutSet: WorkoutSet = {
-    ...createEmptySet(),
-    weightKg: previousSet?.weightKg ?? '',
-    reps: previousSet?.reps ?? '',
-  };
-
-  return {
-    ...exercise,
-    sets: [...exercise.sets, workoutSet],
-  };
-}
-
-function normalizeWorkoutForSave(workout: Workout): Workout {
-  return {
-    ...workout,
-    name: workout.name.trim() || strings.workouts.defaultName,
-  };
-}
-
-function hasWorkoutChanged(initialWorkout: Workout, draftWorkout: Workout) {
-  return (
-    JSON.stringify(normalizeWorkoutForSave(initialWorkout)) !==
-    JSON.stringify(normalizeWorkoutForSave(draftWorkout))
-  );
-}
-
-function shouldConfirmExitWorkout(
-  isNewWorkout: boolean,
-  initialWorkout: Workout,
-  draftWorkout: Workout,
-) {
-  if (isNewWorkout) {
-    return draftWorkout.exercises.length > 0;
-  }
-
-  return hasWorkoutChanged(initialWorkout, draftWorkout);
-}
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -802,29 +641,6 @@ const styles = StyleSheet.create({
     height: 44,
     justifyContent: 'center',
     width: 44,
-  },
-  machinePickerList: {
-    flex: 1,
-  },
-  machinePickerListContent: {
-    gap: 10,
-    paddingBottom: 24,
-  },
-  machinePickerRow: {
-    gap: 10,
-  },
-  machinePickerItem: {
-    flex: 1,
-    maxWidth: '48.5%',
-  },
-  machineSearchRow: {
-    flexDirection: 'row',
-    marginBottom: 8,
-  },
-  helperText: {
-    color: colors.muted,
-    fontSize: 15,
-    lineHeight: 21,
   },
   pressedButton: {
     opacity: 0.7,
