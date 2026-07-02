@@ -1,8 +1,16 @@
 import { supabase } from '../supabaseClient';
+import type { Json } from '../databaseTypes';
 import type { Machine, MuscleGroup } from '../types';
 
 type MachineRow = {
   id: string;
+  name: string;
+  note: string;
+};
+
+type MachineSavePayload = {
+  id: string;
+  muscleGroups: MuscleGroup[];
   name: string;
   note: string;
 };
@@ -36,40 +44,12 @@ export async function loadMachines(): Promise<Machine[]> {
 }
 
 export async function saveMachine(machine: Machine): Promise<void> {
-  const { error: machineError } = await supabase.from('gymbro_machines').upsert({
-    id: machine.id,
-    name: machine.name,
-    note: machine.note,
+  const { error } = await supabase.rpc('gymbro_save_machine', {
+    p_machine: createMachineSavePayload(machine),
   });
 
-  if (machineError) {
-    throw machineError;
-  }
-
-  const { error: deleteMuscleGroupsError } = await supabase
-    .from('gymbro_machine_muscle_groups')
-    .delete()
-    .eq('machine_id', machine.id);
-
-  if (deleteMuscleGroupsError) {
-    throw deleteMuscleGroupsError;
-  }
-
-  if (machine.muscleGroups.length === 0) {
-    return;
-  }
-
-  const { error: insertMuscleGroupsError } = await supabase
-    .from('gymbro_machine_muscle_groups')
-    .insert(
-      machine.muscleGroups.map((muscleGroup) => ({
-        machine_id: machine.id,
-        muscle_group: muscleGroup,
-      })),
-    );
-
-  if (insertMuscleGroupsError) {
-    throw insertMuscleGroupsError;
+  if (error) {
+    throw error;
   }
 }
 
@@ -90,5 +70,14 @@ function mapMachineRow(
     name: machineRow.name,
     muscleGroups,
     note: machineRow.note,
+  };
+}
+
+function createMachineSavePayload(machine: Machine): MachineSavePayload & Json {
+  return {
+    id: machine.id,
+    muscleGroups: machine.muscleGroups,
+    name: machine.name,
+    note: machine.note,
   };
 }

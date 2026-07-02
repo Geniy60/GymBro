@@ -34,6 +34,10 @@ import {
   loadSelectedUserId,
   saveSelectedUserId,
 } from './src/storage/selectedUserStorage';
+import {
+  clearWorkoutDraft,
+  loadWorkoutDraft,
+} from './src/storage/workoutDraftStorage';
 import { strings } from './src/strings';
 import { colors } from './src/theme/colors';
 import type {
@@ -81,6 +85,9 @@ function AppContent() {
   const [isEditingWorkoutNew, setIsEditingWorkoutNew] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [hasLoadedSelectedUser, setHasLoadedSelectedUser] = useState(false);
+  const [checkedWorkoutDraftUserId, setCheckedWorkoutDraftUserId] = useState<
+    string | null
+  >(null);
   const queryClientInstance = useQueryClient();
   const usersQuery = useQuery({
     queryKey: queryKeys.users,
@@ -129,6 +136,19 @@ function AppContent() {
       setScreen('userSelect');
     }
   }, [hasLoadedSelectedUser, selectedUser, users.length, usersQuery.isLoading]);
+
+  useEffect(() => {
+    if (
+      selectedUser === null ||
+      checkedWorkoutDraftUserId === selectedUser.id ||
+      screen !== 'home'
+    ) {
+      return;
+    }
+
+    setCheckedWorkoutDraftUserId(selectedUser.id);
+    void offerStoredWorkoutDraft(selectedUser.id);
+  }, [checkedWorkoutDraftUserId, screen, selectedUser]);
 
   useEffect(() => {
     if (screen !== 'machineForm' && screen !== 'settings') {
@@ -273,18 +293,20 @@ function AppContent() {
     }
   }
 
-  async function handleSaveWorkout(workout: Workout) {
+  async function handleSaveWorkout(workout: Workout): Promise<boolean> {
     if (selectedUserId === null) {
       setScreen('userSelect');
-      return;
+      return false;
     }
 
     try {
       await saveWorkout(workout, selectedUserId);
       await invalidateWorkoutData(selectedUserId);
+      await clearWorkoutDraft(workout.id);
       closeWorkoutForm();
+      return true;
     } catch {
-      showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
+      return false;
     }
   }
 
@@ -349,6 +371,37 @@ function AppContent() {
     } catch {
       showAppAlert(strings.alerts.storageSaveTitle, strings.alerts.storageSaveMessage);
     }
+  }
+
+  async function offerStoredWorkoutDraft(userId: string) {
+    const draft = await loadWorkoutDraft();
+
+    if (draft === null || draft.userId !== userId) {
+      return;
+    }
+
+    showAppAlert(
+      strings.alerts.restoreWorkoutDraftTitle,
+      strings.alerts.restoreWorkoutDraftMessage,
+      [
+        {
+          text: strings.actions.delete,
+          style: 'destructive',
+          onPress: () => {
+            void clearWorkoutDraft(draft.workout.id);
+          },
+        },
+        {
+          text: strings.actions.restore,
+          onPress: () => {
+            setEditingWorkout(draft.workout);
+            setIsEditingWorkoutNew(true);
+            setActiveTab('workouts');
+            setScreen('workoutSession');
+          },
+        },
+      ],
+    );
   }
 
   async function invalidateWorkoutData(userId: string) {
@@ -426,9 +479,7 @@ function AppContent() {
           isNewWorkout={isEditingWorkoutNew}
           machines={machines}
           onBack={closeWorkoutForm}
-          onSave={(workout) => {
-            void handleSaveWorkout(workout);
-          }}
+          onSave={handleSaveWorkout}
           userId={selectedUserId ?? editingWorkout.userId}
           workout={editingWorkout}
         />

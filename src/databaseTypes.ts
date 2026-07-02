@@ -209,6 +209,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      gymbro_save_machine: {
+        Args: {
+          p_machine: Json;
+        };
+        Returns: undefined;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, Json>;

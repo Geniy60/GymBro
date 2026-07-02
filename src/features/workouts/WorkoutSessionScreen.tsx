@@ -23,6 +23,10 @@ import {
   loadLatestSetsForMachine,
   loadPreviousMaxesForMachines,
 } from '../../services/workoutsService';
+import {
+  clearWorkoutDraft,
+  saveWorkoutDraft,
+} from '../../storage/workoutDraftStorage';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import { muscleGroups } from '../../muscleGroups';
@@ -42,10 +46,12 @@ type WorkoutSessionScreenProps = {
   isNewWorkout: boolean;
   machines: Machine[];
   onBack: () => void;
-  onSave: (workout: Workout) => void;
+  onSave: (workout: Workout) => Promise<boolean>;
   userId: string;
   workout: Workout;
 };
+
+type SaveStatus = 'idle' | 'saving' | 'error';
 
 export function WorkoutSessionScreen({
   backgroundColor,
@@ -68,6 +74,7 @@ export function WorkoutSessionScreen({
   const [hasSuggestAttempt, setHasSuggestAttempt] = useState(false);
   const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<string[]>([]);
   const [visibleSetNoteIds, setVisibleSetNoteIds] = useState<string[]>([]);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const filteredMachines = filterMachines(machines, machineSearchText);
   const machineIds = useMemo(
     () => [...new Set(draftWorkout.exercises.map((exercise) => exercise.machineId))],
@@ -112,6 +119,29 @@ export function WorkoutSessionScreen({
       showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
     }
   }, [previousMaxesQuery.isError]);
+
+  useEffect(() => {
+    const shouldStoreDraft = shouldConfirmExitWorkout(
+      isNewWorkout,
+      workout,
+      draftWorkout,
+    );
+    const timeoutId = setTimeout(() => {
+      if (shouldStoreDraft) {
+        void saveWorkoutDraft({
+          isNewWorkout,
+          savedAt: new Date().toISOString(),
+          userId,
+          workout: draftWorkout,
+        });
+        return;
+      }
+
+      void clearWorkoutDraft(draftWorkout.id);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [draftWorkout, isNewWorkout, userId, workout]);
 
   function updateWorkoutName(name: string) {
     setDraftWorkout((currentWorkout) => ({
@@ -288,8 +318,22 @@ export function WorkoutSessionScreen({
     );
   }
 
-  function saveWorkout() {
-    onSave(normalizeWorkoutForSave(draftWorkout));
+  async function saveWorkout() {
+    if (saveStatus === 'saving') {
+      return;
+    }
+
+    const normalizedWorkout = normalizeWorkoutForSave(draftWorkout);
+    setSaveStatus('saving');
+
+    const didSave = await onSave(normalizedWorkout);
+
+    if (didSave) {
+      await clearWorkoutDraft(normalizedWorkout.id);
+      return;
+    }
+
+    setSaveStatus('error');
   }
 
   function openMachinePicker() {
@@ -357,11 +401,16 @@ export function WorkoutSessionScreen({
         {
           text: strings.actions.dontSave,
           style: 'destructive',
-          onPress: onBack,
+          onPress: () => {
+            void clearWorkoutDraft(draftWorkout.id);
+            onBack();
+          },
         },
         {
           text: strings.actions.save,
-          onPress: saveWorkout,
+          onPress: () => {
+            void saveWorkout();
+          },
         },
       ],
     );
@@ -673,15 +722,35 @@ export function WorkoutSessionScreen({
           />
         </View>
 
+        {saveStatus !== 'idle' ? (
+          <Text
+            accessibilityRole={saveStatus === 'error' ? 'alert' : undefined}
+            style={[
+              styles.saveStatusText,
+              saveStatus === 'error' && styles.saveErrorText,
+            ]}
+          >
+            {saveStatus === 'saving'
+              ? strings.workouts.saving
+              : strings.workouts.saveFailed}
+          </Text>
+        ) : null}
+
         <Pressable
           accessibilityLabel={strings.accessibility.finishWorkout}
-          onPress={saveWorkout}
+          disabled={saveStatus === 'saving'}
+          onPress={() => {
+            void saveWorkout();
+          }}
           style={({ pressed }) => [
             styles.saveButton,
+            saveStatus === 'saving' && styles.disabledButton,
             pressed && styles.pressedButton,
           ]}
         >
-          <Text style={styles.saveButtonText}>{strings.actions.finish}</Text>
+          <Text style={styles.saveButtonText}>
+            {saveStatus === 'error' ? strings.actions.retry : strings.actions.finish}
+          </Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -1022,6 +1091,26 @@ const styles = StyleSheet.create({
     color: colors.panel,
     fontSize: 16,
     fontWeight: '800',
+  },
+  saveStatusText: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    bottom: 68,
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '700',
+    left: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    position: 'absolute',
+    right: 20,
+    textAlign: 'center',
+  },
+  saveErrorText: {
+    borderColor: colors.destructiveBorder,
+    color: colors.destructive,
   },
   saveButton: {
     alignItems: 'center',

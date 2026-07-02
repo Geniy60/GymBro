@@ -11,9 +11,9 @@ The initial app shell is in place with a compact header, safe-area handling, and
 - Exercises
 - Workouts
 
-The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. The standard exercise catalog currently contains 27 items.
+The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. Exercise saves now go through one transactional Supabase RPC so exercise rows and muscle-group rows are updated atomically. The standard exercise catalog currently contains 27 items.
 
-The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically.
+The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically. Active workout drafts are autosaved locally on the phone and can be restored after app restart before they are saved to Supabase.
 
 Empty workout drafts now offer a quick exercise suggestion flow. From an empty workout, the user can choose target muscle groups and an exercise count, preview a randomized set of matching exercises, reshuffle it, and add the suggested exercises to the workout using the same latest-set prefill behavior as manual exercise selection.
 
@@ -29,6 +29,24 @@ User-facing app text is centralized in `src/strings.ts`.
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Added active workout draft recovery, save retry status, and transactional exercise saving.
+
+Details:
+
+- Added local active workout draft storage in `src/storage/workoutDraftStorage.ts`.
+- Active workout edits are now autosaved locally after meaningful draft changes.
+- On app startup or user selection, the app offers to restore a matching unfinished workout draft for the selected user.
+- The active workout screen now shows an inline saving state and an inline retry state if saving fails.
+- Discarding a workout draft clears the stored local draft.
+- Successful workout saves clear the stored local draft.
+- Added and applied `supabase/migrations/20260702113000_gymbro_save_machine_rpc.sql`.
+- Added `public.gymbro_save_machine(jsonb)` so exercise saves update exercise rows and muscle-group rows inside one database transaction.
+- Updated `src/services/machinesService.ts` to call the new RPC.
+- Updated Supabase function typings in `src/databaseTypes.ts`.
+- Verified `npx tsc --noEmit` and `npm test` pass.
+
+Previous step:
 
 Added transactional workout saving and split dense workout-session UI pieces.
 
