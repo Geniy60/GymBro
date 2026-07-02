@@ -30,6 +30,19 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Added safer padding to the app launcher icon.
+
+Details:
+
+- Reduced the dumbbell artwork inside the launcher icon canvas by about 20% while preserving the existing approved image style.
+- Updated `assets/icon.png`, `assets/splash-icon.png`, `assets/android-icon-foreground.png`, and `assets/android-icon-monochrome.png`.
+- The Android adaptive foreground dumbbell now has roughly 129 px left and 130 px right margin on the 512 px foreground canvas.
+- The regular 1024 px icon now has roughly 257 px left and 260 px right margin around the detected dumbbell artwork.
+- Verified Expo Doctor passes 18/18 checks.
+- Verified `npx tsc --noEmit` and `npm test` pass.
+
+Previous step:
+
 Prepared the first Android APK build configuration.
 
 Details:
@@ -1231,7 +1244,7 @@ Verified:
 
 ## Next Proposed Step
 
-Submit the first EAS Android APK build with `npm run build:apk`, wait for the cloud build to finish, then install the APK on the phone for manual verification.
+When ready to check the icon on the phone, increment Android `versionCode`, submit a new EAS Android APK build, wait for it to finish, then install the APK for manual verification.
 
 ## Important Decisions
 
