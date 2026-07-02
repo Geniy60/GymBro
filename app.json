@@ -5,8 +5,13 @@
     "slug": "gymbro",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-arms.png",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon-arms.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FDE5B2"
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -14,15 +19,15 @@
       "package": "com.evgeniy.gymbro",
       "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#FDE5B2",
+        "foregroundImage": "./assets/android-icon-foreground-arms.png",
+        "backgroundImage": "./assets/android-icon-background-arms.png",
+        "monochromeImage": "./assets/android-icon-monochrome-arms.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon-arms.png"
     },
     "plugins": [
       "expo-font"

@@ -34,6 +34,20 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Replaced the app icon artwork.
+
+Details:
+
+- Generated and approved a caricature-style icon showing two clasped muscular arms with visible biceps.
+- Updated `assets/icon.png`, `assets/splash-icon.png`, `assets/android-icon-foreground.png`, `assets/android-icon-background.png`, `assets/android-icon-monochrome.png`, and `assets/favicon.png`.
+- Added cache-busting `*-arms.png` icon assets and updated `app.json` to reference those new paths.
+- Added explicit Expo splash config using `assets/splash-icon-arms.png`.
+- Used the approved generated artwork rather than the earlier cropped movie-still attempt.
+- Removed the temporary crop preview asset.
+- Verified `npx tsc --noEmit` and `npm test` pass.
+
+Previous step:
+
 Improved workout reliability, validation, cache invalidation, and test coverage.
 
 Details:
