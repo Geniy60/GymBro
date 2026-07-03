@@ -134,7 +134,7 @@ insert into public.gymbro_machines (id, name, note, sort_order) values
   ('standard-cable-triceps-pushdown', 'Разгибание рук на блоке', 'Cable triceps pushdown. Разгибание рук вниз на верхнем блоке с канатной рукоятью.', 205),
   ('standard-seated-triceps-press', 'Жим на трицепс сидя', 'Seated triceps press. Жим рукоятей вниз сидя, как машинные отжимания на трицепс.', 207),
   ('standard-seated-overhead-triceps-extension', 'Разгибание рук из-за головы сидя', 'Seated overhead triceps extension. Разгибание рук из-за головы сидя.', 208),
-  ('standard-assisted-pull-up-dip', 'Гравитрон', 'Assisted pull-up / dip. Подтягивания или отжимания с противовесом.', 210)
+  ('standard-assisted-pull-up-dip', 'Подтягивания', 'Assisted pull-up / dip. Подтягивания или отжимания с противовесом.', 210)
 on conflict (id) do nothing;
 
 insert into public.gymbro_machine_muscle_groups (machine_id, muscle_group) values

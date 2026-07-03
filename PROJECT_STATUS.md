@@ -34,6 +34,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Renamed the Gravitron exercise to pull-ups.
+
+Details:
+
+- Renamed `standard-assisted-pull-up-dip` from `Гравитрон` to `Подтягивания` in the initial Supabase seed.
+- Added and applied `supabase/migrations/20260703100000_gymbro_rename_gravitron_to_pullups.sql` for the current database.
+- Kept the existing exercise description, muscle groups, and machine image unchanged.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 32 tests across 8 test files.
+
+Previous step:
+
 Submitted a new Android APK build.
 
 Details:
