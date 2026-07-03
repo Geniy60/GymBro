@@ -67,12 +67,16 @@ export const strings = {
     cardioEmpty: 'Кардио пока не записывали.',
     cardioValue: (distanceKm: string, elevationMeters: string, durationMinutes: string) =>
       `${distanceKm} км · ${elevationMeters} м · ${durationMinutes} мин`,
+    historyListTitle: 'Посмотреть историю упражнения',
+    historyListEmpty: 'Истории упражнений пока нет.',
+    historySearchPlaceholder: 'Поиск упражнения',
     maxesTitle: 'Максимумы по упражнениям',
     emptyMaxes: 'Пока нет подходов с весом.',
     historyEmpty: 'По этому упражнению пока нет истории.',
     historyTitle: 'История упражнения',
     maxWeight: (weightKg: string, date: string) => `${weightKg} кг · ${date}`,
     noWeight: 'Без веса',
+    strengthHistoryMaxTitle: 'Максимум',
     workoutMax: (weightKg: string) => `Макс. ${weightKg} кг`,
   },
   users: {

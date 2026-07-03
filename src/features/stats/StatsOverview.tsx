@@ -1,29 +1,35 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useMemo, useState } from 'react';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import type { CardioSummary, MachineMax, WorkoutStats } from '../../types';
-import {
-  formatCardioDistance,
-  formatCardioDuration,
-  formatCardioElevation,
-  formatWeight,
-} from './statsFormat';
+import type { ExerciseHistorySummary, WorkoutStats } from '../../types';
 
 type StatsOverviewProps = {
   maxMonthCount: number;
-  onSelectCardio: (cardio: CardioSummary) => void;
-  onSelectMachine: (machine: MachineMax) => void;
+  onSelectHistoryItem: (item: ExerciseHistorySummary) => void;
   stats: WorkoutStats;
 };
 
 export function StatsOverview({
   maxMonthCount,
-  onSelectCardio,
-  onSelectMachine,
+  onSelectHistoryItem,
   stats,
 }: StatsOverviewProps) {
-  const latestCardio = stats.latestCardio;
+  const [historySearchText, setHistorySearchText] = useState('');
+  const filteredHistoryItems = useMemo(
+    () => filterHistoryItems(stats.exerciseHistoryItems, historySearchText),
+    [historySearchText, stats.exerciseHistoryItems],
+  );
+  const hasHistorySearch = historySearchText.trim().length > 0;
 
   return (
     <View style={styles.content}>
@@ -60,50 +66,67 @@ export function StatsOverview({
         </View>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{strings.stats.cardioTitle}</Text>
-        {latestCardio === null ? (
-          <Text style={styles.emptyText}>{strings.stats.cardioEmpty}</Text>
-        ) : (
-          <Pressable
-            onPress={() => onSelectCardio(latestCardio)}
-            style={({ pressed }) => [
-              styles.maxRow,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Text numberOfLines={1} style={styles.maxMachineName}>
-              {latestCardio.machineName}
-            </Text>
-            <Text style={styles.maxValue}>
-              {formatCardioValue(latestCardio)} · {latestCardio.dateLabel}
-            </Text>
-          </Pressable>
-        )}
-      </View>
-
-      <View style={[styles.section, styles.maxesSection]}>
-        <Text style={styles.sectionTitle}>{strings.stats.maxesTitle}</Text>
-        <FlatList
-          contentContainerStyle={styles.maxesListContent}
-          data={stats.machineMaxes}
-          keyExtractor={(machineMax) => machineMax.id}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>{strings.stats.emptyMaxes}</Text>
-          }
-          renderItem={({ item }) => (
+      <View style={[styles.section, styles.historySection]}>
+        <Text style={styles.sectionTitle}>{strings.stats.historyListTitle}</Text>
+        <View style={styles.searchRow}>
+          <Ionicons color={colors.muted} name="search-outline" size={18} />
+          <TextInput
+            accessibilityLabel={strings.accessibility.search}
+            onChangeText={setHistorySearchText}
+            placeholder={strings.stats.historySearchPlaceholder}
+            placeholderTextColor={colors.muted}
+            style={styles.searchInput}
+            value={historySearchText}
+          />
+          {hasHistorySearch ? (
             <Pressable
-              onPress={() => onSelectMachine(item)}
+              accessibilityLabel={strings.accessibility.clearSearch}
+              onPress={() => setHistorySearchText('')}
               style={({ pressed }) => [
-                styles.maxRow,
+                styles.clearSearchButton,
                 pressed && styles.pressedButton,
               ]}
             >
-              <Text numberOfLines={1} style={styles.maxMachineName}>
-                {item.machineName}
+              <Ionicons color={colors.muted} name="close" size={18} />
+            </Pressable>
+          ) : null}
+        </View>
+        <FlatList
+          contentContainerStyle={styles.historyListContent}
+          data={filteredHistoryItems}
+          keyExtractor={(historyItem) => historyItem.id}
+          ListEmptyComponent={
+            <View style={styles.emptyBlock}>
+              <Text style={styles.emptyText}>
+                {stats.exerciseHistoryItems.length === 0
+                  ? strings.stats.historyListEmpty
+                  : strings.empty.filtered.message}
               </Text>
-              <Text style={styles.maxValue}>
-                {strings.stats.maxWeight(formatWeight(item.weightKg), item.dateLabel)}
+              {hasHistorySearch ? (
+                <Pressable
+                  onPress={() => setHistorySearchText('')}
+                  style={({ pressed }) => [
+                    styles.resetSearchButton,
+                    pressed && styles.pressedButton,
+                  ]}
+                >
+                  <Text style={styles.resetSearchButtonText}>
+                    {strings.actions.resetSearch}
+                  </Text>
+                </Pressable>
+              ) : null}
+            </View>
+          }
+          renderItem={({ item }) => (
+            <Pressable
+              onPress={() => onSelectHistoryItem(item)}
+              style={({ pressed }) => [
+                styles.historyRow,
+                pressed && styles.pressedButton,
+              ]}
+            >
+              <Text numberOfLines={1} style={styles.historyMachineName}>
+                {item.machineName}
               </Text>
             </Pressable>
           )}
@@ -114,20 +137,27 @@ export function StatsOverview({
   );
 }
 
-function formatCardioValue(cardio: CardioSummary): string {
-  return strings.stats.cardioValue(
-    formatCardioDistance(cardio.distanceKm),
-    formatCardioElevation(cardio.elevationMeters),
-    formatCardioDuration(cardio.durationSeconds),
-  );
-}
-
 function StatTile({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.statTile}>
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
+  );
+}
+
+function filterHistoryItems(
+  items: ExerciseHistorySummary[],
+  searchText: string,
+): ExerciseHistorySummary[] {
+  const normalizedSearchText = searchText.trim().toLocaleLowerCase();
+
+  if (normalizedSearchText.length === 0) {
+    return items;
+  }
+
+  return items.filter((item) =>
+    item.machineName.toLocaleLowerCase().includes(normalizedSearchText),
   );
 }
 
@@ -169,7 +199,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     padding: 12,
   },
-  maxesSection: {
+  historySection: {
     flex: 1,
   },
   sectionTitle: {
@@ -214,33 +244,71 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 2,
   },
-  maxesListContent: {
+  searchRow: {
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 6,
+    height: 40,
+    marginBottom: 9,
+    paddingHorizontal: 10,
+  },
+  searchInput: {
+    color: colors.text,
+    flex: 1,
+    fontSize: 14,
+    height: '100%',
+    padding: 0,
+  },
+  clearSearchButton: {
+    alignItems: 'center',
+    height: 30,
+    justifyContent: 'center',
+    width: 30,
+  },
+  historyListContent: {
     gap: 8,
     paddingBottom: 4,
+  },
+  emptyBlock: {
+    gap: 10,
   },
   emptyText: {
     color: colors.muted,
     fontSize: 14,
     lineHeight: 20,
   },
-  maxRow: {
+  resetSearchButton: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#F0FDF4',
+    borderColor: colors.primary,
+    borderRadius: 8,
+    borderWidth: 1,
+    minHeight: 36,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  resetSearchButtonText: {
+    color: colors.primary,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  historyRow: {
     backgroundColor: '#F8FAFC',
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     paddingHorizontal: 12,
-    paddingVertical: 9,
+    paddingVertical: 11,
   },
-  maxMachineName: {
+  historyMachineName: {
     color: colors.text,
     fontSize: 15,
     fontWeight: '800',
-  },
-  maxValue: {
-    color: colors.muted,
-    fontSize: 13,
-    fontWeight: '700',
-    marginTop: 3,
   },
   pressedButton: {
     opacity: 0.7,

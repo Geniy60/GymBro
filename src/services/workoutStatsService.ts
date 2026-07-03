@@ -2,8 +2,8 @@ import { supabase } from '../supabaseClient';
 import type {
   CardioHistoryItem,
   CardioSummary,
+  ExerciseHistorySummary,
   MachineHistoryItem,
-  MachineMax,
   MonthWorkoutStat,
   WorkoutStats,
 } from '../types';
@@ -32,23 +32,37 @@ type CardioRow = {
   started_at: string;
 };
 
+type CardioSummaryRow = {
+  machine_id: string | null;
+  machine_name: string;
+  started_at: string;
+};
+
 export async function loadWorkoutStats(userId: string): Promise<WorkoutStats> {
   const now = new Date();
   const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   const firstChartMonthStart = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-  const [totalWorkouts, monthWorkoutCount, monthStats, machineMaxes, latestCardio] =
+  const [
+    totalWorkouts,
+    monthWorkoutCount,
+    monthStats,
+    strengthHistoryItems,
+    cardioHistoryItems,
+  ] =
     await Promise.all([
       countWorkouts(userId),
       countWorkouts(userId, currentMonthStart, nextMonthStart),
       loadMonthWorkoutStats(userId, firstChartMonthStart),
-      loadMachineMaxes(userId),
-      loadLatestCardio(userId),
+      loadStrengthHistorySummaries(userId),
+      loadCardioHistorySummaries(userId),
     ]);
 
   return {
-    latestCardio,
-    machineMaxes,
+    exerciseHistoryItems: sortExerciseHistoryItems([
+      ...strengthHistoryItems,
+      ...cardioHistoryItems,
+    ]),
     monthStats,
     monthWorkoutCount,
     totalWorkouts,
@@ -100,8 +114,10 @@ export async function loadMachineHistory({
   }));
 }
 
-async function loadLatestCardio(userId: string): Promise<CardioSummary | null> {
-  const { data, error } = await supabase.rpc('gymbro_latest_cardio_summary', {
+async function loadCardioHistorySummaries(
+  userId: string,
+): Promise<ExerciseHistorySummary[]> {
+  const { data, error } = await supabase.rpc('gymbro_cardio_history_summaries', {
     p_user_id: userId,
   });
 
@@ -109,11 +125,13 @@ async function loadLatestCardio(userId: string): Promise<CardioSummary | null> {
     throw error;
   }
 
-  const row = ((data ?? []) as unknown as CardioRow[])[0];
-
-  return row === undefined
-    ? null
-    : mapCardioRow(row, row.machine_id ?? `cardio-${row.started_at}`);
+  return ((data ?? []) as unknown as CardioSummaryRow[])
+    .filter((row): row is CardioSummaryRow & { machine_id: string } => row.machine_id !== null)
+    .map((row) => ({
+      id: row.machine_id,
+      machineName: row.machine_name,
+      trackingType: 'cardio',
+    }));
 }
 
 async function countWorkouts(
@@ -179,7 +197,9 @@ async function loadMonthWorkoutStats(
   });
 }
 
-async function loadMachineMaxes(userId: string): Promise<MachineMax[]> {
+async function loadStrengthHistorySummaries(
+  userId: string,
+): Promise<ExerciseHistorySummary[]> {
   const { data, error } = await supabase.rpc('gymbro_machine_maxes', {
     p_user_id: userId,
   });
@@ -191,10 +211,11 @@ async function loadMachineMaxes(userId: string): Promise<MachineMax[]> {
   return ((data ?? []) as unknown as MachineMaxRow[])
     .filter((row): row is MachineMaxRow & { machine_id: string } => row.machine_id !== null)
     .map((row) => ({
-      dateLabel: formatDateLabel(row.started_at),
       id: row.machine_id,
       machineName: row.machine_name,
-      weightKg: row.weight_kg,
+      maxDateLabel: formatDateLabel(row.started_at),
+      maxWeightKg: row.weight_kg,
+      trackingType: 'strength',
     }));
 }
 
@@ -226,4 +247,12 @@ function mapCardioRow(row: CardioRow, id: string): CardioSummary {
     id,
     machineName: row.machine_name,
   };
+}
+
+function sortExerciseHistoryItems(
+  items: ExerciseHistorySummary[],
+): ExerciseHistorySummary[] {
+  return items.slice().sort((left, right) =>
+    left.machineName.localeCompare(right.machineName, 'ru-RU'),
+  );
 }

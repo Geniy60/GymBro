@@ -11,7 +11,7 @@ import {
   loadWorkoutStats,
 } from '../../services/workoutStatsService';
 import { strings } from '../../strings';
-import type { CardioSummary, MachineMax, WorkoutStats } from '../../types';
+import type { ExerciseHistorySummary, WorkoutStats } from '../../types';
 import { MachineHistoryScreen } from './MachineHistoryScreen';
 import { StatsOverview } from './StatsOverview';
 
@@ -20,44 +20,44 @@ type StatsScreenProps = {
 };
 
 const emptyStats: WorkoutStats = {
-  latestCardio: null,
-  machineMaxes: [],
+  exerciseHistoryItems: [],
   monthStats: [],
   monthWorkoutCount: 0,
   totalWorkouts: 0,
 };
 
 export function StatsScreen({ userId }: StatsScreenProps) {
-  const [selectedCardio, setSelectedCardio] = useState<CardioSummary | null>(null);
-  const [selectedMachine, setSelectedMachine] = useState<MachineMax | null>(null);
+  const [selectedHistoryItem, setSelectedHistoryItem] =
+    useState<ExerciseHistorySummary | null>(null);
   const statsQuery = useQuery({
     enabled: userId !== null,
     queryFn: () => loadWorkoutStats(userId ?? ''),
     queryKey: queryKeys.workoutStats(userId ?? 'none'),
   });
   const historyQuery = useQuery({
-    enabled: userId !== null && selectedMachine !== null,
+    enabled:
+      userId !== null && selectedHistoryItem?.trackingType === 'strength',
     queryFn: () =>
       loadMachineHistory({
-        machineId: selectedMachine?.id ?? '',
+        machineId: selectedHistoryItem?.id ?? '',
         userId: userId ?? '',
       }),
     queryKey:
-      userId === null || selectedMachine === null
+      userId === null || selectedHistoryItem?.trackingType !== 'strength'
         ? queryKeys.machineHistory('none', 'none')
-        : queryKeys.machineHistory(userId, selectedMachine.id),
+        : queryKeys.machineHistory(userId, selectedHistoryItem.id),
   });
   const cardioHistoryQuery = useQuery({
-    enabled: userId !== null && selectedCardio !== null,
+    enabled: userId !== null && selectedHistoryItem?.trackingType === 'cardio',
     queryFn: () =>
       loadCardioHistory({
-        machineId: selectedCardio?.id ?? '',
+        machineId: selectedHistoryItem?.id ?? '',
         userId: userId ?? '',
       }),
     queryKey:
-      userId === null || selectedCardio === null
+      userId === null || selectedHistoryItem?.trackingType !== 'cardio'
         ? queryKeys.cardioHistory('none', 'none')
-        : queryKeys.cardioHistory(userId, selectedCardio.id),
+        : queryKeys.cardioHistory(userId, selectedHistoryItem.id),
   });
   const stats = statsQuery.data ?? emptyStats;
   const maxMonthCount = Math.max(
@@ -66,18 +66,17 @@ export function StatsScreen({ userId }: StatsScreenProps) {
   );
 
   useEffect(() => {
-    if (selectedMachine === null && selectedCardio === null) {
+    if (selectedHistoryItem === null) {
       return undefined;
     }
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      setSelectedCardio(null);
-      setSelectedMachine(null);
+      setSelectedHistoryItem(null);
       return true;
     });
 
     return () => subscription.remove();
-  }, [selectedCardio, selectedMachine]);
+  }, [selectedHistoryItem]);
 
   useEffect(() => {
     if (statsQuery.isError || historyQuery.isError || cardioHistoryQuery.isError) {
@@ -85,7 +84,7 @@ export function StatsScreen({ userId }: StatsScreenProps) {
     }
   }, [cardioHistoryQuery.isError, historyQuery.isError, statsQuery.isError]);
 
-  if (selectedCardio !== null) {
+  if (selectedHistoryItem?.trackingType === 'cardio') {
     const selectedCardioHistory = cardioHistoryQuery.data ?? [];
     const isLoadingHistory =
       selectedCardioHistory.length === 0 && cardioHistoryQuery.isFetching;
@@ -96,13 +95,13 @@ export function StatsScreen({ userId }: StatsScreenProps) {
         historyItems={[]}
         isLoadingHistory={isLoadingHistory}
         mode="cardio"
-        onBack={() => setSelectedCardio(null)}
-        selectedItem={selectedCardio}
+        onBack={() => setSelectedHistoryItem(null)}
+        selectedItem={selectedHistoryItem}
       />
     );
   }
 
-  if (selectedMachine !== null) {
+  if (selectedHistoryItem?.trackingType === 'strength') {
     const selectedMachineHistory = historyQuery.data ?? [];
     const isLoadingHistory =
       selectedMachineHistory.length === 0 && historyQuery.isFetching;
@@ -112,8 +111,8 @@ export function StatsScreen({ userId }: StatsScreenProps) {
         historyItems={selectedMachineHistory}
         isLoadingHistory={isLoadingHistory}
         mode="strength"
-        onBack={() => setSelectedMachine(null)}
-        selectedItem={selectedMachine}
+        onBack={() => setSelectedHistoryItem(null)}
+        selectedItem={selectedHistoryItem}
       />
     );
   }
@@ -129,8 +128,7 @@ export function StatsScreen({ userId }: StatsScreenProps) {
   return (
     <StatsOverview
       maxMonthCount={maxMonthCount}
-      onSelectCardio={setSelectedCardio}
-      onSelectMachine={setSelectedMachine}
+      onSelectHistoryItem={setSelectedHistoryItem}
       stats={stats}
     />
   );

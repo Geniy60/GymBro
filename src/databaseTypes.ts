@@ -208,6 +208,16 @@ export type Database = {
           duration_seconds: number | null;
         }[];
       };
+      gymbro_cardio_history_summaries: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          machine_id: string | null;
+          machine_name: string;
+          started_at: string;
+        }[];
+      };
       gymbro_machine_history: {
         Args: {
           p_machine_id: string;

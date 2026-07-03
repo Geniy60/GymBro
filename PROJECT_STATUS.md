@@ -34,6 +34,24 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Reworked stats exercise history.
+
+Details:
+
+- Replaced separate cardio and strength maximum sections with one combined exercise history list.
+- Renamed the stats history block to `Посмотреть историю упражнения`.
+- Added exercise history search in the stats block.
+- Simplified history list rows to show only the exercise name.
+- Strength history detail now shows the exercise maximum and date at the top.
+- Cardio history detail opens directly to the history list without a maximum summary.
+- Added and applied `supabase/migrations/20260703123000_gymbro_cardio_history_summaries.sql`.
+- Added `gymbro_cardio_history_summaries` for cardio exercises that have history.
+- Updated unit tests for the combined strength/cardio history list.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Added compact cardio stats.
 
 Details:

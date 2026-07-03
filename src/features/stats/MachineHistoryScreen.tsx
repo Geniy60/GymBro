@@ -6,9 +6,8 @@ import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type {
   CardioHistoryItem,
-  CardioSummary,
+  ExerciseHistorySummary,
   MachineHistoryItem,
-  MachineMax,
 } from '../../types';
 import {
   formatCardioDistance,
@@ -23,7 +22,7 @@ type MachineHistoryScreenProps = {
   isLoadingHistory: boolean;
   mode: 'cardio' | 'strength';
   onBack: () => void;
-  selectedItem: CardioSummary | MachineMax;
+  selectedItem: ExerciseHistorySummary;
 };
 
 export function MachineHistoryScreen({
@@ -52,6 +51,20 @@ export function MachineHistoryScreen({
           <Text style={styles.detailSubtitle}>{strings.stats.historyTitle}</Text>
         </View>
       </View>
+
+      {mode === 'strength' && selectedItem.maxWeightKg !== undefined ? (
+        <View style={styles.maxSummary}>
+          <Text style={styles.maxSummaryLabel}>
+            {strings.stats.strengthHistoryMaxTitle}
+          </Text>
+          <Text style={styles.maxSummaryValue}>
+            {strings.stats.maxWeight(
+              formatWeight(selectedItem.maxWeightKg),
+              selectedItem.maxDateLabel ?? '',
+            )}
+          </Text>
+        </View>
+      ) : null}
 
       {mode === 'cardio' ? (
         <FlatList
@@ -154,6 +167,26 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 13,
     fontWeight: '700',
+    marginTop: 2,
+  },
+  maxSummary: {
+    backgroundColor: '#F8FAFC',
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  maxSummaryLabel: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  maxSummaryValue: {
+    color: colors.primary,
+    fontSize: 15,
+    fontWeight: '800',
     marginTop: 2,
   },
   historyListContent: {
