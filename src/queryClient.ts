@@ -11,6 +11,8 @@ export const queryKeys = {
     ['workoutSummaries', userId, searchText] as const,
   workoutDetail: (workoutId: string) => ['workoutDetail', workoutId] as const,
   workoutStats: (userId: string) => ['workoutStats', userId] as const,
+  cardioHistory: (userId: string, machineId: string) =>
+    ['cardioHistory', userId, machineId] as const,
   machineHistory: (userId: string, machineId: string) =>
     ['machineHistory', userId, machineId] as const,
   previousMachineMaxes: (userId: string, workoutId: string, machineIdsKey: string) =>
@@ -33,6 +35,9 @@ export async function invalidateWorkoutQueries(
     }),
     queryClientInstance.invalidateQueries({
       queryKey: queryKeys.workoutStats(userId),
+    }),
+    queryClientInstance.invalidateQueries({
+      queryKey: ['cardioHistory', userId],
     }),
     queryClientInstance.invalidateQueries({
       queryKey: ['machineHistory', userId],

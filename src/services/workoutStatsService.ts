@@ -1,5 +1,7 @@
 import { supabase } from '../supabaseClient';
 import type {
+  CardioHistoryItem,
+  CardioSummary,
   MachineHistoryItem,
   MachineMax,
   MonthWorkoutStat,
@@ -20,25 +22,58 @@ type MachineHistoryRow = {
   started_at: string;
 };
 
+type CardioRow = {
+  distance_km: number | null;
+  duration_seconds: number | null;
+  elevation_meters: number | null;
+  id?: string;
+  machine_id: string | null;
+  machine_name: string;
+  started_at: string;
+};
+
 export async function loadWorkoutStats(userId: string): Promise<WorkoutStats> {
   const now = new Date();
   const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   const firstChartMonthStart = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-  const [totalWorkouts, monthWorkoutCount, monthStats, machineMaxes] =
+  const [totalWorkouts, monthWorkoutCount, monthStats, machineMaxes, latestCardio] =
     await Promise.all([
       countWorkouts(userId),
       countWorkouts(userId, currentMonthStart, nextMonthStart),
       loadMonthWorkoutStats(userId, firstChartMonthStart),
       loadMachineMaxes(userId),
+      loadLatestCardio(userId),
     ]);
 
   return {
+    latestCardio,
     machineMaxes,
     monthStats,
     monthWorkoutCount,
     totalWorkouts,
   };
+}
+
+export async function loadCardioHistory({
+  machineId,
+  userId,
+}: {
+  machineId: string;
+  userId: string;
+}): Promise<CardioHistoryItem[]> {
+  const { data, error } = await supabase.rpc('gymbro_cardio_history', {
+    p_machine_id: machineId,
+    p_user_id: userId,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return ((data ?? []) as unknown as CardioRow[]).map((row) =>
+    mapCardioRow(row, row.id ?? `${row.machine_id ?? 'cardio'}-${row.started_at}`),
+  );
 }
 
 export async function loadMachineHistory({
@@ -63,6 +98,22 @@ export async function loadMachineHistory({
     maxWeightKg: row.max_weight_kg,
     setCount: row.set_count,
   }));
+}
+
+async function loadLatestCardio(userId: string): Promise<CardioSummary | null> {
+  const { data, error } = await supabase.rpc('gymbro_latest_cardio_summary', {
+    p_user_id: userId,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  const row = ((data ?? []) as unknown as CardioRow[])[0];
+
+  return row === undefined
+    ? null
+    : mapCardioRow(row, row.machine_id ?? `cardio-${row.started_at}`);
 }
 
 async function countWorkouts(
@@ -164,4 +215,15 @@ function formatDateLabel(value: string): string {
   return Number.isNaN(date.getTime())
     ? ''
     : date.toLocaleDateString('ru-RU');
+}
+
+function mapCardioRow(row: CardioRow, id: string): CardioSummary {
+  return {
+    dateLabel: formatDateLabel(row.started_at),
+    distanceKm: row.distance_km,
+    durationSeconds: row.duration_seconds,
+    elevationMeters: row.elevation_meters,
+    id,
+    machineName: row.machine_name,
+  };
 }

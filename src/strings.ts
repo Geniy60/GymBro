@@ -63,6 +63,10 @@ export const strings = {
     totalWorkouts: 'Всего',
     monthWorkouts: 'За месяц',
     chartTitle: 'Последние 6 месяцев',
+    cardioTitle: 'Кардио',
+    cardioEmpty: 'Кардио пока не записывали.',
+    cardioValue: (distanceKm: string, elevationMeters: string, durationMinutes: string) =>
+      `${distanceKm} км · ${elevationMeters} м · ${durationMinutes} мин`,
     maxesTitle: 'Максимумы по упражнениям',
     emptyMaxes: 'Пока нет подходов с весом.',
     historyEmpty: 'По этому упражнению пока нет истории.',

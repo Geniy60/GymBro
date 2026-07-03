@@ -34,6 +34,22 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Added compact cardio stats.
+
+Details:
+
+- Added latest cardio summary to the Stats screen.
+- The cardio summary shows only distance, elevation, and time for the latest cardio workout.
+- Tapping the cardio summary opens cardio history with the same three values by date.
+- Kept cardio separate from strength maximums; no cardio maximums were added.
+- Added and applied `supabase/migrations/20260703120000_gymbro_cardio_stats.sql`.
+- Added `gymbro_latest_cardio_summary` and `gymbro_cardio_history` RPC functions.
+- Added a focused unit test for cardio history mapping.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 34 tests across 9 test files.
+
+Previous step:
+
 Compacted the treadmill workout card.
 
 Details:

@@ -4,21 +4,35 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { ListLoadingState } from '../../components/ListLoadingState';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import type { MachineHistoryItem, MachineMax } from '../../types';
-import { formatWeight } from './statsFormat';
+import type {
+  CardioHistoryItem,
+  CardioSummary,
+  MachineHistoryItem,
+  MachineMax,
+} from '../../types';
+import {
+  formatCardioDistance,
+  formatCardioDuration,
+  formatCardioElevation,
+  formatWeight,
+} from './statsFormat';
 
 type MachineHistoryScreenProps = {
+  cardioHistoryItems?: CardioHistoryItem[];
   historyItems: MachineHistoryItem[];
   isLoadingHistory: boolean;
+  mode: 'cardio' | 'strength';
   onBack: () => void;
-  selectedMachine: MachineMax;
+  selectedItem: CardioSummary | MachineMax;
 };
 
 export function MachineHistoryScreen({
+  cardioHistoryItems = [],
   historyItems,
   isLoadingHistory,
+  mode,
   onBack,
-  selectedMachine,
+  selectedItem,
 }: MachineHistoryScreenProps) {
   return (
     <View style={styles.content}>
@@ -34,25 +48,53 @@ export function MachineHistoryScreen({
           <Ionicons name="arrow-back" size={22} color={colors.text} />
         </Pressable>
         <View style={styles.detailTitleBlock}>
-          <Text style={styles.detailTitle}>{selectedMachine.machineName}</Text>
+          <Text style={styles.detailTitle}>{selectedItem.machineName}</Text>
           <Text style={styles.detailSubtitle}>{strings.stats.historyTitle}</Text>
         </View>
       </View>
 
-      <FlatList
-        contentContainerStyle={styles.historyListContent}
-        data={historyItems}
-        keyExtractor={(historyItem) => historyItem.id}
-        ListEmptyComponent={
-          isLoadingHistory ? (
-            <ListLoadingState rowCount={3} />
-          ) : (
-            <Text style={styles.emptyText}>{strings.stats.historyEmpty}</Text>
-          )
-        }
-        renderItem={({ item }) => <MachineHistoryRow item={item} />}
-        showsVerticalScrollIndicator={false}
-      />
+      {mode === 'cardio' ? (
+        <FlatList
+          contentContainerStyle={styles.historyListContent}
+          data={cardioHistoryItems}
+          keyExtractor={(historyItem) => historyItem.id}
+          ListEmptyComponent={
+            isLoadingHistory ? (
+              <ListLoadingState rowCount={3} />
+            ) : (
+              <Text style={styles.emptyText}>{strings.stats.historyEmpty}</Text>
+            )
+          }
+          renderItem={({ item }) => <CardioHistoryRow item={item} />}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <FlatList
+          contentContainerStyle={styles.historyListContent}
+          data={historyItems}
+          keyExtractor={(historyItem) => historyItem.id}
+          ListEmptyComponent={
+            isLoadingHistory ? (
+              <ListLoadingState rowCount={3} />
+            ) : (
+              <Text style={styles.emptyText}>{strings.stats.historyEmpty}</Text>
+            )
+          }
+          renderItem={({ item }) => <MachineHistoryRow item={item} />}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+    </View>
+  );
+}
+
+function CardioHistoryRow({ item }: { item: CardioHistoryItem }) {
+  return (
+    <View style={styles.historyRow}>
+      <View style={styles.historyTextBlock}>
+        <Text style={styles.historyDate}>{item.dateLabel}</Text>
+      </View>
+      <Text style={styles.historyMax}>{formatCardioValue(item)}</Text>
     </View>
   );
 }
@@ -69,6 +111,14 @@ function MachineHistoryRow({ item }: { item: MachineHistoryItem }) {
           : strings.stats.workoutMax(formatWeight(item.maxWeightKg))}
       </Text>
     </View>
+  );
+}
+
+function formatCardioValue(item: CardioHistoryItem): string {
+  return strings.stats.cardioValue(
+    formatCardioDistance(item.distanceKm),
+    formatCardioElevation(item.elevationMeters),
+    formatCardioDuration(item.durationSeconds),
   );
 }
 

@@ -180,6 +180,34 @@ export type Database = {
           weight_kg: number | null;
         }[];
       };
+      gymbro_latest_cardio_summary: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          machine_id: string | null;
+          machine_name: string;
+          started_at: string;
+          distance_km: number | null;
+          elevation_meters: number | null;
+          duration_seconds: number | null;
+        }[];
+      };
+      gymbro_cardio_history: {
+        Args: {
+          p_machine_id: string;
+          p_user_id: string;
+        };
+        Returns: {
+          id: string;
+          machine_id: string | null;
+          machine_name: string;
+          started_at: string;
+          distance_km: number | null;
+          elevation_meters: number | null;
+          duration_seconds: number | null;
+        }[];
+      };
       gymbro_machine_history: {
         Args: {
           p_machine_id: string;

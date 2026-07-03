@@ -98,6 +98,15 @@ export type MachineMax = {
   weightKg: number;
 };
 
+export type CardioSummary = {
+  dateLabel: string;
+  distanceKm: number | null;
+  durationSeconds: number | null;
+  elevationMeters: number | null;
+  id: string;
+  machineName: string;
+};
+
 export type MachineHistoryItem = {
   dateLabel: string;
   id: string;
@@ -105,9 +114,12 @@ export type MachineHistoryItem = {
   setCount: number;
 };
 
+export type CardioHistoryItem = CardioSummary;
+
 export type WorkoutStats = {
   totalWorkouts: number;
   monthWorkoutCount: number;
   monthStats: MonthWorkoutStat[];
+  latestCardio: CardioSummary | null;
   machineMaxes: MachineMax[];
 };

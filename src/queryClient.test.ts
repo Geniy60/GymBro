@@ -15,6 +15,8 @@ describe('queryKeys', () => {
     expect(queryKeys.workoutDetail('workout-1'))
       .toEqual(['workoutDetail', 'workout-1']);
     expect(queryKeys.workoutStats('user-1')).toEqual(['workoutStats', 'user-1']);
+    expect(queryKeys.cardioHistory('user-1', 'treadmill'))
+      .toEqual(['cardioHistory', 'user-1', 'treadmill']);
     expect(queryKeys.machineHistory('user-1', 'machine-1'))
       .toEqual(['machineHistory', 'user-1', 'machine-1']);
     expect(queryKeys.previousMachineMaxes('user-1', 'workout-1', 'a|b'))
@@ -40,6 +42,9 @@ describe('queryKeys', () => {
     });
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
       queryKey: queryKeys.workoutStats('user-1'),
+    });
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ['cardioHistory', 'user-1'],
     });
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
       queryKey: ['machineHistory', 'user-1'],

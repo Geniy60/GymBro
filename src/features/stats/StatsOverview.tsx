@@ -2,20 +2,29 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import type { MachineMax, WorkoutStats } from '../../types';
-import { formatWeight } from './statsFormat';
+import type { CardioSummary, MachineMax, WorkoutStats } from '../../types';
+import {
+  formatCardioDistance,
+  formatCardioDuration,
+  formatCardioElevation,
+  formatWeight,
+} from './statsFormat';
 
 type StatsOverviewProps = {
   maxMonthCount: number;
+  onSelectCardio: (cardio: CardioSummary) => void;
   onSelectMachine: (machine: MachineMax) => void;
   stats: WorkoutStats;
 };
 
 export function StatsOverview({
   maxMonthCount,
+  onSelectCardio,
   onSelectMachine,
   stats,
 }: StatsOverviewProps) {
+  const latestCardio = stats.latestCardio;
+
   return (
     <View style={styles.content}>
       <View style={styles.summaryRow}>
@@ -51,6 +60,28 @@ export function StatsOverview({
         </View>
       </View>
 
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{strings.stats.cardioTitle}</Text>
+        {latestCardio === null ? (
+          <Text style={styles.emptyText}>{strings.stats.cardioEmpty}</Text>
+        ) : (
+          <Pressable
+            onPress={() => onSelectCardio(latestCardio)}
+            style={({ pressed }) => [
+              styles.maxRow,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Text numberOfLines={1} style={styles.maxMachineName}>
+              {latestCardio.machineName}
+            </Text>
+            <Text style={styles.maxValue}>
+              {formatCardioValue(latestCardio)} · {latestCardio.dateLabel}
+            </Text>
+          </Pressable>
+        )}
+      </View>
+
       <View style={[styles.section, styles.maxesSection]}>
         <Text style={styles.sectionTitle}>{strings.stats.maxesTitle}</Text>
         <FlatList
@@ -80,6 +111,14 @@ export function StatsOverview({
         />
       </View>
     </View>
+  );
+}
+
+function formatCardioValue(cardio: CardioSummary): string {
+  return strings.stats.cardioValue(
+    formatCardioDistance(cardio.distanceKm),
+    formatCardioElevation(cardio.elevationMeters),
+    formatCardioDuration(cardio.durationSeconds),
   );
 }
 

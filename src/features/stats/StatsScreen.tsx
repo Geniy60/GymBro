@@ -6,11 +6,12 @@ import { showAppAlert } from '../../appAlert';
 import { ListLoadingState } from '../../components/ListLoadingState';
 import { queryKeys } from '../../queryClient';
 import {
+  loadCardioHistory,
   loadMachineHistory,
   loadWorkoutStats,
 } from '../../services/workoutStatsService';
 import { strings } from '../../strings';
-import type { MachineMax, WorkoutStats } from '../../types';
+import type { CardioSummary, MachineMax, WorkoutStats } from '../../types';
 import { MachineHistoryScreen } from './MachineHistoryScreen';
 import { StatsOverview } from './StatsOverview';
 
@@ -19,6 +20,7 @@ type StatsScreenProps = {
 };
 
 const emptyStats: WorkoutStats = {
+  latestCardio: null,
   machineMaxes: [],
   monthStats: [],
   monthWorkoutCount: 0,
@@ -26,6 +28,7 @@ const emptyStats: WorkoutStats = {
 };
 
 export function StatsScreen({ userId }: StatsScreenProps) {
+  const [selectedCardio, setSelectedCardio] = useState<CardioSummary | null>(null);
   const [selectedMachine, setSelectedMachine] = useState<MachineMax | null>(null);
   const statsQuery = useQuery({
     enabled: userId !== null,
@@ -44,6 +47,18 @@ export function StatsScreen({ userId }: StatsScreenProps) {
         ? queryKeys.machineHistory('none', 'none')
         : queryKeys.machineHistory(userId, selectedMachine.id),
   });
+  const cardioHistoryQuery = useQuery({
+    enabled: userId !== null && selectedCardio !== null,
+    queryFn: () =>
+      loadCardioHistory({
+        machineId: selectedCardio?.id ?? '',
+        userId: userId ?? '',
+      }),
+    queryKey:
+      userId === null || selectedCardio === null
+        ? queryKeys.cardioHistory('none', 'none')
+        : queryKeys.cardioHistory(userId, selectedCardio.id),
+  });
   const stats = statsQuery.data ?? emptyStats;
   const maxMonthCount = Math.max(
     ...stats.monthStats.map((monthStat) => monthStat.count),
@@ -51,23 +66,41 @@ export function StatsScreen({ userId }: StatsScreenProps) {
   );
 
   useEffect(() => {
-    if (selectedMachine === null) {
+    if (selectedMachine === null && selectedCardio === null) {
       return undefined;
     }
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      setSelectedCardio(null);
       setSelectedMachine(null);
       return true;
     });
 
     return () => subscription.remove();
-  }, [selectedMachine]);
+  }, [selectedCardio, selectedMachine]);
 
   useEffect(() => {
-    if (statsQuery.isError || historyQuery.isError) {
+    if (statsQuery.isError || historyQuery.isError || cardioHistoryQuery.isError) {
       showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
     }
-  }, [historyQuery.isError, statsQuery.isError]);
+  }, [cardioHistoryQuery.isError, historyQuery.isError, statsQuery.isError]);
+
+  if (selectedCardio !== null) {
+    const selectedCardioHistory = cardioHistoryQuery.data ?? [];
+    const isLoadingHistory =
+      selectedCardioHistory.length === 0 && cardioHistoryQuery.isFetching;
+
+    return (
+      <MachineHistoryScreen
+        cardioHistoryItems={selectedCardioHistory}
+        historyItems={[]}
+        isLoadingHistory={isLoadingHistory}
+        mode="cardio"
+        onBack={() => setSelectedCardio(null)}
+        selectedItem={selectedCardio}
+      />
+    );
+  }
 
   if (selectedMachine !== null) {
     const selectedMachineHistory = historyQuery.data ?? [];
@@ -78,8 +111,9 @@ export function StatsScreen({ userId }: StatsScreenProps) {
       <MachineHistoryScreen
         historyItems={selectedMachineHistory}
         isLoadingHistory={isLoadingHistory}
+        mode="strength"
         onBack={() => setSelectedMachine(null)}
-        selectedMachine={selectedMachine}
+        selectedItem={selectedMachine}
       />
     );
   }
@@ -95,6 +129,7 @@ export function StatsScreen({ userId }: StatsScreenProps) {
   return (
     <StatsOverview
       maxMonthCount={maxMonthCount}
+      onSelectCardio={setSelectedCardio}
       onSelectMachine={setSelectedMachine}
       stats={stats}
     />
