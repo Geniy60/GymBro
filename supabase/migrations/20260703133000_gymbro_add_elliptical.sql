@@ -1,7 +1,7 @@
 insert into public.gymbro_machines (id, name, note, sort_order, tracking_type)
 values (
   'standard-elliptical',
-  'Эллиптический ход',
+  'Эллипсоид',
   'Elliptical trainer. Кардио на эллипсоиде с учетом времени, дистанции, высоты и скорости.',
   16,
   'cardio'

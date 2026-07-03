@@ -34,6 +34,31 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Enlarged exercise images.
+
+Details:
+
+- Increased machine image preview height in shared exercise tiles from 104 to 118.
+- Increased the tile minimum height proportionally so the larger preview has stable layout space.
+- Kept the change scoped to the shared tile used by the exercise list, workout picker, and suggestion preview.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Renamed the elliptical exercise.
+
+Details:
+
+- Renamed `standard-elliptical` from `Эллиптический ход` to `Эллипсоид`.
+- Updated `supabase/migrations/20260703133000_gymbro_add_elliptical.sql` for fresh setup.
+- Added and applied `supabase/migrations/20260703134000_gymbro_rename_elliptical.sql` for the current database.
+- Kept the cardio type, muscle groups, and image unchanged.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Added the elliptical cardio exercise.
 
 Details:
