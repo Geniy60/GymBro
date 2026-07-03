@@ -30,10 +30,7 @@ export function MachineImageFrame({ machineId, style }: MachineImageFrameProps) 
 const styles = StyleSheet.create({
   frame: {
     alignItems: 'center',
-    backgroundColor: '#EEF7FF',
-    borderColor: colors.border,
     borderRadius: 8,
-    borderWidth: 1,
     justifyContent: 'center',
     overflow: 'hidden',
   },

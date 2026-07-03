@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
-    minHeight: 188,
+    minHeight: 215,
     padding: 8,
   },
   selectedTile: {
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   tileImage: {
-    height: 118,
+    height: 145,
     width: '100%',
   },
   textBlock: {

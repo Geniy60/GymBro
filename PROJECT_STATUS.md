@@ -34,6 +34,67 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Increased exercise photo area by another eight percent.
+
+Details:
+
+- Increased the shared exercise tile image area from 134 to 145.
+- Increased the tile minimum height from 204 to 215 to keep layout stable.
+- Kept image rendering without zoom, background, or frame border.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Removed exercise image zoom.
+
+Details:
+
+- Removed the shared machine image `transform` scale because it could crop exercise artwork.
+- Kept the larger shared exercise tile image area.
+- Kept the machine image frame borderless and without a background.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Fixed machine image rendering after removing the frame background.
+
+Details:
+
+- Replaced percent-based image enlargement with a `transform` scale in the shared machine image frame.
+- Kept the image frame borderless and without a background.
+- Kept the larger shared exercise tile image area unchanged.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Removed the exercise image frame background.
+
+Details:
+
+- Removed the machine image frame background color and border.
+- Kept the larger shared exercise image size and internal image zoom unchanged.
+- Kept the change scoped to the shared machine image frame.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Enlarged exercise images to fill more of the tile.
+
+Details:
+
+- Increased machine image preview height in shared exercise tiles from 118 to 134.
+- Increased the tile minimum height proportionally so the larger preview has stable layout space.
+- Added a small internal image zoom in the shared machine image frame so artwork uses more of the available photo area.
+- Kept the change scoped to shared exercise image display used by the exercise list, workout picker, and suggestion preview.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Enlarged exercise images.
 
 Details:
