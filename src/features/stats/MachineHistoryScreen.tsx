@@ -20,6 +20,8 @@ type MachineHistoryScreenProps = {
   cardioHistoryItems?: CardioHistoryItem[];
   historyItems: MachineHistoryItem[];
   isLoadingHistory: boolean;
+  maxDateLabel?: string;
+  maxWeightKg?: number;
   mode: 'cardio' | 'strength';
   onBack: () => void;
   selectedItem: ExerciseHistorySummary;
@@ -29,6 +31,8 @@ export function MachineHistoryScreen({
   cardioHistoryItems = [],
   historyItems,
   isLoadingHistory,
+  maxDateLabel,
+  maxWeightKg,
   mode,
   onBack,
   selectedItem,
@@ -52,15 +56,15 @@ export function MachineHistoryScreen({
         </View>
       </View>
 
-      {mode === 'strength' && selectedItem.maxWeightKg !== undefined ? (
+      {mode === 'strength' && maxWeightKg !== undefined ? (
         <View style={styles.maxSummary}>
           <Text style={styles.maxSummaryLabel}>
             {strings.stats.strengthHistoryMaxTitle}
           </Text>
           <Text style={styles.maxSummaryValue}>
             {strings.stats.maxWeight(
-              formatWeight(selectedItem.maxWeightKg),
-              selectedItem.maxDateLabel ?? '',
+              formatWeight(maxWeightKg),
+              maxDateLabel ?? '',
             )}
           </Text>
         </View>

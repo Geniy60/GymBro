@@ -11,7 +11,11 @@ import {
   loadWorkoutStats,
 } from '../../services/workoutStatsService';
 import { strings } from '../../strings';
-import type { ExerciseHistorySummary, WorkoutStats } from '../../types';
+import type {
+  ExerciseHistorySummary,
+  MachineHistoryItem,
+  WorkoutStats,
+} from '../../types';
 import { MachineHistoryScreen } from './MachineHistoryScreen';
 import { StatsOverview } from './StatsOverview';
 
@@ -105,11 +109,14 @@ export function StatsScreen({ userId }: StatsScreenProps) {
     const selectedMachineHistory = historyQuery.data ?? [];
     const isLoadingHistory =
       selectedMachineHistory.length === 0 && historyQuery.isFetching;
+    const selectedMachineMax = getMachineHistoryMax(selectedMachineHistory);
 
     return (
       <MachineHistoryScreen
         historyItems={selectedMachineHistory}
         isLoadingHistory={isLoadingHistory}
+        maxDateLabel={selectedMachineMax?.dateLabel}
+        maxWeightKg={selectedMachineMax?.maxWeightKg ?? undefined}
         mode="strength"
         onBack={() => setSelectedHistoryItem(null)}
         selectedItem={selectedHistoryItem}
@@ -140,3 +147,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 });
+
+function getMachineHistoryMax(
+  historyItems: MachineHistoryItem[],
+): MachineHistoryItem | null {
+  let maxItem: MachineHistoryItem | null = null;
+
+  for (const historyItem of historyItems) {
+    if (historyItem.maxWeightKg === null) {
+      continue;
+    }
+
+    if (
+      maxItem === null ||
+      maxItem.maxWeightKg === null ||
+      historyItem.maxWeightKg > maxItem.maxWeightKg
+    ) {
+      maxItem = historyItem;
+    }
+  }
+
+  return maxItem;
+}

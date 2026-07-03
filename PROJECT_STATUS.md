@@ -34,6 +34,34 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Made strength max loading lazy.
+
+Details:
+
+- Removed the strength max RPC from the initial Stats screen load.
+- The Stats exercise history picker now loads only the exercise catalog plus workout counters and month chart data.
+- Strength maximums are now computed locally from the lazily loaded exercise history after opening a specific strength exercise.
+- Cardio history remains lazy and unchanged.
+- Updated the stats service test to ensure the initial stats load does not call `gymbro_machine_maxes`.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Show all exercises in stats history picker.
+
+Details:
+
+- Changed the Stats exercise history picker to list every exercise from the exercise catalog.
+- Exercises now appear even when they have no workout history yet.
+- Strength exercises still show the max summary in detail only when a max exists.
+- Cardio exercises still open directly to the history list and show the empty state when there is no history.
+- Updated the stats service test to cover strength with history, strength without history, and cardio.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Reworked stats exercise history.
 
 Details:

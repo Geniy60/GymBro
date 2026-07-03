@@ -17,11 +17,33 @@ beforeEach(() => {
 });
 
 describe('workoutStatsService cardio mapping', () => {
-  it('combines strength and cardio exercises into one history list', async () => {
+  it('loads all exercises into one history list without loading maxes', async () => {
     let workoutsQueryCount = 0;
-    supabaseMock.from.mockImplementation(() => {
-      workoutsQueryCount += 1;
+    supabaseMock.from.mockImplementation((table: string) => {
+      if (table === 'gymbro_machines') {
+        return createThenableQuery({
+          data: [
+            {
+              id: 'standard-chest-press',
+              name: 'Chest Press',
+              tracking_type: 'strength',
+            },
+            {
+              id: 'standard-leg-press',
+              name: 'Leg Press',
+              tracking_type: 'strength',
+            },
+            {
+              id: 'standard-treadmill',
+              name: 'Treadmill',
+              tracking_type: 'cardio',
+            },
+          ],
+          error: null,
+        });
+      }
 
+      workoutsQueryCount += 1;
       if (workoutsQueryCount <= 2) {
         return createThenableQuery({ count: workoutsQueryCount, error: null });
       }
@@ -32,33 +54,6 @@ describe('workoutStatsService cardio mapping', () => {
       });
     });
     supabaseMock.rpc.mockImplementation((name: string) => {
-      if (name === 'gymbro_machine_maxes') {
-        return Promise.resolve({
-          data: [
-            {
-              machine_id: 'standard-chest-press',
-              machine_name: 'Chest Press',
-              started_at: '2026-01-01T10:00:00.000Z',
-              weight_kg: 80,
-            },
-          ],
-          error: null,
-        });
-      }
-
-      if (name === 'gymbro_cardio_history_summaries') {
-        return Promise.resolve({
-          data: [
-            {
-              machine_id: 'standard-treadmill',
-              machine_name: 'Treadmill',
-              started_at: '2026-01-02T10:00:00.000Z',
-            },
-          ],
-          error: null,
-        });
-      }
-
       return Promise.resolve({ data: [], error: null });
     });
 
@@ -68,8 +63,11 @@ describe('workoutStatsService cardio mapping', () => {
       {
         id: 'standard-chest-press',
         machineName: 'Chest Press',
-        maxDateLabel: '01.01.2026',
-        maxWeightKg: 80,
+        trackingType: 'strength',
+      },
+      {
+        id: 'standard-leg-press',
+        machineName: 'Leg Press',
         trackingType: 'strength',
       },
       {
@@ -78,6 +76,10 @@ describe('workoutStatsService cardio mapping', () => {
         trackingType: 'cardio',
       },
     ]);
+    expect(supabaseMock.rpc).not.toHaveBeenCalledWith(
+      'gymbro_machine_maxes',
+      expect.anything(),
+    );
   });
 
   it('loads cardio history with distance, elevation, and duration', async () => {
@@ -123,6 +125,7 @@ function createThenableQuery<T>(result: T) {
     eq: () => query,
     gte: () => query,
     lt: () => query,
+    order: () => query,
     select: () => query,
     then: (resolve: (value: T) => unknown, reject: (reason: unknown) => unknown) =>
       Promise.resolve(result).then(resolve, reject),

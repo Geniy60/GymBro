@@ -101,8 +101,6 @@ export type MachineMax = {
 export type ExerciseHistorySummary = {
   id: string;
   machineName: string;
-  maxDateLabel?: string;
-  maxWeightKg?: number;
   trackingType: MachineTrackingType;
 };
 
