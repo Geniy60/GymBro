@@ -34,6 +34,19 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Compacted the treadmill workout card.
+
+Details:
+
+- Reworked the treadmill cardio input block into two compact rows.
+- First row now shows treadmill setup values: speed and incline.
+- Second row now shows result values: distance, elevation, and time.
+- Reduced cardio input height, label size, and spacing so the treadmill card takes less vertical space.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 33 tests across 8 test files.
+
+Previous step:
+
 Applied the treadmill exercise image.
 
 Details:
