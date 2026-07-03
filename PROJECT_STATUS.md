@@ -34,6 +34,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Compacted the top stats area.
+
+Details:
+
+- Reduced the height of the total/month workout stat tiles.
+- Reduced the last-six-month chart height from 120 to 108.
+- Tightened vertical spacing in the top stats area so the exercise history list has more room.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Made strength max loading lazy.
 
 Details:

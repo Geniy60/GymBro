@@ -44,7 +44,7 @@ export function StatsOverview({
         />
       </View>
 
-      <View style={styles.section}>
+      <View style={[styles.section, styles.chartSection]}>
         <Text style={styles.sectionTitle}>{strings.stats.chartTitle}</Text>
         <View style={styles.chartRow}>
           {stats.monthStats.map((monthStat) => (
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   summaryRow: {
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 10,
+    marginBottom: 9,
   },
   statTile: {
     backgroundColor: colors.panel,
@@ -178,18 +178,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 7,
   },
   statValue: {
     color: colors.text,
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '800',
   },
   statLabel: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
-    marginTop: 2,
+    marginTop: 1,
   },
   section: {
     backgroundColor: colors.panel,
@@ -202,17 +202,20 @@ const styles = StyleSheet.create({
   historySection: {
     flex: 1,
   },
+  chartSection: {
+    paddingVertical: 11,
+  },
   sectionTitle: {
     color: colors.text,
     fontSize: 16,
     fontWeight: '800',
-    marginBottom: 10,
+    marginBottom: 9,
   },
   chartRow: {
     alignItems: 'flex-end',
     flexDirection: 'row',
     gap: 8,
-    height: 120,
+    height: 108,
   },
   chartItem: {
     alignItems: 'center',
@@ -236,13 +239,13 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 12,
     fontWeight: '800',
-    marginTop: 4,
+    marginTop: 3,
   },
   chartLabel: {
     color: colors.muted,
     fontSize: 11,
     fontWeight: '700',
-    marginTop: 2,
+    marginTop: 1,
   },
   searchRow: {
     alignItems: 'center',
