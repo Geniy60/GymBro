@@ -42,7 +42,7 @@ import {
   WorkoutSessionFooter,
 } from './WorkoutSessionFooter';
 import {
-  createSetsFromHistory,
+  createSetsForMachine,
   filterMachines,
   findWorkoutInputError,
   hasWorkoutChanged,
@@ -210,7 +210,8 @@ export function WorkoutSessionScreen({
       id: createId(),
       machineId: machine.id,
       machineName: machine.name,
-      sets: createSetsFromHistory(historySets),
+      trackingType: machine.trackingType,
+      sets: createSetsForMachine(machine, historySets),
     };
   }
 

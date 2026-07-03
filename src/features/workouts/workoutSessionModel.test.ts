@@ -19,6 +19,7 @@ import type { Machine, Workout, WorkoutExercise, WorkoutSet } from '../../types'
 import {
   addSetToExercise,
   createEmptySets,
+  createSetsForMachine,
   createSetsFromHistory,
   filterMachines,
   findWorkoutInputError,
@@ -28,24 +29,35 @@ import {
   shouldConfirmExitWorkout,
 } from './workoutSessionModel';
 
+const emptyCardioFields = {
+  distanceKm: '',
+  durationMinutes: '',
+  elevationMeters: '',
+  inclinePercent: '',
+  speedKmh: '',
+};
+
 const machines: Machine[] = [
   {
     id: 'chest-press',
     muscleGroups: ['chest', 'triceps'],
     name: 'Chest Press',
     note: 'plate loaded',
+    trackingType: 'strength',
   },
   {
     id: 'leg-press',
     muscleGroups: ['quads', 'glutes'],
     name: 'Leg Press',
     note: 'wide platform',
+    trackingType: 'strength',
   },
   {
     id: 'lat-pulldown',
     muscleGroups: ['back', 'biceps'],
     name: 'Lat Pulldown',
     note: '',
+    trackingType: 'strength',
   },
 ];
 
@@ -71,6 +83,7 @@ describe('workoutSessionModel', () => {
           id: 'existing',
           machineId: 'chest-press',
           machineName: 'Chest Press',
+          trackingType: 'strength',
           sets: [],
         },
       ],
@@ -96,19 +109,31 @@ describe('workoutSessionModel', () => {
     idMock.state.values = ['set-1', 'set-2'];
 
     expect(createEmptySets(2)).toEqual([
-      { id: 'set-1', note: '', reps: '', weightKg: '' },
-      { id: 'set-2', note: '', reps: '', weightKg: '' },
+      { ...emptyCardioFields, id: 'set-1', note: '', reps: '', weightKg: '' },
+      { ...emptyCardioFields, id: 'set-2', note: '', reps: '', weightKg: '' },
     ]);
   });
 
   it('copies history sets with fresh ids and falls back to four empty sets', () => {
     const historySets: WorkoutSet[] = [
-      { id: 'old-set', note: 'controlled', reps: '10', weightKg: '42.5' },
+      {
+        ...emptyCardioFields,
+        id: 'old-set',
+        note: 'controlled',
+        reps: '10',
+        weightKg: '42.5',
+      },
     ];
     idMock.state.values = ['new-history-set'];
 
     expect(createSetsFromHistory(historySets)).toEqual([
-      { id: 'new-history-set', note: 'controlled', reps: '10', weightKg: '42.5' },
+      {
+        ...emptyCardioFields,
+        id: 'new-history-set',
+        note: 'controlled',
+        reps: '10',
+        weightKg: '42.5',
+      },
     ]);
 
     idMock.state.values = ['a', 'b', 'c', 'd'];
@@ -121,14 +146,37 @@ describe('workoutSessionModel', () => {
       id: 'exercise',
       machineId: 'machine',
       machineName: 'Machine',
-      sets: [{ id: 'set-1', note: 'note', reps: '8', weightKg: '60' }],
+      trackingType: 'strength',
+      sets: [
+        { ...emptyCardioFields, id: 'set-1', note: 'note', reps: '8', weightKg: '60' },
+      ],
     };
     idMock.state.values = ['set-2'];
 
     expect(addSetToExercise(exercise).sets).toEqual([
-      { id: 'set-1', note: 'note', reps: '8', weightKg: '60' },
-      { id: 'set-2', note: '', reps: '8', weightKg: '60' },
+      { ...emptyCardioFields, id: 'set-1', note: 'note', reps: '8', weightKg: '60' },
+      { ...emptyCardioFields, id: 'set-2', note: '', reps: '8', weightKg: '60' },
     ]);
+  });
+
+  it('creates one cardio set and does not add more cardio sets', () => {
+    const treadmill: Machine = {
+      id: 'treadmill',
+      muscleGroups: ['quads'],
+      name: 'Treadmill',
+      note: '',
+      trackingType: 'cardio',
+    };
+    const cardioExercise: WorkoutExercise = {
+      id: 'exercise',
+      machineId: 'treadmill',
+      machineName: 'Treadmill',
+      trackingType: 'cardio',
+      sets: createSetsForMachine(treadmill, undefined),
+    };
+
+    expect(cardioExercise.sets).toHaveLength(1);
+    expect(addSetToExercise(cardioExercise)).toBe(cardioExercise);
   });
 
   it('normalizes workout names and detects meaningful changes', () => {
@@ -155,9 +203,16 @@ describe('workoutSessionModel', () => {
           id: 'exercise',
           machineId: 'machine',
           machineName: 'Machine',
+          trackingType: 'strength',
           sets: [
-            { id: 'set-1', note: '', reps: '10', weightKg: '42,5' },
-            { id: 'set-2', note: '', reps: '', weightKg: '' },
+            {
+              ...emptyCardioFields,
+              id: 'set-1',
+              note: '',
+              reps: '10',
+              weightKg: '42,5',
+            },
+            { ...emptyCardioFields, id: 'set-2', note: '', reps: '', weightKg: '' },
           ],
         },
       ],
@@ -174,7 +229,9 @@ describe('workoutSessionModel', () => {
         exercises: [
           {
             ...workout.exercises[0],
-            sets: [{ id: 'set-1', note: '', reps: '10', weightKg: '-1' }],
+            sets: [
+              { ...emptyCardioFields, id: 'set-1', note: '', reps: '10', weightKg: '-1' },
+            ],
           },
         ],
       }),
@@ -185,7 +242,9 @@ describe('workoutSessionModel', () => {
         exercises: [
           {
             ...workout.exercises[0],
-            sets: [{ id: 'set-1', note: '', reps: '3.5', weightKg: '10' }],
+            sets: [
+              { ...emptyCardioFields, id: 'set-1', note: '', reps: '3.5', weightKg: '10' },
+            ],
           },
         ],
       }),
@@ -212,6 +271,7 @@ describe('workoutSessionModel', () => {
             id: 'exercise',
             machineId: 'machine',
             machineName: 'Machine',
+            trackingType: 'strength',
             sets: [],
           },
         ],

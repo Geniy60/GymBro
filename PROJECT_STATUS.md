@@ -11,7 +11,7 @@ The initial app shell is in place with a compact header, safe-area handling, and
 - Exercises
 - Workouts
 
-The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. Exercise saves now go through one transactional Supabase RPC so exercise rows and muscle-group rows are updated atomically. The standard exercise catalog currently contains 28 items.
+The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. Exercise saves now go through one transactional Supabase RPC so exercise rows and muscle-group rows are updated atomically. The standard exercise catalog currently contains 29 items.
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically. Active workout drafts are autosaved locally on the phone and can be restored after app restart before they are saved to Supabase. The active workout screen has separate Save and Finish actions: Save persists without closing the workout, while Finish saves and returns to the workout list.
 
@@ -33,6 +33,35 @@ The main header has a manual refresh action next to settings. It invalidates the
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Applied the treadmill exercise image.
+
+Details:
+
+- Approved and applied the generated treadmill image.
+- Saved the project asset as `assets/machines/treadmill.png`.
+- Connected `standard-treadmill` to the new image in `src/machineImages.ts`.
+- Resized the generated preview to the project's normal 512x512 machine image format.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 33 tests across 8 test files.
+
+Previous step:
+
+Added treadmill cardio tracking.
+
+Details:
+
+- Added `standard-treadmill` / `Беговая дорожка` as a standard cardio exercise.
+- Added exercise `tracking_type` support for strength and cardio exercises.
+- Added optional cardio workout fields for time, distance, incline, elevation, and speed.
+- Kept treadmill entries to one cardio block instead of strength-style multiple sets.
+- Updated workout save/load RPC handling for the new cardio fields.
+- Added and applied `supabase/migrations/20260703110000_gymbro_add_treadmill_cardio.sql`.
+- Updated tests for strength and cardio workout payloads.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 33 tests across 8 test files.
+
+Previous step:
 
 Renamed the Gravitron exercise to pull-ups.
 

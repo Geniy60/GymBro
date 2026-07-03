@@ -12,6 +12,7 @@ export type Machine = {
   name: string;
   muscleGroups: MuscleGroup[];
   note: string;
+  trackingType: MachineTrackingType;
 };
 
 export type MachineDraft = {
@@ -19,6 +20,8 @@ export type MachineDraft = {
   muscleGroups: MuscleGroup[];
   note: string;
 };
+
+export type MachineTrackingType = 'strength' | 'cardio';
 
 export type MuscleGroup =
   | 'chest'
@@ -61,14 +64,20 @@ export type WorkoutExercise = {
   id: string;
   machineId: string;
   machineName: string;
+  trackingType: MachineTrackingType;
   sets: WorkoutSet[];
 };
 
 export type WorkoutSet = {
+  distanceKm: string;
+  durationMinutes: string;
+  elevationMeters: string;
   id: string;
-  weightKg: string;
-  reps: string;
+  inclinePercent: string;
   note: string;
+  reps: string;
+  speedKmh: string;
+  weightKg: string;
 };
 
 export type WorkoutPage = {

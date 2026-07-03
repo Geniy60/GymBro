@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { WorkoutExercise, WorkoutSet } from '../../types';
+import { CardioWorkoutInputBlock } from './CardioWorkoutInputBlock';
 import { WorkoutSetInputRow } from './WorkoutSetInputRow';
 
 type WorkoutExerciseCardProps = {
@@ -39,6 +40,8 @@ export function WorkoutExerciseCard({
   visibleSetNoteIds,
 }: WorkoutExerciseCardProps) {
   const isCollapsed = collapsedExerciseIds.includes(exercise.id);
+  const isCardioExercise = exercise.trackingType === 'cardio';
+  const cardioSet = exercise.sets[0];
 
   return (
     <View style={[styles.exerciseCard, isCollapsed && styles.collapsedExerciseCard]}>
@@ -55,7 +58,11 @@ export function WorkoutExerciseCard({
           {isCollapsed ? null : (
             <>
               <Pressable
-                accessibilityLabel={strings.workouts.clearExerciseSets}
+                accessibilityLabel={
+                  isCardioExercise
+                    ? strings.workouts.clearCardioSet
+                    : strings.workouts.clearExerciseSets
+                }
                 onPress={() => clearExerciseSets(exercise.id)}
                 style={({ pressed }) => [
                   styles.smallIconButton,
@@ -106,30 +113,42 @@ export function WorkoutExerciseCard({
 
       {isCollapsed ? null : (
         <>
-          {exercise.sets.map((workoutSet, index) => (
-            <WorkoutSetInputRow
-              deleteSet={deleteSet}
+          {isCardioExercise && cardioSet !== undefined ? (
+            <CardioWorkoutInputBlock
               exerciseId={exercise.id}
-              index={index}
-              isNoteVisible={visibleSetNoteIds.includes(workoutSet.id)}
-              key={workoutSet.id}
-              previousMaxWeightKg={previousMaxWeightKg}
-              toggleSetNote={toggleSetNote}
               updateSet={updateSet}
-              workoutSet={workoutSet}
+              workoutSet={cardioSet}
             />
-          ))}
+          ) : (
+            <>
+              {exercise.sets.map((workoutSet, index) => (
+                <WorkoutSetInputRow
+                  deleteSet={deleteSet}
+                  exerciseId={exercise.id}
+                  index={index}
+                  isNoteVisible={visibleSetNoteIds.includes(workoutSet.id)}
+                  key={workoutSet.id}
+                  previousMaxWeightKg={previousMaxWeightKg}
+                  toggleSetNote={toggleSetNote}
+                  updateSet={updateSet}
+                  workoutSet={workoutSet}
+                />
+              ))}
 
-          <Pressable
-            accessibilityLabel={strings.workouts.addSet}
-            onPress={() => addSet(exercise.id)}
-            style={({ pressed }) => [
-              styles.secondaryButton,
-              pressed && styles.pressedButton,
-            ]}
-          >
-            <Text style={styles.secondaryButtonText}>{strings.workouts.addSet}</Text>
-          </Pressable>
+              <Pressable
+                accessibilityLabel={strings.workouts.addSet}
+                onPress={() => addSet(exercise.id)}
+                style={({ pressed }) => [
+                  styles.secondaryButton,
+                  pressed && styles.pressedButton,
+                ]}
+              >
+                <Text style={styles.secondaryButtonText}>
+                  {strings.workouts.addSet}
+                </Text>
+              </Pressable>
+            </>
+          )}
         </>
       )}
     </View>

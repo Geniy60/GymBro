@@ -29,6 +29,7 @@ const machineImagesById: Partial<Record<string, ImageSourcePropType>> = {
   'standard-seated-row': require('../assets/machines/seated-row.png'),
   'standard-seated-triceps-press': require('../assets/machines/seated-triceps-press.png'),
   'standard-standing-calf-raise': require('../assets/machines/standing-calf-raise.png'),
+  'standard-treadmill': require('../assets/machines/treadmill.png'),
 };
 
 export function getMachineImage(machineId: string): ImageSourcePropType | undefined {

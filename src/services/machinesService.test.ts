@@ -22,12 +22,14 @@ describe('machinesService payload mapping', () => {
         muscleGroups: ['chest', 'triceps'],
         name: 'Chest Press',
         note: 'Seat 4',
+        trackingType: 'strength',
       }),
     ).toEqual({
       id: 'machine-1',
       muscleGroups: ['chest', 'triceps'],
       name: 'Chest Press',
       note: 'Seat 4',
+      trackingType: 'strength',
     });
   });
 });
@@ -40,8 +42,18 @@ describe('machinesService read mapping', () => {
           select: () => ({
             order: async () => ({
               data: [
-                { id: 'machine-1', name: 'Chest Press', note: 'Seat 4' },
-                { id: 'machine-2', name: 'Leg Press', note: '' },
+                {
+                  id: 'machine-1',
+                  name: 'Chest Press',
+                  note: 'Seat 4',
+                  tracking_type: 'strength',
+                },
+                {
+                  id: 'machine-2',
+                  name: 'Treadmill',
+                  note: '',
+                  tracking_type: 'cardio',
+                },
               ],
               error: null,
             }),
@@ -67,12 +79,14 @@ describe('machinesService read mapping', () => {
         muscleGroups: ['chest', 'triceps'],
         name: 'Chest Press',
         note: 'Seat 4',
+        trackingType: 'strength',
       },
       {
         id: 'machine-2',
         muscleGroups: ['quads'],
-        name: 'Leg Press',
+        name: 'Treadmill',
         note: '',
+        trackingType: 'cardio',
       },
     ]);
   });

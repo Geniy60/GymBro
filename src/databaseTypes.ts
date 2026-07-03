@@ -18,6 +18,7 @@ export type Database = {
           name: string;
           note: string;
           sort_order: number;
+          tracking_type: 'strength' | 'cardio';
           updated_at: string;
         };
         Insert: {
@@ -25,11 +26,13 @@ export type Database = {
           name: string;
           note?: string;
           sort_order?: number;
+          tracking_type?: 'strength' | 'cardio';
         };
         Update: {
           name?: string;
           note?: string;
           sort_order?: number;
+          tracking_type?: 'strength' | 'cardio';
         };
         Relationships: [];
       };
@@ -93,6 +96,7 @@ export type Database = {
           machine_id: string | null;
           machine_name_snapshot: string;
           sort_order: number;
+          tracking_type: 'strength' | 'cardio';
           updated_at: string;
           workout_id: string;
         };
@@ -101,38 +105,55 @@ export type Database = {
           machine_id?: string | null;
           machine_name_snapshot: string;
           sort_order?: number;
+          tracking_type?: 'strength' | 'cardio';
           workout_id: string;
         };
         Update: {
           machine_id?: string | null;
           machine_name_snapshot?: string;
           sort_order?: number;
+          tracking_type?: 'strength' | 'cardio';
         };
         Relationships: [];
       };
       gymbro_workout_sets: {
         Row: {
           created_at: string;
+          distance_km: number | null;
+          duration_seconds: number | null;
+          elevation_meters: number | null;
           exercise_id: string;
           id: string;
+          incline_percent: number | null;
           note: string;
           reps: string;
           sort_order: number;
+          speed_kmh: number | null;
           updated_at: string;
           weight_kg: number | null;
         };
         Insert: {
+          distance_km?: number | null;
+          duration_seconds?: number | null;
+          elevation_meters?: number | null;
           exercise_id: string;
           id: string;
+          incline_percent?: number | null;
           note?: string;
           reps?: string;
           sort_order?: number;
+          speed_kmh?: number | null;
           weight_kg?: number | null;
         };
         Update: {
+          distance_km?: number | null;
+          duration_seconds?: number | null;
+          elevation_meters?: number | null;
+          incline_percent?: number | null;
           note?: string;
           reps?: string;
           sort_order?: number;
+          speed_kmh?: number | null;
           weight_kg?: number | null;
         };
         Relationships: [];
@@ -151,6 +172,11 @@ export type Database = {
           id: string;
           note: string;
           reps: string;
+          duration_seconds: number | null;
+          distance_km: number | null;
+          incline_percent: number | null;
+          elevation_meters: number | null;
+          speed_kmh: number | null;
           weight_kg: number | null;
         }[];
       };

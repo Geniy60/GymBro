@@ -1,5 +1,8 @@
 import type { Workout, WorkoutExercise, WorkoutSet } from '../../types';
-import { addSetToExercise, createEmptySets } from './workoutSessionModel';
+import {
+  addSetToExercise,
+  createEmptySetsForTrackingType,
+} from './workoutSessionModel';
 
 export type WorkoutSessionDraftState = {
   collapsedExerciseIds: string[];
@@ -177,13 +180,14 @@ function clearExerciseSets(
   );
   const setCount = exerciseToClear?.sets.length ?? 0;
   const clearedSetIds = exerciseToClear?.sets.map((workoutSet) => workoutSet.id) ?? [];
+  const trackingType = exerciseToClear?.trackingType ?? 'strength';
 
   return {
     ...updateExercises(state, (exercise) =>
       exercise.id === exerciseId
         ? {
             ...exercise,
-            sets: createEmptySets(setCount > 0 ? setCount : 4),
+            sets: createEmptySetsForTrackingType(trackingType, setCount),
           }
         : exercise,
     ),

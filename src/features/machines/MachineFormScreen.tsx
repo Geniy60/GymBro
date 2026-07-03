@@ -86,6 +86,7 @@ export function MachineFormScreen({
 
     onSave({
       id: machine?.id ?? createId(),
+      trackingType: machine?.trackingType ?? 'strength',
       ...nextDraft,
     });
   }

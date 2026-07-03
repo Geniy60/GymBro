@@ -23,6 +23,14 @@ import {
 import { colors } from './theme/colors';
 import type { Workout } from './types';
 
+const emptyCardioFields = {
+  distanceKm: '',
+  durationMinutes: '',
+  elevationMeters: '',
+  inclinePercent: '',
+  speedKmh: '',
+};
+
 describe('appModel', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -57,9 +65,16 @@ describe('appModel', () => {
           id: 'old-exercise',
           machineId: 'machine-1',
           machineName: 'Chest Press',
+          trackingType: 'strength',
           sets: [
-            { id: 'old-set-1', note: 'first', reps: '10', weightKg: '50' },
-            { id: 'old-set-2', note: '', reps: '8', weightKg: '55' },
+            {
+              ...emptyCardioFields,
+              id: 'old-set-1',
+              note: 'first',
+              reps: '10',
+              weightKg: '50',
+            },
+            { ...emptyCardioFields, id: 'old-set-2', note: '', reps: '8', weightKg: '55' },
           ],
         },
       ],

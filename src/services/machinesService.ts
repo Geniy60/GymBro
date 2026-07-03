@@ -1,11 +1,12 @@
 import { supabase } from '../supabaseClient';
 import type { Json } from '../databaseTypes';
-import type { Machine, MuscleGroup } from '../types';
+import type { Machine, MachineTrackingType, MuscleGroup } from '../types';
 
 type MachineRow = {
   id: string;
   name: string;
   note: string;
+  tracking_type: MachineTrackingType | null;
 };
 
 type MachineSavePayload = {
@@ -13,12 +14,13 @@ type MachineSavePayload = {
   muscleGroups: MuscleGroup[];
   name: string;
   note: string;
+  trackingType: MachineTrackingType;
 };
 
 export async function loadMachines(): Promise<Machine[]> {
   const { data: machineRows, error: machineError } = await supabase
     .from('gymbro_machines')
-    .select('id, name, note')
+    .select('id, name, note, tracking_type')
     .order('name', { ascending: true });
 
   if (machineError) {
@@ -70,6 +72,7 @@ function mapMachineRow(
     name: machineRow.name,
     muscleGroups,
     note: machineRow.note,
+    trackingType: machineRow.tracking_type ?? 'strength',
   };
 }
 
@@ -79,5 +82,6 @@ export function createMachineSavePayload(machine: Machine): MachineSavePayload &
     muscleGroups: machine.muscleGroups,
     name: machine.name,
     note: machine.note,
+    trackingType: machine.trackingType,
   };
 }

@@ -21,15 +21,30 @@ import {
   workoutSessionDraftReducer,
 } from './workoutSessionReducer';
 
+const emptyCardioFields = {
+  distanceKm: '',
+  durationMinutes: '',
+  elevationMeters: '',
+  inclinePercent: '',
+  speedKmh: '',
+};
+
 const workout: Workout = {
   exercises: [
     {
       id: 'exercise-1',
       machineId: 'machine-1',
       machineName: 'Chest Press',
+      trackingType: 'strength',
       sets: [
-        { id: 'set-1', note: 'warmup', reps: '10', weightKg: '50' },
-        { id: 'set-2', note: '', reps: '8', weightKg: '60' },
+        {
+          ...emptyCardioFields,
+          id: 'set-1',
+          note: 'warmup',
+          reps: '10',
+          weightKg: '50',
+        },
+        { ...emptyCardioFields, id: 'set-2', note: '', reps: '8', weightKg: '60' },
       ],
     },
   ],
@@ -58,6 +73,7 @@ describe('workoutSessionDraftReducer', () => {
             id: 'exercise-2',
             machineId: 'machine-2',
             machineName: 'Leg Press',
+            trackingType: 'strength',
             sets: [],
           },
         ],
@@ -94,7 +110,7 @@ describe('workoutSessionDraftReducer', () => {
     });
 
     expect(state.draftWorkout.exercises[0].sets).toEqual([
-      { id: 'set-2', note: '', reps: '8', weightKg: '60' },
+      { ...emptyCardioFields, id: 'set-2', note: '', reps: '8', weightKg: '60' },
     ]);
     expect(state.visibleSetNoteIds).toEqual([]);
   });

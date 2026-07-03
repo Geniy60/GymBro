@@ -1,6 +1,7 @@
 import { supabase } from '../supabaseClient';
 import type { Json } from '../databaseTypes';
 import type {
+  MachineTrackingType,
   Workout,
   WorkoutExercise,
   WorkoutPage,
@@ -21,14 +22,20 @@ type WorkoutExerciseRow = {
   id: string;
   machine_id: string | null;
   machine_name_snapshot: string;
+  tracking_type: MachineTrackingType | null;
   workout_id: string;
 };
 
 type WorkoutSetRow = {
+  distance_km: number | null;
+  duration_seconds: number | null;
+  elevation_meters: number | null;
   exercise_id: string;
   id: string;
+  incline_percent: number | null;
   note: string;
   reps: string;
+  speed_kmh: number | null;
   weight_kg: number | null;
 };
 
@@ -42,10 +49,16 @@ type WorkoutSavePayload = {
     id: string;
     machineId: string;
     machineName: string;
+    trackingType: MachineTrackingType;
     sets: {
+      distanceKm: number | null;
+      durationSeconds: number | null;
+      elevationMeters: number | null;
       id: string;
+      inclinePercent: number | null;
       note: string;
       reps: string;
+      speedKmh: number | null;
       weightKg: number | null;
     }[];
   }[];
@@ -185,7 +198,7 @@ async function loadWorkoutExercisesByWorkoutIds(
 ): Promise<WorkoutExerciseRow[]> {
   const { data, error } = await supabase
     .from('gymbro_workout_exercises')
-    .select('id, workout_id, machine_id, machine_name_snapshot')
+    .select('id, workout_id, machine_id, machine_name_snapshot, tracking_type')
     .in('workout_id', workoutIds)
     .order('sort_order', { ascending: true });
 
@@ -201,7 +214,9 @@ async function loadWorkoutSetsByExerciseIds(
 ): Promise<WorkoutSetRow[]> {
   const { data, error } = await supabase
     .from('gymbro_workout_sets')
-    .select('id, exercise_id, weight_kg, reps, note')
+    .select(
+      'id, exercise_id, weight_kg, reps, note, duration_seconds, distance_km, incline_percent, elevation_meters, speed_kmh',
+    )
     .in('exercise_id', exerciseIds)
     .order('sort_order', { ascending: true });
 
@@ -248,15 +263,21 @@ function mapWorkoutExerciseRow(
     id: exerciseRow.id,
     machineId: exerciseRow.machine_id ?? '',
     machineName: exerciseRow.machine_name_snapshot,
+    trackingType: exerciseRow.tracking_type ?? 'strength',
     sets: setRows.map(mapWorkoutSetRow),
   };
 }
 
 function mapWorkoutSetRow(setRow: WorkoutSetRow): WorkoutSet {
   return {
+    distanceKm: formatNullableNumber(setRow.distance_km ?? null),
+    durationMinutes: formatDurationMinutes(setRow.duration_seconds ?? null),
+    elevationMeters: formatNullableNumber(setRow.elevation_meters ?? null),
     id: setRow.id,
+    inclinePercent: formatNullableNumber(setRow.incline_percent ?? null),
     note: setRow.note,
     reps: setRow.reps,
+    speedKmh: formatNullableNumber(setRow.speed_kmh ?? null),
     weightKg: formatWeightKg(setRow.weight_kg),
   };
 }
@@ -277,16 +298,58 @@ function formatWeightKg(weightKg: number | null): string {
   return weightKg === null ? '' : String(weightKg);
 }
 
+function parseOptionalNumber(value: string): number | null {
+  const normalizedValue = value.trim().replace(',', '.');
+
+  if (normalizedValue.length === 0) {
+    return null;
+  }
+
+  const parsedValue = Number(normalizedValue);
+
+  return Number.isFinite(parsedValue) ? parsedValue : null;
+}
+
+function parseDurationSeconds(durationMinutes: string): number | null {
+  const parsedDurationMinutes = parseOptionalNumber(durationMinutes);
+
+  return parsedDurationMinutes === null
+    ? null
+    : Math.round(parsedDurationMinutes * 60);
+}
+
+function formatNullableNumber(value: number | null): string {
+  return value === null ? '' : String(value);
+}
+
+function formatDurationMinutes(durationSeconds: number | null): string {
+  if (durationSeconds === null) {
+    return '';
+  }
+
+  const durationMinutes = durationSeconds / 60;
+
+  return Number.isInteger(durationMinutes)
+    ? String(durationMinutes)
+    : String(Number(durationMinutes.toFixed(2)));
+}
+
 export function createWorkoutSavePayload(workout: Workout): WorkoutSavePayload & Json {
   return {
     exercises: workout.exercises.map((exercise) => ({
       id: exercise.id,
       machineId: exercise.machineId,
       machineName: exercise.machineName,
+      trackingType: exercise.trackingType,
       sets: exercise.sets.map((workoutSet) => ({
+        distanceKm: parseOptionalNumber(workoutSet.distanceKm),
+        durationSeconds: parseDurationSeconds(workoutSet.durationMinutes),
+        elevationMeters: parseOptionalNumber(workoutSet.elevationMeters),
         id: workoutSet.id,
+        inclinePercent: parseOptionalNumber(workoutSet.inclinePercent),
         note: workoutSet.note,
         reps: workoutSet.reps,
+        speedKmh: parseOptionalNumber(workoutSet.speedKmh),
         weightKg: parseWeightKg(workoutSet.weightKg),
       })),
     })),
