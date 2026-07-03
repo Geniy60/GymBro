@@ -14,6 +14,7 @@ const machineImagesById: Partial<Record<string, ImageSourcePropType>> = {
   'standard-downward-pec-fly': require('../assets/machines/downward-pec-fly.png'),
   'standard-dumbbell-biceps-curl': require('../assets/machines/dumbbell-biceps-curl.png'),
   'standard-dumbbell-lunges': require('../assets/machines/dumbbell-lunges.png'),
+  'standard-elliptical': require('../assets/machines/elliptical.png'),
   'standard-glute-kickback': require('../assets/machines/glute-kickback.png'),
   'standard-hip-abduction': require('../assets/machines/hip-abduction.png'),
   'standard-hip-adduction': require('../assets/machines/hip-adduction.png'),
