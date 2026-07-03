@@ -11,7 +11,7 @@ The initial app shell is in place with a compact header, safe-area handling, and
 - Exercises
 - Workouts
 
-The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. Exercise saves now go through one transactional Supabase RPC so exercise rows and muscle-group rows are updated atomically. The standard exercise catalog currently contains 30 items.
+The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. Exercise saves now go through one transactional Supabase RPC so exercise rows and muscle-group rows are updated atomically. The standard exercise catalog currently contains 31 items.
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically. Active workout drafts are autosaved locally on the phone and can be restored after app restart before they are saved to Supabase. The active workout screen has separate Save and Finish actions: Save persists without closing the workout, while Finish saves and returns to the workout list.
 
@@ -33,6 +33,43 @@ The main header has a manual refresh action next to settings. It invalidates the
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Applied the approved stair climber image angle.
+
+Details:
+
+- Replaced `assets/machines/stair-climber.png` with the approved generated image.
+- The final stair climber asset now shows a male athlete from a rear three-quarter angle facing the console.
+- Kept the exercise data and image mapping unchanged.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Replaced the stair climber image with a generated app-style asset.
+
+Details:
+
+- Replaced the temporary photo-based `assets/machines/stair-climber.png`.
+- Generated a matching studio-style stair climber image with a person using the machine.
+- Saved the final project asset as a 512x512 PNG.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Added the stair climber cardio exercise.
+
+Details:
+
+- Added `standard-stair-climber` / `Лестница` as a standard cardio exercise.
+- Added and applied `supabase/migrations/20260703221000_gymbro_add_stair_climber.sql`.
+- Prepared the user-provided stair climber image as `assets/machines/stair-climber.png`.
+- Connected `standard-stair-climber` to the new image in `src/machineImages.ts`.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
 
 Increased exercise photo area by another eight percent.
 
