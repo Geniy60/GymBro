@@ -38,6 +38,41 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Changed the rest timer button accent color.
+
+Details:
+
+- Changed the active workout Rest button to use an orange accent.
+- Kept Save and Finish button colors unchanged.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Adjusted active workout bottom button height.
+
+Details:
+
+- Increased the one-row bottom action button height from 38 to 44.
+- This keeps the buttons smaller than the original 48 height while making them easier to tap.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Compacted active workout bottom controls into one row.
+
+Details:
+
+- Moved the rest timer action into the same row as Save and Finish.
+- The active rest timer button now shows the countdown in place.
+- Tapping the active rest timer button cancels the timer.
+- Reduced bottom action button height from 48 to 38 to give the exercise list more space.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Replaced Android native keyboard resize with a JS keyboard inset.
 
 Details:

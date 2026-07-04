@@ -597,28 +597,32 @@ export function WorkoutSessionScreen({
             keyboardBottomInset > 0 && { marginBottom: keyboardBottomInset },
           ]}
         >
-          <RestTimerControl
-            isActive={restTimerEndsAt !== null}
-            onCancel={() => {
-              void cancelActiveRestTimer();
-            }}
-            onStart={() => {
-              void startRestTimer();
-            }}
-            remainingSeconds={
-              restTimerEndsAt === null
-                ? restTimerSeconds
-                : Math.max(0, Math.ceil((restTimerEndsAt - restTimerNow) / 1000))
-            }
-          />
-
           <WorkoutSessionFooter
             onFinish={() => {
               void saveWorkout(true);
             }}
+            onRestTimerPress={() => {
+              if (restTimerEndsAt === null) {
+                void startRestTimer();
+                return;
+              }
+
+              void cancelActiveRestTimer();
+            }}
             onSave={() => {
               void saveWorkout(false);
             }}
+            restTimerActive={restTimerEndsAt !== null}
+            restTimerLabel={
+              <RestTimerControl
+                isActive={restTimerEndsAt !== null}
+                remainingSeconds={
+                  restTimerEndsAt === null
+                    ? restTimerSeconds
+                    : Math.max(0, Math.ceil((restTimerEndsAt - restTimerNow) / 1000))
+                }
+              />
+            }
             saveStatus={saveStatus}
           />
         </View>
@@ -665,7 +669,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   bottomControls: {
-    gap: 8,
     paddingBottom: 8,
     paddingTop: 8,
   },

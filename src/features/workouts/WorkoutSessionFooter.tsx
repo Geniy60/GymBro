@@ -1,19 +1,30 @@
+import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 
+const restTimerColor = '#D97706';
+const restTimerBorderColor = '#FCD34D';
+const restTimerActiveBackgroundColor = '#FFFBEB';
+
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 type WorkoutSessionFooterProps = {
   onFinish: () => void;
+  onRestTimerPress: () => void;
   onSave: () => void;
+  restTimerLabel: ReactNode;
+  restTimerActive: boolean;
   saveStatus: SaveStatus;
 };
 
 export function WorkoutSessionFooter({
   onFinish,
+  onRestTimerPress,
   onSave,
+  restTimerActive,
+  restTimerLabel,
   saveStatus,
 }: WorkoutSessionFooterProps) {
   const isSaving = saveStatus === 'saving';
@@ -33,6 +44,30 @@ export function WorkoutSessionFooter({
       ) : null}
 
       <View style={styles.footerActions}>
+        <Pressable
+          accessibilityLabel={
+            restTimerActive
+              ? strings.accessibility.cancelRestTimer
+              : strings.accessibility.startRestTimer
+          }
+          onPress={onRestTimerPress}
+          style={({ pressed }) => [
+            styles.footerButton,
+            styles.restTimerButton,
+            restTimerActive && styles.activeRestTimerButton,
+            pressed && styles.pressedButton,
+          ]}
+        >
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.restTimerButtonText,
+              restTimerActive && styles.activeRestTimerButtonText,
+            ]}
+          >
+            {restTimerLabel}
+          </Text>
+        </Pressable>
         <Pressable
           accessibilityLabel={strings.accessibility.saveWorkout}
           disabled={isSaving}
@@ -102,14 +137,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 10,
-    minHeight: 48,
+    minHeight: 44,
   },
   footerButton: {
     alignItems: 'center',
     borderRadius: 8,
     flex: 1,
     justifyContent: 'center',
-    minHeight: 48,
+    minHeight: 44,
+    paddingHorizontal: 6,
+  },
+  restTimerButton: {
+    backgroundColor: restTimerColor,
+  },
+  activeRestTimerButton: {
+    backgroundColor: restTimerActiveBackgroundColor,
+    borderColor: restTimerBorderColor,
+    borderWidth: 1,
+  },
+  restTimerButtonText: {
+    color: colors.panel,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  activeRestTimerButtonText: {
+    color: restTimerColor,
   },
   saveDraftButton: {
     backgroundColor: colors.panel,
@@ -118,7 +170,7 @@ const styles = StyleSheet.create({
   },
   saveDraftButtonText: {
     color: colors.primary,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
   },
   finishButton: {
@@ -126,7 +178,7 @@ const styles = StyleSheet.create({
   },
   finishButtonText: {
     color: colors.panel,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
   },
   disabledButton: {
