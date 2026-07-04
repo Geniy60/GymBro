@@ -11,6 +11,7 @@ import { loadWorkoutSummaries } from '../../services/workoutsService';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { WorkoutPage, WorkoutSummary } from '../../types';
+import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 import { WorkoutCard } from './WorkoutCard';
 
 type WorkoutListItem =
@@ -42,6 +43,7 @@ export function WorkoutsScreen({
 }: WorkoutsScreenProps) {
   const [searchText, setSearchText] = useState('');
   const [debouncedSearchText, setDebouncedSearchText] = useState('');
+  const keyboardBottomInset = useKeyboardBottomInset();
   const trimmedSearchText = debouncedSearchText.trim();
   const workoutSummariesQuery = useInfiniteQuery({
     enabled: userId !== null,
@@ -98,8 +100,12 @@ export function WorkoutsScreen({
       </View>
 
       <FlatList
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          keyboardBottomInset > 0 && { paddingBottom: 88 + keyboardBottomInset },
+        ]}
         data={workoutListItems}
+        keyboardDismissMode="on-drag"
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
           isWaitingForWorkouts ? (

@@ -17,6 +17,7 @@ import {
 } from '../../storage/restTimerSettingsStorage';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
+import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 
 type RestTimerSettingsScreenProps = {
   backgroundColor: string;
@@ -29,6 +30,7 @@ export function RestTimerSettingsScreen({
 }: RestTimerSettingsScreenProps) {
   const [secondsText, setSecondsText] = useState('');
   const [errorText, setErrorText] = useState('');
+  const keyboardBottomInset = useKeyboardBottomInset();
 
   useEffect(() => {
     void loadInitialValue();
@@ -57,7 +59,10 @@ export function RestTimerSettingsScreen({
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.content}
+        style={[
+          styles.content,
+          keyboardBottomInset > 0 && { paddingBottom: keyboardBottomInset },
+        ]}
       >
         <SecondaryScreenHeader
           marginBottom={18}

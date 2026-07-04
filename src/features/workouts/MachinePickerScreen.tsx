@@ -7,6 +7,7 @@ import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { Machine, Workout } from '../../types';
+import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 import { MachinePickerButton } from './MachinePickerButton';
 
 type MachinePickerScreenProps = {
@@ -30,6 +31,8 @@ export function MachinePickerScreen({
   onChangeSearchText,
   workout,
 }: MachinePickerScreenProps) {
+  const keyboardBottomInset = useKeyboardBottomInset();
+
   return (
     <SafeAreaView
       edges={['top', 'right', 'bottom', 'left']}
@@ -62,8 +65,14 @@ export function MachinePickerScreen({
             ) : (
               <FlatList
                 columnWrapperStyle={styles.machinePickerRow}
-                contentContainerStyle={styles.machinePickerListContent}
+                contentContainerStyle={[
+                  styles.machinePickerListContent,
+                  keyboardBottomInset > 0 && {
+                    paddingBottom: 24 + keyboardBottomInset,
+                  },
+                ]}
                 data={filteredMachines}
+                keyboardDismissMode="on-drag"
                 keyboardShouldPersistTaps="handled"
                 keyExtractor={(machine) => machine.id}
                 numColumns={2}

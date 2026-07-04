@@ -38,6 +38,33 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Added auto-scroll for lower keyboard-covered form fields.
+
+Details:
+
+- Exercise add/edit now scrolls to the lower form area when the note field receives focus.
+- Body measurements now scroll the form toward the focused measurement input.
+- Starting measurement edit also scrolls back to the measurement form.
+- This complements the Android keyboard bottom inset, which adds space but does not automatically move the focused input into view by itself.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Applied Android keyboard inset handling across input screens.
+
+Details:
+
+- Reused the existing `useKeyboardBottomInset` helper across all remaining screens with user input where the keyboard could cover content.
+- Added keyboard-aware bottom padding to rest timer settings, body measurements, machines list search, workout exercise picker search, workouts list search, and stats history search.
+- Added drag-to-dismiss keyboard behavior to the affected scrollable lists.
+- Kept the existing active workout and exercise form keyboard handling.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+- Verified `npx expo install --check` reports dependencies are up to date.
+
+Previous step:
+
 Changed the rest timer button accent color.
 
 Details:

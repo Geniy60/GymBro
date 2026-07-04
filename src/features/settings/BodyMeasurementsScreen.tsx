@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -39,6 +39,7 @@ import type {
   BodyMeasurementDraft,
   BodyMeasurementMetric,
 } from '../../types';
+import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 
 const EMPTY_DRAFT: BodyMeasurementDraft = {
   abdomenCm: '',
@@ -73,6 +74,8 @@ export function BodyMeasurementsScreen({
   const [editingMeasurement, setEditingMeasurement] =
     useState<BodyMeasurement | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const keyboardBottomInset = useKeyboardBottomInset();
+  const measurementsListRef = useRef<FlatList<BodyMeasurement>>(null);
   const queryClient = useQueryClient();
   const measurementsQuery = useQuery({
     enabled: userId !== null,
@@ -135,6 +138,7 @@ export function BodyMeasurementsScreen({
   function startEditingMeasurement(measurement: BodyMeasurement) {
     setEditingMeasurement(measurement);
     setDraft(createDraftFromMeasurement(measurement));
+    scrollToMeasurementInput(0);
   }
 
   function cancelEditingMeasurement() {
@@ -180,6 +184,15 @@ export function BodyMeasurementsScreen({
     }
   }
 
+  function scrollToMeasurementInput(inputIndex: number) {
+    setTimeout(() => {
+      measurementsListRef.current?.scrollToOffset({
+        animated: true,
+        offset: 230 + inputIndex * 62,
+      });
+    }, 250);
+  }
+
   return (
     <SafeAreaView
       edges={['top', 'right', 'bottom', 'left']}
@@ -196,9 +209,16 @@ export function BodyMeasurementsScreen({
         />
 
         <FlatList
-          contentContainerStyle={styles.listContent}
+          ref={measurementsListRef}
+          contentContainerStyle={[
+            styles.listContent,
+            keyboardBottomInset > 0 && {
+              paddingBottom: 24 + keyboardBottomInset,
+            },
+          ]}
           data={reversedMeasurements}
           keyExtractor={(item) => item.id}
+          keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
           ListEmptyComponent={
             measurementsQuery.isLoading ? (
@@ -223,6 +243,7 @@ export function BodyMeasurementsScreen({
                 isSaving={isSaving}
                 onCancelEditing={cancelEditingMeasurement}
                 onChangeDraft={setDraft}
+                onFocusInput={scrollToMeasurementInput}
                 onSave={() => {
                   void saveMeasurement();
                 }}
@@ -413,6 +434,7 @@ function MeasurementForm({
   isSaving,
   onCancelEditing,
   onChangeDraft,
+  onFocusInput,
   onSave,
 }: {
   draft: BodyMeasurementDraft;
@@ -420,6 +442,7 @@ function MeasurementForm({
   isSaving: boolean;
   onCancelEditing: () => void;
   onChangeDraft: (draft: BodyMeasurementDraft) => void;
+  onFocusInput: (inputIndex: number) => void;
   onSave: () => void;
 }) {
   return (
@@ -432,26 +455,31 @@ function MeasurementForm({
       <View style={styles.inputRow}>
         <MeasurementInput
           label={strings.bodyMeasurements.weightKg}
+          onFocus={() => onFocusInput(0)}
           onChangeText={(value) => onChangeDraft({ ...draft, weightKg: value })}
           value={draft.weightKg}
         />
         <MeasurementInput
           label={strings.bodyMeasurements.waistCm}
+          onFocus={() => onFocusInput(1)}
           onChangeText={(value) => onChangeDraft({ ...draft, waistCm: value })}
           value={draft.waistCm}
         />
         <MeasurementInput
           label={strings.bodyMeasurements.hipsCm}
+          onFocus={() => onFocusInput(2)}
           onChangeText={(value) => onChangeDraft({ ...draft, hipsCm: value })}
           value={draft.hipsCm}
         />
         <MeasurementInput
           label={strings.bodyMeasurements.chestCm}
+          onFocus={() => onFocusInput(3)}
           onChangeText={(value) => onChangeDraft({ ...draft, chestCm: value })}
           value={draft.chestCm}
         />
         <MeasurementInput
           label={strings.bodyMeasurements.abdomenCm}
+          onFocus={() => onFocusInput(4)}
           onChangeText={(value) => onChangeDraft({ ...draft, abdomenCm: value })}
           value={draft.abdomenCm}
         />
@@ -486,10 +514,12 @@ function MeasurementForm({
 
 function MeasurementInput({
   label,
+  onFocus,
   onChangeText,
   value,
 }: {
   label: string;
+  onFocus: () => void;
   onChangeText: (value: string) => void;
   value: string;
 }) {
@@ -498,6 +528,7 @@ function MeasurementInput({
       <Text style={styles.inputLabel}>{label}</Text>
       <TextInput
         keyboardType="decimal-pad"
+        onFocus={onFocus}
         onChangeText={onChangeText}
         placeholder="0"
         placeholderTextColor={colors.muted}

@@ -8,6 +8,7 @@ import { SearchInput } from '../../components/SearchInput';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { Machine } from '../../types';
+import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 
 type MachinesScreenProps = {
   isLoading: boolean;
@@ -23,6 +24,7 @@ export function MachinesScreen({
   onEditMachine,
 }: MachinesScreenProps) {
   const [searchText, setSearchText] = useState('');
+  const keyboardBottomInset = useKeyboardBottomInset();
 
   const filteredMachines = useMemo(() => {
     const normalizedSearch = searchText.trim().toLocaleLowerCase();
@@ -66,8 +68,13 @@ export function MachinesScreen({
 
       <FlatList
         columnWrapperStyle={styles.gridRow}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          keyboardBottomInset > 0 && { paddingBottom: 24 + keyboardBottomInset },
+        ]}
         data={filteredMachines}
+        keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
           isLoading ? (

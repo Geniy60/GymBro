@@ -12,6 +12,7 @@ import {
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { ExerciseHistorySummary, WorkoutStats } from '../../types';
+import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 
 type StatsOverviewProps = {
   maxMonthCount: number;
@@ -25,6 +26,7 @@ export function StatsOverview({
   stats,
 }: StatsOverviewProps) {
   const [historySearchText, setHistorySearchText] = useState('');
+  const keyboardBottomInset = useKeyboardBottomInset();
   const filteredHistoryItems = useMemo(
     () => filterHistoryItems(stats.exerciseHistoryItems, historySearchText),
     [historySearchText, stats.exerciseHistoryItems],
@@ -92,9 +94,15 @@ export function StatsOverview({
           ) : null}
         </View>
         <FlatList
-          contentContainerStyle={styles.historyListContent}
+          contentContainerStyle={[
+            styles.historyListContent,
+            keyboardBottomInset > 0 && {
+              paddingBottom: 4 + keyboardBottomInset,
+            },
+          ]}
           data={filteredHistoryItems}
           keyExtractor={(historyItem) => historyItem.id}
+          keyboardDismissMode="on-drag"
           ListEmptyComponent={
             <View style={styles.emptyBlock}>
               <Text style={styles.emptyText}>
