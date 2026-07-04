@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { BackHandler, LogBox, StyleSheet } from 'react-native';
+import { BackHandler, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { showAppAlert } from './src/appAlert';
@@ -62,10 +62,6 @@ import type {
 } from './src/types';
 
 const MIN_REFRESH_FEEDBACK_MS = 600;
-
-LogBox.ignoreLogs([
-  '`expo-notifications` functionality is not fully supported in Expo Go',
-]);
 
 export default function App() {
   return (

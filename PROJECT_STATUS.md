@@ -15,7 +15,7 @@ The Exercises tab supports list, search, add, edit, and delete. Exercise data st
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically. Active workout drafts are autosaved locally on the phone and can be restored after app restart before they are saved to Supabase. The active workout screen has separate Save and Finish actions: Save persists without closing the workout, while Finish saves and returns to the workout list.
 
-The active workout screen now has a rest timer button. The timer duration is stored locally on the phone, defaults to 90 seconds, can be changed from Settings, and schedules a local device notification through `expo-notifications` when started. Notification support is loaded lazily when the timer starts so Expo Go notification limitations do not interrupt app startup.
+The active workout screen now has a rest timer button. The timer duration is stored locally on the phone, defaults to 90 seconds, can be changed from Settings, and schedules a local device notification through `expo-notifications` when started. Notification support is loaded lazily when the timer starts. Expo Go may still show its known `expo-notifications` limitation warning even though local timer notifications arrive.
 
 Empty workout drafts now offer a quick exercise suggestion flow. From an empty workout, the user can choose target muscle groups and an exercise count, preview a randomized set of matching exercises, reshuffle it, and add the suggested exercises to the workout using the same latest-set prefill behavior as manual exercise selection.
 
@@ -38,13 +38,14 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
-Suppressed the known Expo Go notifications warning.
+Removed the Expo Go notification warning suppression attempt.
 
 Details:
 
-- Rest timer local notifications were confirmed to arrive on the phone.
-- Added a targeted `LogBox.ignoreLogs` entry for the Expo Go `expo-notifications` support warning.
-- Kept other warnings and errors visible.
+- Removed the temporary `console.warn` filter around dynamic `expo-notifications` import.
+- Kept the normal lazy import because it avoids loading notification support before the timer is used.
+- Rest timer local notifications still arrive in Expo Go, but Expo Go may continue showing its known `expo-notifications` limitation warning.
+- Accepted that warning as an Expo Go limitation rather than adding another suppression workaround.
 - Verified `npm test` passes with 35 tests across 9 test files.
 - Verified `npx expo install --check` reports dependencies are up to date.
 
@@ -60,7 +61,6 @@ Details:
 - Measurement editing reuses the existing add form and keeps the original measurement date.
 - Updated the body measurement chart metric picker to include chest and abdomen.
 - Changed the rest timer notification service to load `expo-notifications` lazily only when starting or cancelling a scheduled timer notification.
-- This avoids the Expo Go SDK 53+ notification limitation message during normal app startup.
 - Verified `npx tsc --noEmit` passes.
 - Verified `npm test` passes with 35 tests across 9 test files.
 - Verified `npx expo install --check` reports dependencies are up to date.
