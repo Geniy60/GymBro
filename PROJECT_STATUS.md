@@ -34,6 +34,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Submitted Android APK build version 3.
+
+Details:
+
+- Incremented Android `versionCode` from 2 to 3.
+- Ran Expo Doctor only, as requested; 18/18 checks passed.
+- Submitted EAS Android internal-distribution APK build with profile `apk`.
+- Confirmed the latest EAS Android build is `IN_QUEUE` with app build version `3`.
+- Build URL: https://expo.dev/accounts/geniy60/projects/gymbro/builds/db9c49a4-7133-425b-a12a-f766942be8a5
+
+Previous step:
+
 Added the curtsy reverse lunge exercise.
 
 Details:
