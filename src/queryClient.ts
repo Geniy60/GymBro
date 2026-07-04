@@ -15,6 +15,7 @@ export const queryKeys = {
     ['cardioHistory', userId, machineId] as const,
   machineHistory: (userId: string, machineId: string) =>
     ['machineHistory', userId, machineId] as const,
+  bodyMeasurements: (userId: string) => ['bodyMeasurements', userId] as const,
   previousMachineMaxes: (userId: string, workoutId: string, machineIdsKey: string) =>
     ['previousMachineMaxes', userId, workoutId, machineIdsKey] as const,
 };

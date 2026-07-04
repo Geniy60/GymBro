@@ -15,7 +15,11 @@ The Exercises tab supports list, search, add, edit, and delete. Exercise data st
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically. Active workout drafts are autosaved locally on the phone and can be restored after app restart before they are saved to Supabase. The active workout screen has separate Save and Finish actions: Save persists without closing the workout, while Finish saves and returns to the workout list.
 
+The active workout screen now has a rest timer button. The timer duration is stored locally on the phone, defaults to 90 seconds, can be changed from Settings, and schedules a local device notification through `expo-notifications` when started. Notification support is loaded lazily when the timer starts so Expo Go notification limitations do not interrupt app startup.
+
 Empty workout drafts now offer a quick exercise suggestion flow. From an empty workout, the user can choose target muscle groups and an exercise count, preview a randomized set of matching exercises, reshuffle it, and add the suggested exercises to the workout using the same latest-set prefill behavior as manual exercise selection.
+
+Settings now include a body measurements screen. Measurements are stored in Supabase per selected user and support weight, waist, hips, chest, and abdomen values. Existing measurement history entries can be edited or deleted, and the screen includes a selectable SVG line chart that defaults to weight.
 
 The app has a simple local user selector for the two seeded users:
 
@@ -33,6 +37,52 @@ The main header has a manual refresh action next to settings. It invalidates the
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Suppressed the known Expo Go notifications warning.
+
+Details:
+
+- Rest timer local notifications were confirmed to arrive on the phone.
+- Added a targeted `LogBox.ignoreLogs` entry for the Expo Go `expo-notifications` support warning.
+- Kept other warnings and errors visible.
+- Verified `npm test` passes with 35 tests across 9 test files.
+- Verified `npx expo install --check` reports dependencies are up to date.
+
+Previous step:
+
+Extended body measurements and made notification loading lazy.
+
+Details:
+
+- Added chest and abdomen fields to body measurements.
+- Added and applied `supabase/migrations/20260704123000_gymbro_body_measurements_chest_abdomen.sql`.
+- Added edit and delete actions for measurement history rows.
+- Measurement editing reuses the existing add form and keeps the original measurement date.
+- Updated the body measurement chart metric picker to include chest and abdomen.
+- Changed the rest timer notification service to load `expo-notifications` lazily only when starting or cancelling a scheduled timer notification.
+- This avoids the Expo Go SDK 53+ notification limitation message during normal app startup.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+- Verified `npx expo install --check` reports dependencies are up to date.
+
+Previous step:
+
+Added rest timer notifications and body measurements.
+
+Details:
+
+- Added `expo-notifications` and configured the Expo notifications plugin.
+- Added a workout rest timer control that starts from the active workout screen and schedules a local device notification.
+- Added a Settings screen entry for the rest timer duration, stored locally with a default of 90 seconds.
+- Added `react-native-svg` for a lightweight body measurement chart.
+- Added a Settings screen entry for body measurements with add form, metric picker, SVG line chart, and history list.
+- Added and applied `supabase/migrations/20260704120000_gymbro_body_measurements.sql`.
+- Added a Supabase service and typed table definitions for body measurements.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+- Verified `npx expo install --check` reports dependencies are up to date.
+
+Previous step:
 
 Submitted Android APK build version 3.
 

@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { BackHandler, StyleSheet } from 'react-native';
+import { BackHandler, LogBox, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { showAppAlert } from './src/appAlert';
@@ -19,6 +19,8 @@ import { AppAlertHost } from './src/components/AppAlertHost';
 import { MainTabs } from './src/components/MainTabs';
 import { MachineFormScreen } from './src/features/machines/MachineFormScreen';
 import { MachinesScreen } from './src/features/machines/MachinesScreen';
+import { BodyMeasurementsScreen } from './src/features/settings/BodyMeasurementsScreen';
+import { RestTimerSettingsScreen } from './src/features/settings/RestTimerSettingsScreen';
 import { SettingsScreen } from './src/features/settings/SettingsScreen';
 import { StatsScreen } from './src/features/stats/StatsScreen';
 import { UserSelectScreen } from './src/features/users/UserSelectScreen';
@@ -60,6 +62,10 @@ import type {
 } from './src/types';
 
 const MIN_REFRESH_FEEDBACK_MS = 600;
+
+LogBox.ignoreLogs([
+  '`expo-notifications` functionality is not fully supported in Expo Go',
+]);
 
 export default function App() {
   return (
@@ -144,7 +150,12 @@ function AppContent() {
   }, [checkedWorkoutDraftUserId, screen, selectedUser]);
 
   useEffect(() => {
-    if (screen !== 'machineForm' && screen !== 'settings') {
+    if (
+      screen !== 'machineForm' &&
+      screen !== 'settings' &&
+      screen !== 'restTimerSettings' &&
+      screen !== 'bodyMeasurements'
+    ) {
       return undefined;
     }
 
@@ -154,7 +165,12 @@ function AppContent() {
         return true;
       }
 
-      closeSettings();
+      if (screen === 'settings') {
+        closeSettings();
+        return true;
+      }
+
+      openSettings();
       return true;
     });
 
@@ -267,6 +283,14 @@ function AppContent() {
 
   function closeSettings() {
     setScreen('home');
+  }
+
+  function openRestTimerSettings() {
+    setScreen('restTimerSettings');
+  }
+
+  function openBodyMeasurements() {
+    setScreen('bodyMeasurements');
   }
 
   function openUserSelect() {
@@ -443,6 +467,35 @@ function AppContent() {
           currentUser={selectedUser}
           onBack={closeSettings}
           onChangeUser={openUserSelect}
+          onOpenBodyMeasurements={openBodyMeasurements}
+          onOpenRestTimerSettings={openRestTimerSettings}
+        />
+        <StatusBar style="dark" />
+        <AppAlertHost />
+      </SafeAreaProvider>
+    );
+  }
+
+  if (screen === 'restTimerSettings') {
+    return (
+      <SafeAreaProvider>
+        <RestTimerSettingsScreen
+          backgroundColor={appBackgroundColor}
+          onBack={openSettings}
+        />
+        <StatusBar style="dark" />
+        <AppAlertHost />
+      </SafeAreaProvider>
+    );
+  }
+
+  if (screen === 'bodyMeasurements') {
+    return (
+      <SafeAreaProvider>
+        <BodyMeasurementsScreen
+          backgroundColor={appBackgroundColor}
+          onBack={openSettings}
+          userId={selectedUserId}
         />
         <StatusBar style="dark" />
         <AppAlertHost />

@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useMemo, useReducer, useState } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   BackHandler,
@@ -17,6 +17,10 @@ import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { createId } from '../../createId';
 import { queryKeys } from '../../queryClient';
 import {
+  cancelRestTimerNotification,
+  scheduleRestTimerNotification,
+} from '../../services/restTimerNotificationService';
+import {
   loadLatestSetsForMachine,
   loadPreviousMaxesForMachines,
 } from '../../services/workoutsService';
@@ -24,6 +28,7 @@ import {
   clearWorkoutDraft,
   saveWorkoutDraft,
 } from '../../storage/workoutDraftStorage';
+import { loadRestTimerSeconds } from '../../storage/restTimerSettingsStorage';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type {
@@ -37,6 +42,7 @@ import { EmptyWorkoutExerciseList } from './EmptyWorkoutExerciseList';
 import { MachinePickerScreen } from './MachinePickerScreen';
 import { MachineSuggestScreen } from './MachineSuggestScreen';
 import { WorkoutExerciseCard } from './WorkoutExerciseCard';
+import { RestTimerControl } from './RestTimerControl';
 import {
   type SaveStatus,
   WorkoutSessionFooter,
@@ -94,6 +100,10 @@ export function WorkoutSessionScreen({
   const [suggestedMachines, setSuggestedMachines] = useState<Machine[]>([]);
   const [hasSuggestAttempt, setHasSuggestAttempt] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [restTimerSeconds, setRestTimerSeconds] = useState(90);
+  const [restTimerEndsAt, setRestTimerEndsAt] = useState<number | null>(null);
+  const [restTimerNow, setRestTimerNow] = useState(() => Date.now());
+  const restTimerNotificationIdRef = useRef<string | null>(null);
   const {
     collapsedExerciseIds,
     draftWorkout,
@@ -142,7 +152,36 @@ export function WorkoutSessionScreen({
     isMachineSuggestOpen,
     isSavedWorkoutNew,
     savedWorkout,
-  ]);
+    ]);
+
+  useEffect(() => {
+    void loadRestTimerSeconds().then(setRestTimerSeconds);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      void cancelActiveRestTimerNotification();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (restTimerEndsAt === null) {
+      return undefined;
+    }
+
+    const intervalId = setInterval(() => {
+      const nextNow = Date.now();
+
+      setRestTimerNow(nextNow);
+
+      if (nextNow >= restTimerEndsAt) {
+        setRestTimerEndsAt(null);
+        restTimerNotificationIdRef.current = null;
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [restTimerEndsAt]);
 
   useEffect(() => {
     if (previousMaxesQuery.isError) {
@@ -305,6 +344,11 @@ export function WorkoutSessionScreen({
 
     setSaveStatus('saving');
 
+    if (closeAfterSave) {
+      setRestTimerEndsAt(null);
+      await cancelActiveRestTimerNotification();
+    }
+
     const didSave = await onSave(normalizedWorkout, { closeAfterSave });
 
     if (didSave) {
@@ -371,6 +415,7 @@ export function WorkoutSessionScreen({
 
   function confirmExitWorkout() {
     if (!shouldConfirmExitWorkout(isSavedWorkoutNew, savedWorkout, draftWorkout)) {
+      void cancelActiveRestTimer();
       onBack();
       return;
     }
@@ -388,6 +433,7 @@ export function WorkoutSessionScreen({
           style: 'destructive',
           onPress: () => {
             void clearWorkoutDraft(draftWorkout.id);
+            void cancelActiveRestTimer();
             onBack();
           },
         },
@@ -399,6 +445,46 @@ export function WorkoutSessionScreen({
         },
       ],
     );
+  }
+
+  async function startRestTimer() {
+    await cancelActiveRestTimerNotification();
+
+    const nextEndsAt = Date.now() + restTimerSeconds * 1000;
+
+    setRestTimerNow(Date.now());
+    setRestTimerEndsAt(nextEndsAt);
+
+    try {
+      restTimerNotificationIdRef.current = await scheduleRestTimerNotification(
+        restTimerSeconds,
+      );
+
+      if (restTimerNotificationIdRef.current === null) {
+        showAppAlert(
+          strings.alerts.notificationPermissionTitle,
+          strings.alerts.notificationPermissionMessage,
+        );
+      }
+    } catch {
+      restTimerNotificationIdRef.current = null;
+      showAppAlert(
+        strings.alerts.notificationPermissionTitle,
+        strings.alerts.notificationPermissionMessage,
+      );
+    }
+  }
+
+  async function cancelActiveRestTimer() {
+    setRestTimerEndsAt(null);
+    await cancelActiveRestTimerNotification();
+  }
+
+  async function cancelActiveRestTimerNotification() {
+    const notificationId = restTimerNotificationIdRef.current;
+
+    restTimerNotificationIdRef.current = null;
+    await cancelRestTimerNotification(notificationId);
   }
 
   if (isMachinePickerOpen) {
@@ -507,6 +593,21 @@ export function WorkoutSessionScreen({
           }}
           saveStatus={saveStatus}
         />
+
+        <RestTimerControl
+          isActive={restTimerEndsAt !== null}
+          onCancel={() => {
+            void cancelActiveRestTimer();
+          }}
+          onStart={() => {
+            void startRestTimer();
+          }}
+          remainingSeconds={
+            restTimerEndsAt === null
+              ? restTimerSeconds
+              : Math.max(0, Math.ceil((restTimerEndsAt - restTimerNow) / 1000))
+          }
+        />
       </View>
     </SafeAreaView>
   );
@@ -547,7 +648,7 @@ const styles = StyleSheet.create({
   },
   exercisesListContent: {
     flexGrow: 1,
-    paddingBottom: 68,
+    paddingBottom: 118,
   },
   addMachineIconButton: {
     alignItems: 'center',

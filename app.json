@@ -30,7 +30,8 @@
       "favicon": "./assets/favicon-arms.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-notifications"
     ],
     "extra": {
       "eas": {

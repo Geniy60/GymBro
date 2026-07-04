@@ -55,6 +55,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      gymbro_body_measurements: {
+        Row: {
+          abdomen_cm: number | null;
+          chest_cm: number | null;
+          created_at: string;
+          hips_cm: number | null;
+          id: string;
+          measured_at: string;
+          updated_at: string;
+          user_id: string;
+          waist_cm: number | null;
+          weight_kg: number | null;
+        };
+        Insert: {
+          abdomen_cm?: number | null;
+          chest_cm?: number | null;
+          hips_cm?: number | null;
+          id: string;
+          measured_at: string;
+          user_id: string;
+          waist_cm?: number | null;
+          weight_kg?: number | null;
+        };
+        Update: {
+          abdomen_cm?: number | null;
+          chest_cm?: number | null;
+          hips_cm?: number | null;
+          measured_at?: string;
+          waist_cm?: number | null;
+          weight_kg?: number | null;
+        };
+        Relationships: [];
+      };
       gymbro_machine_muscle_groups: {
         Row: {
           machine_id: string;

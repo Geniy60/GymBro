@@ -1,0 +1,154 @@
+import { useEffect, useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
+import {
+  loadRestTimerSeconds,
+  saveRestTimerSeconds,
+} from '../../storage/restTimerSettingsStorage';
+import { strings } from '../../strings';
+import { colors } from '../../theme/colors';
+
+type RestTimerSettingsScreenProps = {
+  backgroundColor: string;
+  onBack: () => void;
+};
+
+export function RestTimerSettingsScreen({
+  backgroundColor,
+  onBack,
+}: RestTimerSettingsScreenProps) {
+  const [secondsText, setSecondsText] = useState('');
+  const [errorText, setErrorText] = useState('');
+
+  useEffect(() => {
+    void loadInitialValue();
+  }, []);
+
+  async function loadInitialValue() {
+    setSecondsText(String(await loadRestTimerSeconds()));
+  }
+
+  async function saveSettings() {
+    const parsedSeconds = Number(secondsText.trim());
+
+    if (!Number.isInteger(parsedSeconds) || parsedSeconds <= 0) {
+      setErrorText(strings.restTimer.invalidSeconds);
+      return;
+    }
+
+    await saveRestTimerSeconds(parsedSeconds);
+    onBack();
+  }
+
+  return (
+    <SafeAreaView
+      edges={['top', 'right', 'bottom', 'left']}
+      style={[styles.safeArea, { backgroundColor }]}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.content}
+      >
+        <SecondaryScreenHeader
+          marginBottom={18}
+          onBack={onBack}
+          title={strings.restTimer.settingTitle}
+        />
+
+        <View style={styles.field}>
+          <Text style={styles.label}>{strings.restTimer.secondsLabel}</Text>
+          <TextInput
+            keyboardType="number-pad"
+            onChangeText={(value) => {
+              setSecondsText(value);
+              setErrorText('');
+            }}
+            placeholder={strings.restTimer.secondsPlaceholder}
+            placeholderTextColor={colors.muted}
+            style={styles.input}
+            value={secondsText}
+          />
+          {errorText.length > 0 ? (
+            <Text accessibilityRole="alert" style={styles.errorText}>
+              {errorText}
+            </Text>
+          ) : null}
+        </View>
+
+        <Pressable
+          accessibilityLabel={strings.accessibility.saveRestTimerSettings}
+          onPress={() => {
+            void saveSettings();
+          }}
+          style={({ pressed }) => [
+            styles.saveButton,
+            pressed && styles.pressedButton,
+          ]}
+        >
+          <Text style={styles.saveButtonText}>{strings.actions.save}</Text>
+        </Pressable>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
+  field: {
+    marginBottom: 16,
+  },
+  label: {
+    color: colors.text,
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    color: colors.text,
+    fontSize: 16,
+    height: 48,
+    paddingHorizontal: 14,
+  },
+  errorText: {
+    color: colors.destructive,
+    fontSize: 13,
+    fontWeight: '700',
+    marginTop: 8,
+  },
+  saveButton: {
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  saveButtonText: {
+    color: colors.panel,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  pressedButton: {
+    opacity: 0.7,
+  },
+});

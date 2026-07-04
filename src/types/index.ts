@@ -3,7 +3,9 @@ export type MainTab = 'machines' | 'stats' | 'workouts';
 export type AppScreen =
   | 'home'
   | 'machineForm'
+  | 'bodyMeasurements'
   | 'settings'
+  | 'restTimerSettings'
   | 'userSelect'
   | 'workoutSession';
 
@@ -128,3 +130,29 @@ export type WorkoutStats = {
   monthStats: MonthWorkoutStat[];
   exerciseHistoryItems: ExerciseHistorySummary[];
 };
+
+export type BodyMeasurement = {
+  abdomenCm: number | null;
+  chestCm: number | null;
+  id: string;
+  hipsCm: number | null;
+  measuredAt: string;
+  userId: string;
+  waistCm: number | null;
+  weightKg: number | null;
+};
+
+export type BodyMeasurementDraft = {
+  abdomenCm: string;
+  chestCm: string;
+  hipsCm: string;
+  waistCm: string;
+  weightKg: string;
+};
+
+export type BodyMeasurementMetric =
+  | 'weightKg'
+  | 'waistCm'
+  | 'hipsCm'
+  | 'chestCm'
+  | 'abdomenCm';

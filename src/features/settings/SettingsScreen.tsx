@@ -10,6 +10,8 @@ type SettingsScreenProps = {
   backgroundColor: string;
   currentUser: AppUser | null;
   onBack: () => void;
+  onOpenBodyMeasurements: () => void;
+  onOpenRestTimerSettings: () => void;
   onChangeUser: () => void;
 };
 
@@ -17,6 +19,8 @@ export function SettingsScreen({
   backgroundColor,
   currentUser,
   onBack,
+  onOpenBodyMeasurements,
+  onOpenRestTimerSettings,
   onChangeUser,
 }: SettingsScreenProps) {
   return (
@@ -59,8 +63,51 @@ export function SettingsScreen({
             </Text>
           </Pressable>
         </View>
+
+        <SettingsActionRow
+          accessibilityLabel={strings.accessibility.restTimerSettings}
+          description={strings.settings.restTimerDescription}
+          onPress={onOpenRestTimerSettings}
+          title={strings.settings.restTimer}
+        />
+
+        <SettingsActionRow
+          accessibilityLabel={strings.accessibility.bodyMeasurements}
+          description={strings.settings.bodyMeasurementsDescription}
+          onPress={onOpenBodyMeasurements}
+          title={strings.settings.bodyMeasurements}
+        />
       </View>
     </SafeAreaView>
+  );
+}
+
+function SettingsActionRow({
+  accessibilityLabel,
+  description,
+  onPress,
+  title,
+}: {
+  accessibilityLabel: string;
+  description: string;
+  onPress: () => void;
+  title: string;
+}) {
+  return (
+    <Pressable
+      accessibilityLabel={accessibilityLabel}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.settingsActionRow,
+        pressed && styles.pressedButton,
+      ]}
+    >
+      <View style={styles.settingsTextBlock}>
+        <Text style={styles.settingsLabel}>{title}</Text>
+        <Text style={styles.settingsValue}>{description}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={22} color={colors.muted} />
+    </Pressable>
   );
 }
 
@@ -103,6 +150,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 10,
+  },
+  settingsActionRow: {
+    alignItems: 'center',
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between',
+    marginBottom: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
