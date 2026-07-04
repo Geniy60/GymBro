@@ -73,12 +73,8 @@ function formatRemainingTime(totalSeconds: number): string {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    bottom: 68,
     flexDirection: 'row',
     gap: 8,
-    left: 20,
-    position: 'absolute',
-    right: 20,
   },
   startButton: {
     alignItems: 'center',

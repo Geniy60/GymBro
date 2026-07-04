@@ -38,6 +38,58 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Replaced Android native keyboard resize with a JS keyboard inset.
+
+Details:
+
+- Removed Expo Android `softwareKeyboardLayoutMode: "resize"` because it does not help the current Expo Go session without a new native build.
+- Added `src/useKeyboardBottomInset.ts` to track Android keyboard height through React Native keyboard events.
+- The active workout bottom controls now move above the keyboard while keeping the exercise list scrollable in the remaining space.
+- The exercise add/edit form gets extra bottom scroll padding while the Android keyboard is open.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+- Verified `npx expo install --check` reports dependencies are up to date.
+
+Previous step:
+
+Fixed the lingering bottom gap after hiding the keyboard.
+
+Details:
+
+- Changed Android `KeyboardAvoidingView` behavior from manual `height` adjustment to platform/system resize.
+- Added Expo Android `softwareKeyboardLayoutMode: "resize"`.
+- Kept iOS `KeyboardAvoidingView` padding behavior unchanged.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+- Verified `npx expo install --check` reports dependencies are up to date.
+
+Previous step:
+
+Moved active workout bottom actions out of the exercise list overlay.
+
+Details:
+
+- Removed absolute positioning from the rest timer control and workout Save/Finish footer.
+- Added a normal bottom controls area at the bottom of the active workout screen.
+- The exercise list now scrolls only in the remaining available space above the bottom controls.
+- Reduced the exercise list bottom padding because the controls no longer overlay list content.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Improved keyboard handling on exercise input screens.
+
+Details:
+
+- Wrapped the exercise add/edit form in a platform `KeyboardAvoidingView`.
+- Added drag-to-dismiss keyboard behavior to the exercise form scroll view.
+- Wrapped the active workout screen in a platform `KeyboardAvoidingView` so lower set input fields are not covered by the keyboard.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Removed the Expo Go notification warning suppression attempt.
 
 Details:

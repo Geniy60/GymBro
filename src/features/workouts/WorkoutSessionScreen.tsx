@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import {
   BackHandler,
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -38,6 +40,7 @@ import type {
   WorkoutExercise,
   WorkoutSet,
 } from '../../types';
+import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 import { EmptyWorkoutExerciseList } from './EmptyWorkoutExerciseList';
 import { MachinePickerScreen } from './MachinePickerScreen';
 import { MachineSuggestScreen } from './MachineSuggestScreen';
@@ -103,6 +106,7 @@ export function WorkoutSessionScreen({
   const [restTimerSeconds, setRestTimerSeconds] = useState(90);
   const [restTimerEndsAt, setRestTimerEndsAt] = useState<number | null>(null);
   const [restTimerNow, setRestTimerNow] = useState(() => Date.now());
+  const keyboardBottomInset = useKeyboardBottomInset();
   const restTimerNotificationIdRef = useRef<string | null>(null);
   const {
     collapsedExerciseIds,
@@ -528,7 +532,10 @@ export function WorkoutSessionScreen({
       edges={['top', 'right', 'bottom', 'left']}
       style={[styles.safeArea, { backgroundColor }]}
     >
-      <View style={styles.content}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.content}
+      >
         <SecondaryScreenHeader
           marginBottom={8}
           onBack={confirmExitWorkout}
@@ -584,31 +591,38 @@ export function WorkoutSessionScreen({
           />
         </View>
 
-        <WorkoutSessionFooter
-          onFinish={() => {
-            void saveWorkout(true);
-          }}
-          onSave={() => {
-            void saveWorkout(false);
-          }}
-          saveStatus={saveStatus}
-        />
+        <View
+          style={[
+            styles.bottomControls,
+            keyboardBottomInset > 0 && { marginBottom: keyboardBottomInset },
+          ]}
+        >
+          <RestTimerControl
+            isActive={restTimerEndsAt !== null}
+            onCancel={() => {
+              void cancelActiveRestTimer();
+            }}
+            onStart={() => {
+              void startRestTimer();
+            }}
+            remainingSeconds={
+              restTimerEndsAt === null
+                ? restTimerSeconds
+                : Math.max(0, Math.ceil((restTimerEndsAt - restTimerNow) / 1000))
+            }
+          />
 
-        <RestTimerControl
-          isActive={restTimerEndsAt !== null}
-          onCancel={() => {
-            void cancelActiveRestTimer();
-          }}
-          onStart={() => {
-            void startRestTimer();
-          }}
-          remainingSeconds={
-            restTimerEndsAt === null
-              ? restTimerSeconds
-              : Math.max(0, Math.ceil((restTimerEndsAt - restTimerNow) / 1000))
-          }
-        />
-      </View>
+          <WorkoutSessionFooter
+            onFinish={() => {
+              void saveWorkout(true);
+            }}
+            onSave={() => {
+              void saveWorkout(false);
+            }}
+            saveStatus={saveStatus}
+          />
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -648,7 +662,12 @@ const styles = StyleSheet.create({
   },
   exercisesListContent: {
     flexGrow: 1,
-    paddingBottom: 118,
+    paddingBottom: 10,
+  },
+  bottomControls: {
+    gap: 8,
+    paddingBottom: 8,
+    paddingTop: 8,
   },
   addMachineIconButton: {
     alignItems: 'center',

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +15,7 @@ import { createId } from '../../createId';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { Machine, MachineDraft, MuscleGroup } from '../../types';
+import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 import { MachineFormActions } from './MachineFormActions';
 import { MachineMuscleGroupPicker } from './MachineMuscleGroupPicker';
 
@@ -47,6 +50,7 @@ export function MachineFormScreen({
         },
   );
   const [machineNameError, setMachineNameError] = useState('');
+  const keyboardBottomInset = useKeyboardBottomInset();
 
   const isEditingMachine = machine !== null;
 
@@ -96,70 +100,82 @@ export function MachineFormScreen({
       edges={['top', 'right', 'bottom', 'left']}
       style={[styles.safeArea, { backgroundColor }]}
     >
-      <ScrollView
-        contentContainerStyle={styles.formContent}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.keyboardAvoidingView}
       >
-        <SecondaryScreenHeader
-          marginBottom={18}
-          onBack={onBack}
-          title={
-            isEditingMachine
-              ? strings.forms.machine.editTitle
-              : strings.forms.machine.addTitle
-          }
-        />
-
-        <View style={styles.formField}>
-          <Text style={styles.fieldLabel}>{strings.forms.machine.nameLabel}</Text>
-          <TextInput
-            accessibilityLabel={strings.forms.machine.nameLabel}
-            autoFocus
-            onChangeText={(value) => updateMachineTextDraft('name', value)}
-            placeholder={strings.forms.machine.namePlaceholder}
-            placeholderTextColor={colors.muted}
-            style={[
-              styles.formInput,
-              machineNameError.length > 0 && styles.inputError,
-            ]}
-            value={machineDraft.name}
+        <ScrollView
+          contentContainerStyle={[
+            styles.formContent,
+            keyboardBottomInset > 0 && { paddingBottom: 28 + keyboardBottomInset },
+          ]}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+        >
+          <SecondaryScreenHeader
+            marginBottom={18}
+            onBack={onBack}
+            title={
+              isEditingMachine
+                ? strings.forms.machine.editTitle
+                : strings.forms.machine.addTitle
+            }
           />
-          {machineNameError.length > 0 ? (
-            <Text style={styles.errorText}>{machineNameError}</Text>
-          ) : null}
-        </View>
 
-        <MachineMuscleGroupPicker
-          onToggleMuscleGroup={toggleMuscleGroup}
-          selectedMuscleGroups={machineDraft.muscleGroups}
-        />
+          <View style={styles.formField}>
+            <Text style={styles.fieldLabel}>{strings.forms.machine.nameLabel}</Text>
+            <TextInput
+              accessibilityLabel={strings.forms.machine.nameLabel}
+              autoFocus
+              onChangeText={(value) => updateMachineTextDraft('name', value)}
+              placeholder={strings.forms.machine.namePlaceholder}
+              placeholderTextColor={colors.muted}
+              style={[
+                styles.formInput,
+                machineNameError.length > 0 && styles.inputError,
+              ]}
+              value={machineDraft.name}
+            />
+            {machineNameError.length > 0 ? (
+              <Text style={styles.errorText}>{machineNameError}</Text>
+            ) : null}
+          </View>
 
-        <View style={styles.formField}>
-          <Text style={styles.fieldLabel}>{strings.forms.machine.noteLabel}</Text>
-          <TextInput
-            accessibilityLabel={strings.forms.machine.noteLabel}
-            multiline
-            onChangeText={(value) => updateMachineTextDraft('note', value)}
-            placeholder={strings.forms.machine.notePlaceholder}
-            placeholderTextColor={colors.muted}
-            style={[styles.formInput, styles.noteInput]}
-            textAlignVertical="top"
-            value={machineDraft.note}
+          <MachineMuscleGroupPicker
+            onToggleMuscleGroup={toggleMuscleGroup}
+            selectedMuscleGroups={machineDraft.muscleGroups}
           />
-        </View>
 
-        <MachineFormActions
-          machine={machine}
-          onDelete={onDelete}
-          onSave={saveMachine}
-        />
-      </ScrollView>
+          <View style={styles.formField}>
+            <Text style={styles.fieldLabel}>{strings.forms.machine.noteLabel}</Text>
+            <TextInput
+              accessibilityLabel={strings.forms.machine.noteLabel}
+              multiline
+              onChangeText={(value) => updateMachineTextDraft('note', value)}
+              placeholder={strings.forms.machine.notePlaceholder}
+              placeholderTextColor={colors.muted}
+              style={[styles.formInput, styles.noteInput]}
+              textAlignVertical="top"
+              value={machineDraft.note}
+            />
+          </View>
+
+          <MachineFormActions
+            machine={machine}
+            onDelete={onDelete}
+            onSave={saveMachine}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
+    flex: 1,
+  },
+  keyboardAvoidingView: {
     flex: 1,
   },
   formContent: {
