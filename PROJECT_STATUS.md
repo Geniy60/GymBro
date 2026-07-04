@@ -38,6 +38,19 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Aligned body measurement and exercise edit keyboard behavior with workouts.
+
+Details:
+
+- Removed the forced scroll-on-focus behavior from exercise editing and body measurements.
+- Exercise editing now uses the same keyboard-height inset pattern without jumping the form on each focused field.
+- Body measurements now shifts the list/form area above the keyboard without forcing repeated scrolls when switching fields.
+- This keeps keyboard behavior consistent with the active workout screen.
+- Verified `npx tsc --noEmit` passes.
+- Verified `npm test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Added auto-scroll for lower keyboard-covered form fields.
 
 Details:

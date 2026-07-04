@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -51,7 +51,6 @@ export function MachineFormScreen({
   );
   const [machineNameError, setMachineNameError] = useState('');
   const keyboardBottomInset = useKeyboardBottomInset();
-  const formScrollRef = useRef<ScrollView>(null);
 
   const isEditingMachine = machine !== null;
 
@@ -96,12 +95,6 @@ export function MachineFormScreen({
     });
   }
 
-  function scrollToFormBottom() {
-    setTimeout(() => {
-      formScrollRef.current?.scrollToEnd({ animated: true });
-    }, 250);
-  }
-
   return (
     <SafeAreaView
       edges={['top', 'right', 'bottom', 'left']}
@@ -112,10 +105,12 @@ export function MachineFormScreen({
         style={styles.keyboardAvoidingView}
       >
         <ScrollView
-          ref={formScrollRef}
           contentContainerStyle={[
             styles.formContent,
-            keyboardBottomInset > 0 && { paddingBottom: 28 + keyboardBottomInset },
+          ]}
+          style={[
+            styles.formScroll,
+            keyboardBottomInset > 0 && { marginBottom: keyboardBottomInset },
           ]}
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
@@ -159,7 +154,6 @@ export function MachineFormScreen({
             <TextInput
               accessibilityLabel={strings.forms.machine.noteLabel}
               multiline
-              onFocus={scrollToFormBottom}
               onChangeText={(value) => updateMachineTextDraft('note', value)}
               placeholder={strings.forms.machine.notePlaceholder}
               placeholderTextColor={colors.muted}
@@ -185,6 +179,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   keyboardAvoidingView: {
+    flex: 1,
+  },
+  formScroll: {
     flex: 1,
   },
   formContent: {
