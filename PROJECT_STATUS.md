@@ -38,6 +38,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Submitted Android APK build version 4.
+
+Details:
+
+- Incremented Android `versionCode` from 3 to 4.
+- Ran Expo Doctor only, as requested; 18/18 checks passed.
+- Submitted EAS Android internal-distribution APK build with profile `apk` and `--no-wait`.
+- Confirmed the latest EAS Android build is `IN_PROGRESS` with app build version `4`.
+- Build URL: https://expo.dev/accounts/geniy60/projects/gymbro/builds/a8c5f428-3017-4a64-a5b3-8a5fc2e8d1c9
+
+Previous step:
+
 Aligned body measurement and exercise edit keyboard behavior with workouts.
 
 Details:
