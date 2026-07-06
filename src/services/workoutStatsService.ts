@@ -6,6 +6,7 @@ import type {
   MachineTrackingType,
   MachineHistoryItem,
   MonthWorkoutStat,
+  MuscleGroup,
   WorkoutStats,
 } from '../types';
 
@@ -19,7 +20,13 @@ type MachineHistoryRow = {
 type MachineRow = {
   id: string;
   name: string;
+  note: string;
   tracking_type: MachineTrackingType | null;
+};
+
+type MachineMuscleGroupRow = {
+  machine_id: string;
+  muscle_group: MuscleGroup;
 };
 
 type CardioRow = {
@@ -106,18 +113,30 @@ export async function loadMachineHistory({
 async function loadExerciseHistorySummaries(
   _userId: string,
 ): Promise<ExerciseHistorySummary[]> {
-  const { data, error } = await supabase
+  const { data: machineRows, error: machineError } = await supabase
     .from('gymbro_machines')
-    .select('id, name, tracking_type')
+    .select('id, name, note, tracking_type')
     .order('name', { ascending: true });
 
-  if (error) {
-    throw error;
+  if (machineError) {
+    throw machineError;
   }
 
-  return ((data ?? []) as MachineRow[]).map((row) => ({
+  const { data: muscleGroupRows, error: muscleGroupError } = await supabase
+    .from('gymbro_machine_muscle_groups')
+    .select('machine_id, muscle_group');
+
+  if (muscleGroupError) {
+    throw muscleGroupError;
+  }
+
+  return ((machineRows ?? []) as MachineRow[]).map((row) => ({
     id: row.id,
     machineName: row.name,
+    muscleGroups: ((muscleGroupRows ?? []) as MachineMuscleGroupRow[])
+      .filter((muscleGroupRow) => muscleGroupRow.machine_id === row.id)
+      .map((muscleGroupRow) => muscleGroupRow.muscle_group),
+    note: row.note,
     trackingType: row.tracking_type ?? 'strength',
   }));
 }

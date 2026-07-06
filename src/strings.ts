@@ -116,6 +116,7 @@ export const strings = {
     historyTitle: 'История упражнения',
     maxWeight: (weightKg: string, date: string) => `${weightKg} кг · ${date}`,
     noWeight: 'Без веса',
+    openHistoryItem: (name: string) => `Открыть историю упражнения ${name}`,
     strengthHistoryMaxTitle: 'Максимум',
     workoutMax: (weightKg: string) => `Макс. ${weightKg} кг`,
   },

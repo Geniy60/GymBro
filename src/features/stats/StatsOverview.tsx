@@ -2,16 +2,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import {
   FlatList,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
+  Pressable,
 } from 'react-native';
 
+import { MachineTile } from '../../components/MachineTile';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import type { ExerciseHistorySummary, WorkoutStats } from '../../types';
+import type { ExerciseHistorySummary, Machine, WorkoutStats } from '../../types';
 import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 
 type StatsOverviewProps = {
@@ -94,10 +95,11 @@ export function StatsOverview({
           ) : null}
         </View>
         <FlatList
+          columnWrapperStyle={styles.historyGridRow}
           contentContainerStyle={[
             styles.historyListContent,
             keyboardBottomInset > 0 && {
-              paddingBottom: 4 + keyboardBottomInset,
+              paddingBottom: 12 + keyboardBottomInset,
             },
           ]}
           data={filteredHistoryItems}
@@ -125,18 +127,15 @@ export function StatsOverview({
               ) : null}
             </View>
           }
+          numColumns={2}
           renderItem={({ item }) => (
-            <Pressable
-              onPress={() => onSelectHistoryItem(item)}
-              style={({ pressed }) => [
-                styles.historyRow,
-                pressed && styles.pressedButton,
-              ]}
-            >
-              <Text numberOfLines={1} style={styles.historyMachineName}>
-                {item.machineName}
-              </Text>
-            </Pressable>
+            <View style={styles.historyGridItem}>
+              <MachineTile
+                accessibilityLabel={strings.stats.openHistoryItem(item.machineName)}
+                machine={createMachineFromHistoryItem(item)}
+                onPress={() => onSelectHistoryItem(item)}
+              />
+            </View>
           )}
           showsVerticalScrollIndicator={false}
         />
@@ -164,9 +163,27 @@ function filterHistoryItems(
     return items;
   }
 
-  return items.filter((item) =>
-    item.machineName.toLocaleLowerCase().includes(normalizedSearchText),
-  );
+  return items.filter((item) => {
+    const searchableText = [
+      item.machineName,
+      ...item.muscleGroups.map(
+        (muscleGroup) => strings.muscleGroups.labels[muscleGroup],
+      ),
+      item.note,
+    ].join(' ').toLocaleLowerCase();
+
+    return searchableText.includes(normalizedSearchText);
+  });
+}
+
+function createMachineFromHistoryItem(item: ExerciseHistorySummary): Machine {
+  return {
+    id: item.id,
+    muscleGroups: item.muscleGroups,
+    name: item.machineName,
+    note: item.note,
+    trackingType: item.trackingType,
+  };
 }
 
 const styles = StyleSheet.create({
@@ -281,8 +298,16 @@ const styles = StyleSheet.create({
     width: 30,
   },
   historyListContent: {
-    gap: 8,
-    paddingBottom: 4,
+    flexGrow: 1,
+    gap: 10,
+    paddingBottom: 12,
+  },
+  historyGridRow: {
+    gap: 10,
+  },
+  historyGridItem: {
+    flex: 1,
+    maxWidth: '48.5%',
   },
   emptyBlock: {
     gap: 10,
@@ -306,19 +331,6 @@ const styles = StyleSheet.create({
   resetSearchButtonText: {
     color: colors.primary,
     fontSize: 13,
-    fontWeight: '800',
-  },
-  historyRow: {
-    backgroundColor: '#F8FAFC',
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 11,
-  },
-  historyMachineName: {
-    color: colors.text,
-    fontSize: 15,
     fontWeight: '800',
   },
   pressedButton: {

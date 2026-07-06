@@ -26,17 +26,36 @@ describe('workoutStatsService cardio mapping', () => {
             {
               id: 'standard-chest-press',
               name: 'Chest Press',
+              note: 'Machine note',
               tracking_type: 'strength',
             },
             {
               id: 'standard-leg-press',
               name: 'Leg Press',
+              note: '',
               tracking_type: 'strength',
             },
             {
               id: 'standard-treadmill',
               name: 'Treadmill',
+              note: '',
               tracking_type: 'cardio',
+            },
+          ],
+          error: null,
+        });
+      }
+
+      if (table === 'gymbro_machine_muscle_groups') {
+        return createThenableQuery({
+          data: [
+            {
+              machine_id: 'standard-chest-press',
+              muscle_group: 'chest',
+            },
+            {
+              machine_id: 'standard-leg-press',
+              muscle_group: 'quads',
             },
           ],
           error: null,
@@ -63,16 +82,22 @@ describe('workoutStatsService cardio mapping', () => {
       {
         id: 'standard-chest-press',
         machineName: 'Chest Press',
+        muscleGroups: ['chest'],
+        note: 'Machine note',
         trackingType: 'strength',
       },
       {
         id: 'standard-leg-press',
         machineName: 'Leg Press',
+        muscleGroups: ['quads'],
+        note: '',
         trackingType: 'strength',
       },
       {
         id: 'standard-treadmill',
         machineName: 'Treadmill',
+        muscleGroups: [],
+        note: '',
         trackingType: 'cardio',
       },
     ]);

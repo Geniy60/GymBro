@@ -103,6 +103,8 @@ export type MachineMax = {
 export type ExerciseHistorySummary = {
   id: string;
   machineName: string;
+  muscleGroups: MuscleGroup[];
+  note: string;
   trackingType: MachineTrackingType;
 };
 

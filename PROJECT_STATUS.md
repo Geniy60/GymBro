@@ -38,6 +38,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Updated stats exercise search cards.
+
+Details:
+
+- Replaced the plain stats exercise history search rows with the shared exercise tile card used elsewhere.
+- Loaded muscle groups and notes for stats exercise history summaries so the cards can show the same group metadata and search can match names, groups, and notes.
+- Kept the change scoped to the stats overview and existing shared card component.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Submitted Android APK build version 4.
 
 Details:
