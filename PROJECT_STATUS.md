@@ -38,6 +38,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the empty active-workout exercise state.
+
+Details:
+
+- Restyled the empty exercise block inside an active workout as a soft card with a calm exercise icon.
+- Replaced the older purple-pink suggestion gradient with the refreshed green primary action style.
+- Kept the suggestion button action, empty-workout message, and workout draft behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the shared secondary screen header.
 
 Details:
