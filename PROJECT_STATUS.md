@@ -38,6 +38,20 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the body measurements visual layout.
+
+Details:
+
+- Restyled the body measurement metric picker with softer selected and unselected states.
+- Updated the measurement chart and empty chart containers to match the refreshed card surfaces.
+- Made the body measurement input form more compact with a two-column field layout and softer inputs.
+- Refined Save, cancel-edit, and measurement history card styling.
+- Kept body measurement loading, validation, save, update, delete, chart calculations, and Supabase flow unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the exercise form visual layout.
 
 Details:
