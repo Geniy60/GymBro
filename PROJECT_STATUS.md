@@ -38,6 +38,42 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Softened Nastya's app background.
+
+Details:
+
+- Changed Nastya's user-specific app background from a pink tint to a quieter cool neutral tint.
+- Kept Zhenya's background, default background, user selection logic, and all screen behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Improved main tab responsiveness.
+
+Details:
+
+- Made main tab labels stay on one line with font scaling on narrow screens.
+- Reduced tab gaps and horizontal padding slightly so the icon plus Russian label layout has more room.
+- Kept tab icons, active-state styling, tab selection, settings navigation, and manual refresh behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Polished the app shell visual layout.
+
+Details:
+
+- Restyled the main app header with a stronger title and softer refresh/settings icon buttons.
+- Reworked the main tabs into a calmer segmented control with icons and a single clear active state.
+- Removed the older mixed pastel tab colors so the app shell matches the newer green-accent visual system.
+- Kept tab selection, settings navigation, and manual refresh behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the settings and rest timer settings visual layout.
 
 Details:

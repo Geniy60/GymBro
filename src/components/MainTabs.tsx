@@ -1,3 +1,5 @@
+import { Ionicons } from '@expo/vector-icons';
+import { type ComponentProps } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../strings';
@@ -5,6 +7,7 @@ import { colors } from '../theme/colors';
 import type { MainTab } from '../types';
 
 type TabConfig = {
+  iconName: ComponentProps<typeof Ionicons>['name'];
   key: MainTab;
   label: string;
 };
@@ -16,14 +19,17 @@ type MainTabsProps = {
 
 const tabs: TabConfig[] = [
   {
+    iconName: 'barbell-outline',
     key: 'workouts',
     label: strings.tabs.workouts,
   },
   {
+    iconName: 'stats-chart-outline',
     key: 'stats',
     label: strings.tabs.stats,
   },
   {
+    iconName: 'grid-outline',
     key: 'machines',
     label: strings.tabs.machines,
   },
@@ -43,19 +49,21 @@ export function MainTabs({ activeTab, onSelectTab }: MainTabsProps) {
             onPress={() => onSelectTab(tab.key)}
             style={({ pressed }) => [
               styles.tab,
-              tab.key === 'machines' && styles.machinesTab,
-              tab.key === 'stats' && styles.statsTab,
-              tab.key === 'workouts' && styles.workoutsTab,
               isActive && styles.activeTab,
               pressed && styles.pressedButton,
             ]}
           >
+            <Ionicons
+              color={isActive ? colors.primary : colors.muted}
+              name={tab.iconName}
+              size={17}
+            />
             <Text
+              adjustsFontSizeToFit
+              minimumFontScale={0.78}
+              numberOfLines={1}
               style={[
                 styles.tabLabel,
-                tab.key === 'machines' && styles.machinesTabLabel,
-                tab.key === 'stats' && styles.statsTabLabel,
-                tab.key === 'workouts' && styles.workoutsTabLabel,
                 isActive && styles.activeTabLabel,
               ]}
             >
@@ -71,53 +79,42 @@ export function MainTabs({ activeTab, onSelectTab }: MainTabsProps) {
 const styles = StyleSheet.create({
   tabRow: {
     backgroundColor: colors.panel,
-    borderColor: colors.border,
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: 4,
+    gap: 5,
     marginBottom: 12,
     marginHorizontal: 20,
-    marginTop: 6,
+    marginTop: 8,
     padding: 4,
   },
   tab: {
     alignItems: 'center',
     borderColor: 'transparent',
     borderRadius: 6,
-    borderWidth: 2,
+    borderWidth: 1,
     flex: 1,
+    flexDirection: 'row',
+    gap: 3,
     justifyContent: 'center',
-    minHeight: 44,
-  },
-  machinesTab: {
-    backgroundColor: '#CFF7D3',
-  },
-  workoutsTab: {
-    backgroundColor: '#DDD6FE',
-  },
-  statsTab: {
-    backgroundColor: '#FEF3C7',
+    minHeight: 42,
+    minWidth: 0,
+    paddingHorizontal: 2,
   },
   activeTab: {
-    borderColor: colors.text,
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
   },
   tabLabel: {
-    fontSize: 15,
-    fontWeight: '700',
+    color: colors.muted,
+    flexShrink: 1,
+    fontSize: 13,
+    fontWeight: '800',
     textAlign: 'center',
   },
-  machinesTabLabel: {
-    color: '#166534',
-  },
-  workoutsTabLabel: {
-    color: '#6D28D9',
-  },
-  statsTabLabel: {
-    color: '#92400E',
-  },
   activeTabLabel: {
-    color: colors.text,
+    color: colors.primary,
   },
   pressedButton: {
     opacity: 0.7,
