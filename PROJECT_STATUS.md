@@ -38,6 +38,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the shared search input.
+
+Details:
+
+- Added a search icon, icon-based clear action, and a calmer focused state to the shared `SearchInput`.
+- Kept the existing search value, placeholder, text-change, and clear behavior unchanged.
+- Left the separate stats overview search untouched for a future focused cleanup.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the shared empty state.
 
 Details:

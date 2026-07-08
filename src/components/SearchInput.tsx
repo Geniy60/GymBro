@@ -1,4 +1,6 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { strings } from '../strings';
 import { colors } from '../theme/colors';
@@ -15,13 +17,22 @@ export function SearchInput({
   value,
 }: SearchInputProps) {
   const hasValue = value.length > 0;
+  const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isFocused && styles.focusedContainer]}>
+      <Ionicons
+        name="search-outline"
+        size={19}
+        color={isFocused ? colors.primary : colors.muted}
+        style={styles.searchIcon}
+      />
       <TextInput
         autoCapitalize="none"
         clearButtonMode="while-editing"
+        onBlur={() => setIsFocused(false)}
         onChangeText={onChangeText}
+        onFocus={() => setIsFocused(true)}
         placeholder={placeholder}
         placeholderTextColor={colors.muted}
         style={styles.input}
@@ -34,7 +45,7 @@ export function SearchInput({
           onPress={() => onChangeText('')}
           style={styles.clearButton}
         >
-          <Text style={styles.clearButtonText}>×</Text>
+          <Ionicons name="close-circle" size={21} color={colors.muted} />
         </Pressable>
       ) : null}
     </View>
@@ -43,33 +54,36 @@ export function SearchInput({
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     backgroundColor: '#FBFDFB',
     borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
+    flexDirection: 'row',
     height: 44,
-    justifyContent: 'center',
+    paddingLeft: 12,
+    paddingRight: 2,
+  },
+  focusedContainer: {
+    backgroundColor: colors.panel,
+    borderColor: '#B7D8C5',
+  },
+  searchIcon: {
+    marginRight: 8,
   },
   input: {
     color: colors.text,
+    flex: 1,
     fontSize: 15,
     height: 44,
-    paddingLeft: 12,
-    paddingRight: 42,
+    paddingLeft: 0,
+    paddingRight: 8,
   },
   clearButton: {
     alignItems: 'center',
     height: 40,
     justifyContent: 'center',
-    position: 'absolute',
-    right: 2,
     width: 40,
-  },
-  clearButtonText: {
-    color: colors.muted,
-    fontSize: 24,
-    fontWeight: '700',
-    lineHeight: 26,
   },
 });
