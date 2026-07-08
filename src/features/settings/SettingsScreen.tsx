@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { type ComponentProps } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -44,6 +45,9 @@ export function SettingsScreen({
         </View>
 
         <View style={styles.settingsRow}>
+          <View style={styles.settingsIconBadge}>
+            <Ionicons color={colors.primary} name="person-outline" size={20} />
+          </View>
           <View style={styles.settingsTextBlock}>
             <Text style={styles.settingsLabel}>{strings.settings.currentUser}</Text>
             <Text style={styles.settingsValue}>
@@ -67,6 +71,7 @@ export function SettingsScreen({
         <SettingsActionRow
           accessibilityLabel={strings.accessibility.restTimerSettings}
           description={strings.settings.restTimerDescription}
+          iconName="timer-outline"
           onPress={onOpenRestTimerSettings}
           title={strings.settings.restTimer}
         />
@@ -74,6 +79,7 @@ export function SettingsScreen({
         <SettingsActionRow
           accessibilityLabel={strings.accessibility.bodyMeasurements}
           description={strings.settings.bodyMeasurementsDescription}
+          iconName="analytics-outline"
           onPress={onOpenBodyMeasurements}
           title={strings.settings.bodyMeasurements}
         />
@@ -85,11 +91,13 @@ export function SettingsScreen({
 function SettingsActionRow({
   accessibilityLabel,
   description,
+  iconName,
   onPress,
   title,
 }: {
   accessibilityLabel: string;
   description: string;
+  iconName: ComponentProps<typeof Ionicons>['name'];
   onPress: () => void;
   title: string;
 }) {
@@ -102,6 +110,9 @@ function SettingsActionRow({
         pressed && styles.pressedButton,
       ]}
     >
+      <View style={styles.settingsIconBadge}>
+        <Ionicons color={colors.primary} name={iconName} size={20} />
+      </View>
       <View style={styles.settingsTextBlock}>
         <Text style={styles.settingsLabel}>{title}</Text>
         <Text style={styles.settingsValue}>{description}</Text>
@@ -128,7 +139,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     alignItems: 'center',
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
     height: 37,
@@ -144,28 +156,36 @@ const styles = StyleSheet.create({
   settingsRow: {
     alignItems: 'center',
     backgroundColor: colors.panel,
-    borderColor: colors.border,
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
     gap: 12,
     justifyContent: 'space-between',
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 12,
     marginBottom: 10,
   },
   settingsActionRow: {
     alignItems: 'center',
     backgroundColor: colors.panel,
-    borderColor: colors.border,
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
     gap: 12,
     justifyContent: 'space-between',
     marginBottom: 10,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 12,
+  },
+  settingsIconBadge: {
+    alignItems: 'center',
+    backgroundColor: '#EAF7F0',
+    borderRadius: 8,
+    height: 38,
+    justifyContent: 'center',
+    width: 38,
   },
   settingsTextBlock: {
     flex: 1,
@@ -173,7 +193,7 @@ const styles = StyleSheet.create({
   settingsLabel: {
     color: colors.text,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   settingsValue: {
     color: colors.muted,
@@ -183,7 +203,9 @@ const styles = StyleSheet.create({
   changeButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
+    borderColor: '#B7D8C5',
     borderRadius: 8,
+    borderWidth: 1,
     justifyContent: 'center',
     minHeight: 40,
     paddingHorizontal: 12,
@@ -191,7 +213,7 @@ const styles = StyleSheet.create({
   changeButtonText: {
     color: colors.panel,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   pressedButton: {
     opacity: 0.7,

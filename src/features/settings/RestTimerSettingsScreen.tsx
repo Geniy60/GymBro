@@ -70,38 +70,40 @@ export function RestTimerSettingsScreen({
           title={strings.restTimer.settingTitle}
         />
 
-        <View style={styles.field}>
-          <Text style={styles.label}>{strings.restTimer.secondsLabel}</Text>
-          <TextInput
-            keyboardType="number-pad"
-            onChangeText={(value) => {
-              setSecondsText(value);
-              setErrorText('');
-            }}
-            placeholder={strings.restTimer.secondsPlaceholder}
-            placeholderTextColor={colors.muted}
-            style={styles.input}
-            value={secondsText}
-          />
-          {errorText.length > 0 ? (
-            <Text accessibilityRole="alert" style={styles.errorText}>
-              {errorText}
-            </Text>
-          ) : null}
-        </View>
+        <View style={styles.formCard}>
+          <View style={styles.field}>
+            <Text style={styles.label}>{strings.restTimer.secondsLabel}</Text>
+            <TextInput
+              keyboardType="number-pad"
+              onChangeText={(value) => {
+                setSecondsText(value);
+                setErrorText('');
+              }}
+              placeholder={strings.restTimer.secondsPlaceholder}
+              placeholderTextColor={colors.muted}
+              style={styles.input}
+              value={secondsText}
+            />
+            {errorText.length > 0 ? (
+              <Text accessibilityRole="alert" style={styles.errorText}>
+                {errorText}
+              </Text>
+            ) : null}
+          </View>
 
-        <Pressable
-          accessibilityLabel={strings.accessibility.saveRestTimerSettings}
-          onPress={() => {
-            void saveSettings();
-          }}
-          style={({ pressed }) => [
-            styles.saveButton,
-            pressed && styles.pressedButton,
-          ]}
-        >
-          <Text style={styles.saveButtonText}>{strings.actions.save}</Text>
-        </Pressable>
+          <Pressable
+            accessibilityLabel={strings.accessibility.saveRestTimerSettings}
+            onPress={() => {
+              void saveSettings();
+            }}
+            style={({ pressed }) => [
+              styles.saveButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Text style={styles.saveButtonText}>{strings.actions.save}</Text>
+          </Pressable>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -116,18 +118,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 8,
   },
+  formCard: {
+    backgroundColor: colors.panel,
+    borderColor: '#E4E9F2',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 12,
+    padding: 12,
+  },
   field: {
-    marginBottom: 16,
+    gap: 8,
   },
   label: {
     color: colors.text,
     fontSize: 15,
-    fontWeight: '700',
-    marginBottom: 8,
+    fontWeight: '800',
   },
   input: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -144,14 +153,16 @@ const styles = StyleSheet.create({
   saveButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
+    borderColor: '#B7D8C5',
     borderRadius: 8,
+    borderWidth: 1,
     justifyContent: 'center',
     minHeight: 48,
   },
   saveButtonText: {
     color: colors.panel,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   pressedButton: {
     opacity: 0.7,

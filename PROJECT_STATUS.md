@@ -38,6 +38,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the settings and rest timer settings visual layout.
+
+Details:
+
+- Restyled the Settings screen rows with softer cards, icon badges, stronger labels, and a refined change-user action.
+- Restyled the Rest Timer settings screen as a compact form card with softer input and matching primary Save action.
+- Kept settings navigation, user switching, rest timer duration loading, validation, and saving behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the body measurements visual layout.
 
 Details:
