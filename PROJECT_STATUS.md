@@ -38,6 +38,33 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Removed duplicate exercise type text from the exercise history summary.
+
+Details:
+
+- Removed the separate type metric from the exercise history summary because the exercise type is already shown under the exercise name.
+- Kept the history entry count metric and the strength maximum metric when a strength maximum is available.
+- Kept history loading, strength/cardio rows, empty state, and back behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
+Polished the exercise history detail screen.
+
+Details:
+
+- Restyled the exercise history detail screen with the shared secondary header and a compact summary card.
+- Added summary metrics for history entry count and maximum/type using existing history data.
+- Restyled strength and cardio history rows with matching icons, metadata, and softer card surfaces.
+- Replaced the plain empty-history text with the shared `EmptyState`.
+- Added centralized Russian labels for history record counts, history type, and set counts.
+- Kept history loading, Supabase queries, strength/cardio switching, and back behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
 Collapsed workout exercises by default on session open.
 
 Details:

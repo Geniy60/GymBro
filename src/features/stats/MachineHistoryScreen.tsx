@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { EmptyState } from '../../components/EmptyState';
 import { ListLoadingState } from '../../components/ListLoadingState';
+import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type {
@@ -37,38 +39,51 @@ export function MachineHistoryScreen({
   onBack,
   selectedItem,
 }: MachineHistoryScreenProps) {
+  const historyCount =
+    mode === 'cardio' ? cardioHistoryItems.length : historyItems.length;
+
   return (
     <View style={styles.content}>
-      <View style={styles.detailHeader}>
-        <Pressable
-          accessibilityLabel={strings.accessibility.back}
-          onPress={onBack}
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && styles.pressedButton,
-          ]}
-        >
-          <Ionicons name="arrow-back" size={22} color={colors.text} />
-        </Pressable>
-        <View style={styles.detailTitleBlock}>
-          <Text style={styles.detailTitle}>{selectedItem.machineName}</Text>
-          <Text style={styles.detailSubtitle}>{strings.stats.historyTitle}</Text>
+      <SecondaryScreenHeader
+        marginBottom={10}
+        onBack={onBack}
+        title={strings.stats.historyTitle}
+      />
+
+      <View style={styles.exerciseSummary}>
+        <View style={styles.exerciseSummaryHeader}>
+          <View style={styles.exerciseIconBadge}>
+            <Ionicons
+              name={mode === 'cardio' ? 'walk-outline' : 'barbell-outline'}
+              size={20}
+              color={colors.primary}
+            />
+          </View>
+          <View style={styles.exerciseSummaryText}>
+            <Text numberOfLines={2} style={styles.detailTitle}>
+              {selectedItem.machineName}
+            </Text>
+            <Text style={styles.detailSubtitle}>
+              {strings.machineTracking[selectedItem.trackingType]}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.summaryMetricRow}>
+          <SummaryMetric
+            label={strings.stats.historyRecordCountTitle}
+            value={strings.stats.historyRecordCount(historyCount)}
+          />
+          {mode === 'strength' && maxWeightKg !== undefined ? (
+            <SummaryMetric
+              label={strings.stats.strengthHistoryMaxTitle}
+              value={strings.stats.maxWeight(
+                formatWeight(maxWeightKg),
+                maxDateLabel ?? '',
+              )}
+            />
+          ) : null}
         </View>
       </View>
-
-      {mode === 'strength' && maxWeightKg !== undefined ? (
-        <View style={styles.maxSummary}>
-          <Text style={styles.maxSummaryLabel}>
-            {strings.stats.strengthHistoryMaxTitle}
-          </Text>
-          <Text style={styles.maxSummaryValue}>
-            {strings.stats.maxWeight(
-              formatWeight(maxWeightKg),
-              maxDateLabel ?? '',
-            )}
-          </Text>
-        </View>
-      ) : null}
 
       {mode === 'cardio' ? (
         <FlatList
@@ -79,7 +94,10 @@ export function MachineHistoryScreen({
             isLoadingHistory ? (
               <ListLoadingState rowCount={3} />
             ) : (
-              <Text style={styles.emptyText}>{strings.stats.historyEmpty}</Text>
+              <EmptyState
+                message={strings.stats.historyEmpty}
+                title={strings.stats.historyTitle}
+              />
             )
           }
           renderItem={({ item }) => <CardioHistoryRow item={item} />}
@@ -94,7 +112,10 @@ export function MachineHistoryScreen({
             isLoadingHistory ? (
               <ListLoadingState rowCount={3} />
             ) : (
-              <Text style={styles.emptyText}>{strings.stats.historyEmpty}</Text>
+              <EmptyState
+                message={strings.stats.historyEmpty}
+                title={strings.stats.historyTitle}
+              />
             )
           }
           renderItem={({ item }) => <MachineHistoryRow item={item} />}
@@ -105,11 +126,26 @@ export function MachineHistoryScreen({
   );
 }
 
+function SummaryMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.summaryMetric}>
+      <Text style={styles.summaryMetricLabel}>{label}</Text>
+      <Text numberOfLines={2} style={styles.summaryMetricValue}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
 function CardioHistoryRow({ item }: { item: CardioHistoryItem }) {
   return (
     <View style={styles.historyRow}>
+      <View style={styles.historyIconBadge}>
+        <Ionicons name="walk-outline" size={17} color={colors.primary} />
+      </View>
       <View style={styles.historyTextBlock}>
         <Text style={styles.historyDate}>{item.dateLabel}</Text>
+        <Text style={styles.historyMeta}>{strings.machineTracking.cardio}</Text>
       </View>
       <Text style={styles.historyMax}>{formatCardioValue(item)}</Text>
     </View>
@@ -119,8 +155,12 @@ function CardioHistoryRow({ item }: { item: CardioHistoryItem }) {
 function MachineHistoryRow({ item }: { item: MachineHistoryItem }) {
   return (
     <View style={styles.historyRow}>
+      <View style={styles.historyIconBadge}>
+        <Ionicons name="barbell-outline" size={17} color={colors.primary} />
+      </View>
       <View style={styles.historyTextBlock}>
         <Text style={styles.historyDate}>{item.dateLabel}</Text>
+        <Text style={styles.historyMeta}>{strings.stats.setCount(item.setCount)}</Text>
       </View>
       <Text style={styles.historyMax}>
         {item.maxWeightKg === null
@@ -144,28 +184,39 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
-  backButton: {
-    alignItems: 'center',
-    borderColor: colors.border,
+  exerciseSummary: {
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
-    height: 37,
-    justifyContent: 'center',
-    width: 37,
+    gap: 12,
+    marginBottom: 10,
+    padding: 12,
   },
-  detailHeader: {
+  exerciseSummaryHeader: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 12,
+    gap: 10,
   },
-  detailTitleBlock: {
+  exerciseIconBadge: {
+    alignItems: 'center',
+    backgroundColor: '#EAF7F0',
+    borderColor: '#D5EBDD',
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  exerciseSummaryText: {
     flex: 1,
+    minWidth: 0,
   },
   detailTitle: {
     color: colors.text,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
+    lineHeight: 22,
   },
   detailSubtitle: {
     color: colors.muted,
@@ -173,61 +224,78 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 2,
   },
-  maxSummary: {
-    backgroundColor: '#F8FAFC',
-    borderColor: colors.border,
+  summaryMetricRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  summaryMetric: {
+    backgroundColor: colors.background,
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 9,
+    flex: 1,
+    gap: 3,
+    minHeight: 58,
+    padding: 10,
   },
-  maxSummaryLabel: {
+  summaryMetricLabel: {
     color: colors.muted,
     fontSize: 12,
     fontWeight: '800',
   },
-  maxSummaryValue: {
+  summaryMetricValue: {
     color: colors.primary,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
-    marginTop: 2,
+    lineHeight: 18,
   },
   historyListContent: {
-    gap: 8,
+    flexGrow: 1,
+    gap: 9,
     paddingBottom: 24,
-  },
-  emptyText: {
-    color: colors.muted,
-    fontSize: 14,
-    lineHeight: 20,
   },
   historyRow: {
     alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
+  historyIconBadge: {
+    alignItems: 'center',
+    backgroundColor: '#EAF7F0',
+    borderRadius: 8,
+    height: 34,
+    justifyContent: 'center',
+    width: 34,
+  },
   historyTextBlock: {
     flex: 1,
+    minWidth: 0,
   },
   historyDate: {
     color: colors.text,
     fontSize: 15,
     fontWeight: '800',
   },
+  historyMeta: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 2,
+  },
   historyMax: {
     color: colors.primary,
     fontSize: 14,
     fontWeight: '800',
-  },
-  pressedButton: {
-    opacity: 0.7,
+    flexShrink: 1,
+    lineHeight: 18,
+    maxWidth: '48%',
+    textAlign: 'right',
   },
 });

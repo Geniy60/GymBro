@@ -10,6 +10,30 @@ function exerciseCountLabel(count: number) {
   return `${count} упражнений`;
 }
 
+function historyRecordCountLabel(count: number) {
+  if (count % 10 === 1 && count % 100 !== 11) {
+    return `${count} запись`;
+  }
+
+  if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) {
+    return `${count} записи`;
+  }
+
+  return `${count} записей`;
+}
+
+function setCountLabel(count: number) {
+  if (count % 10 === 1 && count % 100 !== 11) {
+    return `${count} подход`;
+  }
+
+  if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) {
+    return `${count} подхода`;
+  }
+
+  return `${count} подходов`;
+}
+
 export const strings = {
   app: {
     title: 'GymBro',
@@ -114,6 +138,8 @@ export const strings = {
     historyListTitle: 'Посмотреть историю упражнения',
     historyListEmpty: 'Истории упражнений пока нет.',
     historySearchPlaceholder: 'Поиск упражнения',
+    historyRecordCountTitle: 'Записей',
+    historyRecordCount: historyRecordCountLabel,
     maxesTitle: 'Максимумы по упражнениям',
     emptyMaxes: 'Пока нет подходов с весом.',
     historyEmpty: 'По этому упражнению пока нет истории.',
@@ -121,6 +147,7 @@ export const strings = {
     maxWeight: (weightKg: string, date: string) => `${weightKg} кг · ${date}`,
     noWeight: 'Без веса',
     openHistoryItem: (name: string) => `Открыть историю упражнения ${name}`,
+    setCount: setCountLabel,
     strengthHistoryMaxTitle: 'Максимум',
     workoutMax: (weightKg: string) => `Макс. ${weightKg} кг`,
   },
