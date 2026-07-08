@@ -38,6 +38,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the shared list loading skeleton.
+
+Details:
+
+- Restyled the shared `ListLoadingState` rows to look more like the refreshed list cards.
+- Added a soft left placeholder, varied text placeholder widths, and a right action placeholder for a more intentional loading state.
+- Kept the existing `rowCount` API and all screens that use the loading skeleton unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Adjusted the user selection screen alignment.
 
 Details:

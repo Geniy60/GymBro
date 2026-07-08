@@ -1,7 +1,5 @@
 import { StyleSheet, View } from 'react-native';
 
-import { colors } from '../theme/colors';
-
 type ListLoadingStateProps = {
   rowCount?: number;
 };
@@ -14,8 +12,22 @@ export function ListLoadingState({
       <View style={styles.rows}>
         {Array.from({ length: rowCount }, (_, index) => (
           <View key={index} style={styles.skeletonRow}>
-            <View style={styles.skeletonTitle} />
-            <View style={styles.skeletonMeta} />
+            <View style={styles.skeletonAccent} />
+            <View style={styles.skeletonTextBlock}>
+              <View
+                style={[
+                  styles.skeletonTitle,
+                  index % 2 === 1 && styles.shortSkeletonTitle,
+                ]}
+              />
+              <View
+                style={[
+                  styles.skeletonMeta,
+                  index % 2 === 1 && styles.longSkeletonMeta,
+                ]}
+              />
+            </View>
+            <View style={styles.skeletonAction} />
           </View>
         ))}
       </View>
@@ -31,25 +43,54 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   skeletonRow: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    alignItems: 'center',
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
+    flexDirection: 'row',
+    gap: 12,
     minHeight: 64,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    overflow: 'hidden',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  skeletonAccent: {
+    backgroundColor: '#EAF7F0',
+    borderColor: '#D5EBDD',
+    borderRadius: 7,
+    borderWidth: 1,
+    height: 42,
+    width: 42,
+  },
+  skeletonTextBlock: {
+    flex: 1,
+    gap: 9,
   },
   skeletonTitle: {
-    backgroundColor: '#E9EEF5',
+    backgroundColor: '#E1E8EF',
     borderRadius: 6,
     height: 16,
-    width: '58%',
+    width: '68%',
+  },
+  shortSkeletonTitle: {
+    width: '52%',
   },
   skeletonMeta: {
-    backgroundColor: '#F1F4F8',
+    backgroundColor: '#EEF2F6',
     borderRadius: 6,
     height: 12,
-    marginTop: 10,
-    width: '36%',
+    width: '38%',
+  },
+  longSkeletonMeta: {
+    width: '48%',
+  },
+  skeletonAction: {
+    backgroundColor: '#F2F6F3',
+    borderColor: '#DCE9E2',
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 36,
+    width: 36,
   },
 });
