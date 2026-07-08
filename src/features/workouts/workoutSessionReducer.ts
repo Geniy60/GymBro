@@ -60,7 +60,7 @@ export function createWorkoutSessionDraftState(
   workout: Workout,
 ): WorkoutSessionDraftState {
   return {
-    collapsedExerciseIds: [],
+    collapsedExerciseIds: workout.exercises.map((exercise) => exercise.id),
     draftWorkout: workout,
     visibleSetNoteIds: [],
   };

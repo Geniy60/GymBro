@@ -105,7 +105,7 @@ export function WorkoutExerciseCard({
             ]}
           >
             <Ionicons
-              color={colors.text}
+              color={colors.primary}
               name={isCollapsed ? 'chevron-down' : 'chevron-up'}
               size={18}
             />
@@ -114,7 +114,7 @@ export function WorkoutExerciseCard({
       </View>
 
       {isCollapsed ? null : (
-        <>
+        <View style={styles.exerciseBody}>
           {isCardioExercise && cardioSet !== undefined ? (
             <CardioWorkoutInputBlock
               exerciseId={exercise.id}
@@ -145,13 +145,14 @@ export function WorkoutExerciseCard({
                   pressed && styles.pressedButton,
                 ]}
               >
+                <Ionicons name="add" size={18} color={colors.primary} />
                 <Text style={styles.secondaryButtonText}>
                   {strings.workouts.addSet}
                 </Text>
               </Pressable>
             </>
           )}
-        </>
+        </View>
       )}
     </View>
   );
@@ -159,7 +160,7 @@ export function WorkoutExerciseCard({
 
 const styles = StyleSheet.create({
   exerciseCard: {
-    backgroundColor: colors.panel,
+    backgroundColor: '#FBFDFB',
     borderColor: '#E4E9F2',
     borderRadius: 8,
     borderLeftColor: '#B7D8C5',
@@ -172,18 +173,17 @@ const styles = StyleSheet.create({
   collapsedExerciseCard: {
     backgroundColor: '#FBFDFB',
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
   exerciseHeader: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 8,
     justifyContent: 'space-between',
-    marginBottom: 8,
   },
   collapsedExerciseHeader: {
     marginBottom: 0,
-    minHeight: 40,
+    minHeight: 44,
   },
   exerciseTitleBlock: {
     flex: 1,
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   exerciseHeaderActions: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 5,
+    gap: 6,
   },
   exerciseTitle: {
     color: colors.text,
@@ -201,8 +201,16 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 20,
   },
+  exerciseBody: {
+    borderTopColor: '#E8EDF5',
+    borderTopWidth: 1,
+    marginTop: 9,
+    paddingTop: 9,
+  },
   smallIconButton: {
     alignItems: 'center',
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
     height: 38,
@@ -210,15 +218,15 @@ const styles = StyleSheet.create({
     width: 38,
   },
   collapseButton: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#D9E0EA',
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
   },
   smallClearButton: {
-    backgroundColor: '#F4FBF7',
+    backgroundColor: '#EAF7F0',
     borderColor: '#B7D8C5',
   },
   smallDeleteButton: {
-    backgroundColor: '#FFF7F7',
+    backgroundColor: '#FEF3F2',
     borderColor: colors.destructiveBorder,
   },
   secondaryButton: {
@@ -227,13 +235,15 @@ const styles = StyleSheet.create({
     borderColor: '#B7D8C5',
     borderRadius: 8,
     borderWidth: 1,
+    flexDirection: 'row',
+    gap: 6,
     justifyContent: 'center',
     minHeight: 40,
   },
   secondaryButtonText: {
     color: colors.primary,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   pressedButton: {
     opacity: 0.7,

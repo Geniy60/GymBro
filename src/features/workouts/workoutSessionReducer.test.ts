@@ -55,6 +55,12 @@ const workout: Workout = {
 };
 
 describe('workoutSessionDraftReducer', () => {
+  it('starts with workout exercises collapsed', () => {
+    const state = createWorkoutSessionDraftState(workout);
+
+    expect(state.collapsedExerciseIds).toEqual(['exercise-1']);
+  });
+
   it('updates the workout name', () => {
     const state = workoutSessionDraftReducer(
       createWorkoutSessionDraftState(workout),

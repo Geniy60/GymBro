@@ -72,7 +72,7 @@ export function WorkoutSetInputRow({
             ]}
           >
             <Ionicons
-              color={hasVisibleNote ? '#6D28D9' : colors.text}
+              color={hasVisibleNote ? colors.primary : colors.text}
               name="document-text-outline"
               size={18}
             />
@@ -221,8 +221,8 @@ const styles = StyleSheet.create({
     borderColor: '#D9E0EA',
   },
   activeSmallNoteButton: {
-    backgroundColor: '#EDE9FE',
-    borderColor: '#6D28D9',
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
   },
   smallDeleteButton: {
     backgroundColor: '#FFF7F7',

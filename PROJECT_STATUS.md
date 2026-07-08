@@ -38,6 +38,44 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Collapsed workout exercises by default on session open.
+
+Details:
+
+- Changed the workout session draft initial state so workouts with existing exercises open with all exercise cards collapsed.
+- Kept manual expand/collapse, adding exercises, deleting exercises, set editing, and workout saving behavior unchanged.
+- Added a focused reducer test for the initial collapsed exercise state.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
+Compacted active workout exercise cards after phone review.
+
+Details:
+
+- Removed the `Strength / Cardio` tracking badge from active workout exercise cards because it made the workout screen too tall on the phone.
+- Restored the active workout exercise title size to the more compact value.
+- Kept the refreshed exercise card action buttons, header/body separator, add-set action, and green active set-note state unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Polished active workout exercise cards.
+
+Details:
+
+- Added a compact centralized `Strength / Cardio` tracking badge to active workout exercise cards.
+- Restyled the exercise card header, action buttons, collapse button, and add-set action to match the refreshed green-accent system.
+- Added a subtle separator between the exercise header and set/cardio inputs for better scanability.
+- Replaced the remaining purple active set-note state with the same green-accent treatment.
+- Kept collapse, clear, delete, add-set, set-note, cardio input, and set input behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the exercise suggestion flow.
 
 Details:
