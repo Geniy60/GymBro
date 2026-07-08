@@ -2,14 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { type ComponentProps, useMemo, useState } from 'react';
 import {
   FlatList,
+  Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
-  Pressable,
 } from 'react-native';
 
 import { MachineTile } from '../../components/MachineTile';
+import { SearchInput } from '../../components/SearchInput';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 import type { ExerciseHistorySummary, Machine, WorkoutStats } from '../../types';
@@ -81,27 +81,11 @@ export function StatsOverview({
 
       <View style={styles.historySection}>
         <View style={styles.searchRow}>
-          <Ionicons color={colors.muted} name="search-outline" size={18} />
-          <TextInput
-            accessibilityLabel={strings.accessibility.search}
+          <SearchInput
             onChangeText={setHistorySearchText}
             placeholder={strings.stats.historySearchPlaceholder}
-            placeholderTextColor={colors.muted}
-            style={styles.searchInput}
             value={historySearchText}
           />
-          {hasHistorySearch ? (
-            <Pressable
-              accessibilityLabel={strings.accessibility.clearSearch}
-              onPress={() => setHistorySearchText('')}
-              style={({ pressed }) => [
-                styles.clearSearchButton,
-                pressed && styles.pressedButton,
-              ]}
-            >
-              <Ionicons color={colors.muted} name="close" size={18} />
-            </Pressable>
-          ) : null}
         </View>
         <FlatList
           columnWrapperStyle={styles.historyGridRow}
@@ -326,29 +310,8 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   searchRow: {
-    alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
-    borderRadius: 8,
-    borderWidth: 1,
     flexDirection: 'row',
-    gap: 6,
-    height: 44,
     marginBottom: 10,
-    paddingHorizontal: 12,
-  },
-  searchInput: {
-    color: colors.text,
-    flex: 1,
-    fontSize: 15,
-    height: '100%',
-    padding: 0,
-  },
-  clearSearchButton: {
-    alignItems: 'center',
-    height: 30,
-    justifyContent: 'center',
-    width: 30,
   },
   historyListContent: {
     flexGrow: 1,

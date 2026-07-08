@@ -38,6 +38,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Aligned the stats overview search with the shared search input.
+
+Details:
+
+- Replaced the stats overview's local exercise-history search field with the shared `SearchInput`.
+- Added the shared search accessibility label directly inside `SearchInput` so every shared search field exposes the same Russian label.
+- Kept stats history filtering, reset-search behavior, empty state handling, and list layout unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the shared search input.
 
 Details:

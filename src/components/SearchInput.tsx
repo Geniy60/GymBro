@@ -28,6 +28,7 @@ export function SearchInput({
         style={styles.searchIcon}
       />
       <TextInput
+        accessibilityLabel={strings.accessibility.search}
         autoCapitalize="none"
         clearButtonMode="while-editing"
         onBlur={() => setIsFocused(false)}
