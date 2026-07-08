@@ -38,6 +38,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the shared empty state.
+
+Details:
+
+- Restyled the shared `EmptyState` with a softer contained surface and a decorative neutral icon.
+- Updated the reset action styling to match the refreshed green-accent button system.
+- Kept existing empty-state titles, messages, reset behavior, and component props unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the shared list loading skeleton.
 
 Details:

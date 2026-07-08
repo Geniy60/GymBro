@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
@@ -17,6 +18,15 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <View style={styles.emptyState}>
+      <View
+        accessibilityElementsHidden
+        importantForAccessibility="no"
+        style={styles.emptyVisual}
+      >
+        <View style={styles.emptyVisualInner}>
+          <Ionicons name="file-tray-outline" size={28} color={colors.primary} />
+        </View>
+      </View>
       <Text style={styles.emptyTitle}>{title}</Text>
       <Text style={styles.emptyMessage}>{message}</Text>
       {onReset !== undefined && resetLabel !== undefined ? (
@@ -37,14 +47,38 @@ export function EmptyState({
 const styles = StyleSheet.create({
   emptyState: {
     alignItems: 'center',
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
+    borderRadius: 8,
+    borderWidth: 1,
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 18,
+    paddingVertical: 30,
+  },
+  emptyVisual: {
+    alignItems: 'center',
+    backgroundColor: '#EAF7F0',
+    borderColor: '#D5EBDD',
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 58,
+    justifyContent: 'center',
+    marginBottom: 14,
+    width: 58,
+  },
+  emptyVisualInner: {
+    alignItems: 'center',
+    backgroundColor: '#FBFDFB',
+    borderRadius: 8,
+    height: 42,
+    justifyContent: 'center',
+    width: 42,
   },
   emptyTitle: {
     color: colors.text,
     fontSize: 19,
-    fontWeight: '700',
+    fontWeight: '800',
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -56,7 +90,8 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     alignItems: 'center',
-    borderColor: colors.primary,
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
