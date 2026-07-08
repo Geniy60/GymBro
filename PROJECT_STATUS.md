@@ -38,6 +38,20 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the exercise form visual layout.
+
+Details:
+
+- Added a compact `Strength / Cardio` tracking-type selector to the exercise form, using the existing `trackingType` field already supported by the app and database.
+- Restyled exercise form inputs with softer surfaces and stronger label hierarchy.
+- Updated muscle-group chips to match the refreshed exercise tile palette.
+- Refined Save and Delete action styling while keeping their behavior unchanged.
+- Kept exercise validation, Supabase save flow, delete flow, and navigation behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Restored exercise tile image visibility.
 
 Details:

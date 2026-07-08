@@ -165,6 +165,7 @@ export const strings = {
       muscleGroupHint: 'Выбери одну или несколько групп.',
       noteLabel: 'Заметка',
       notePlaceholder: 'Посадка, настройки, важные ощущения',
+      trackingTypeLabel: 'Тип упражнения',
       errors: {
         nameRequired: 'Введите название упражнения.',
       },

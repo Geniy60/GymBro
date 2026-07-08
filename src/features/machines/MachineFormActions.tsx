@@ -50,18 +50,20 @@ const styles = StyleSheet.create({
   saveButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
+    borderColor: '#B7D8C5',
     borderRadius: 8,
+    borderWidth: 1,
     justifyContent: 'center',
     minHeight: 48,
   },
   saveButtonText: {
     color: colors.panel,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   deleteButton: {
     alignItems: 'center',
-    backgroundColor: colors.panel,
+    backgroundColor: '#FFF7F7',
     borderColor: colors.destructiveBorder,
     borderRadius: 8,
     borderWidth: 1,
@@ -74,7 +76,7 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: colors.destructive,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   pressedButton: {
     opacity: 0.7,

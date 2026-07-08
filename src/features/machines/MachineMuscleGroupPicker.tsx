@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     color: colors.text,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '800',
   },
   fieldHint: {
     color: colors.muted,
@@ -72,18 +72,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tagButton: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
-    minHeight: 36,
+    minHeight: 38,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
   selectedTagButton: {
-    backgroundColor: '#DCFCE7',
-    borderColor: colors.primary,
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
   },
   tagButtonText: {
     color: colors.text,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   selectedTagButtonText: {
-    color: '#166534',
+    color: colors.primary,
   },
   pressedButton: {
     opacity: 0.7,

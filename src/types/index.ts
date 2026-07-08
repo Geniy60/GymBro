@@ -21,6 +21,7 @@ export type MachineDraft = {
   name: string;
   muscleGroups: MuscleGroup[];
   note: string;
+  trackingType: MachineTrackingType;
 };
 
 export type MachineTrackingType = 'strength' | 'cardio';

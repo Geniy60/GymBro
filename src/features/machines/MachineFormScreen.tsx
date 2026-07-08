@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,7 +15,12 @@ import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { createId } from '../../createId';
 import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
-import type { Machine, MachineDraft, MuscleGroup } from '../../types';
+import type {
+  Machine,
+  MachineDraft,
+  MachineTrackingType,
+  MuscleGroup,
+} from '../../types';
 import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 import { MachineFormActions } from './MachineFormActions';
 import { MachineMuscleGroupPicker } from './MachineMuscleGroupPicker';
@@ -31,6 +37,7 @@ const emptyMachineDraft: MachineDraft = {
   name: '',
   muscleGroups: [],
   note: '',
+  trackingType: 'strength',
 };
 
 export function MachineFormScreen({
@@ -47,6 +54,7 @@ export function MachineFormScreen({
           name: machine.name,
           muscleGroups: machine.muscleGroups,
           note: machine.note,
+          trackingType: machine.trackingType,
         },
   );
   const [machineNameError, setMachineNameError] = useState('');
@@ -76,11 +84,19 @@ export function MachineFormScreen({
     }));
   }
 
+  function updateTrackingType(trackingType: MachineTrackingType) {
+    setMachineDraft((currentDraft) => ({
+      ...currentDraft,
+      trackingType,
+    }));
+  }
+
   function saveMachine() {
     const nextDraft: MachineDraft = {
       name: machineDraft.name.trim(),
       muscleGroups: machineDraft.muscleGroups,
       note: machineDraft.note.trim(),
+      trackingType: machineDraft.trackingType,
     };
 
     if (nextDraft.name.length === 0) {
@@ -90,7 +106,6 @@ export function MachineFormScreen({
 
     onSave({
       id: machine?.id ?? createId(),
-      trackingType: machine?.trackingType ?? 'strength',
       ...nextDraft,
     });
   }
@@ -144,6 +159,40 @@ export function MachineFormScreen({
             ) : null}
           </View>
 
+          <View style={styles.formField}>
+            <Text style={styles.fieldLabel}>
+              {strings.forms.machine.trackingTypeLabel}
+            </Text>
+            <View style={styles.trackingTypeControl}>
+              {(['strength', 'cardio'] as const).map((trackingType) => {
+                const isSelected = machineDraft.trackingType === trackingType;
+
+                return (
+                  <Pressable
+                    accessibilityLabel={strings.machineTracking[trackingType]}
+                    accessibilityRole="button"
+                    key={trackingType}
+                    onPress={() => updateTrackingType(trackingType)}
+                    style={({ pressed }) => [
+                      styles.trackingTypeButton,
+                      isSelected && styles.selectedTrackingTypeButton,
+                      pressed && styles.pressedButton,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.trackingTypeButtonText,
+                        isSelected && styles.selectedTrackingTypeButtonText,
+                      ]}
+                    >
+                      {strings.machineTracking[trackingType]}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
           <MachineMuscleGroupPicker
             onToggleMuscleGroup={toggleMuscleGroup}
             selectedMuscleGroups={machineDraft.muscleGroups}
@@ -185,7 +234,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   formContent: {
-    paddingBottom: 28,
+    paddingBottom: 32,
     paddingHorizontal: 20,
     paddingTop: 8,
   },
@@ -196,17 +245,46 @@ const styles = StyleSheet.create({
   fieldLabel: {
     color: colors.text,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '800',
   },
   formInput: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
-    fontSize: 16,
+    fontSize: 15,
     minHeight: 48,
     paddingHorizontal: 14,
+  },
+  trackingTypeControl: {
+    backgroundColor: colors.panel,
+    borderColor: '#E4E9F2',
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 6,
+    padding: 5,
+  },
+  trackingTypeButton: {
+    alignItems: 'center',
+    borderRadius: 8,
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: 38,
+  },
+  selectedTrackingTypeButton: {
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
+    borderWidth: 1,
+  },
+  trackingTypeButtonText: {
+    color: colors.muted,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  selectedTrackingTypeButtonText: {
+    color: colors.primary,
   },
   noteInput: {
     minHeight: 104,
