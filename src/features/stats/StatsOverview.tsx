@@ -70,7 +70,6 @@ export function StatsOverview({
       </View>
 
       <View style={[styles.section, styles.historySection]}>
-        <Text style={styles.sectionTitle}>{strings.stats.historyListTitle}</Text>
         <View style={styles.searchRow}>
           <Ionicons color={colors.muted} name="search-outline" size={18} />
           <TextInput

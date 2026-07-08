@@ -38,6 +38,17 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Removed the stats exercise history picker title.
+
+Details:
+
+- Removed the `Посмотреть историю упражнения` heading from the stats exercise history search section.
+- Kept the search input, exercise cards, and history navigation behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Submitted Android APK build version 5.
 
 Details:
