@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { MachineTile } from '../../components/MachineTile';
@@ -20,9 +21,12 @@ export function SuggestedMachinesPreview({
 }: SuggestedMachinesPreviewProps) {
   if (suggestedMachines.length === 0) {
     return (
-      <Text style={styles.helperText}>
-        {getSuggestEmptyMessage({ canSuggest, hasSuggestAttempt })}
-      </Text>
+      <View style={styles.helperBlock}>
+        <Ionicons name="sparkles-outline" size={20} color={colors.primary} />
+        <Text style={styles.helperText}>
+          {getSuggestEmptyMessage({ canSuggest, hasSuggestAttempt })}
+        </Text>
+      </View>
     );
   }
 
@@ -53,6 +57,7 @@ export function SuggestedMachinesPreview({
           pressed && styles.pressedButton,
         ]}
       >
+        <Ionicons name="add" size={21} color={colors.panel} />
         <Text style={styles.suggestAddButtonText}>
           {strings.workouts.addSuggestedMachines}
         </Text>
@@ -82,8 +87,19 @@ function getSuggestEmptyMessage({
 function noop() {}
 
 const styles = StyleSheet.create({
+  helperBlock: {
+    alignItems: 'center',
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 10,
+    padding: 12,
+  },
   helperText: {
     color: colors.muted,
+    flex: 1,
     fontSize: 15,
     lineHeight: 21,
   },
@@ -109,8 +125,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.primary,
     borderRadius: 8,
+    flexDirection: 'row',
+    gap: 8,
     justifyContent: 'center',
     minHeight: 44,
+    paddingHorizontal: 14,
   },
   suggestAddButtonText: {
     color: colors.panel,

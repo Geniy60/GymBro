@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -78,19 +77,12 @@ export function MachineSuggestScreen({
               pressed && styles.pressedButton,
             ]}
           >
-            <LinearGradient
-              colors={['#7C3AED', '#A855F7', '#EC4899']}
-              end={{ x: 1, y: 1 }}
-              start={{ x: 0, y: 0 }}
-              style={styles.suggestPrimaryGradient}
-            >
-              <Ionicons name="sparkles-outline" size={20} color={colors.panel} />
-              <Text style={styles.suggestPrimaryButtonText}>
-                {hasSuggestAttempt
-                  ? strings.workouts.resuggestMachines
-                  : strings.workouts.suggestMachinesButton}
-              </Text>
-            </LinearGradient>
+            <Ionicons name="sparkles-outline" size={20} color={colors.panel} />
+            <Text style={styles.suggestPrimaryButtonText}>
+              {hasSuggestAttempt
+                ? strings.workouts.resuggestMachines
+                : strings.workouts.suggestMachinesButton}
+            </Text>
           </Pressable>
 
           <SuggestedMachinesPreview
@@ -115,20 +107,18 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   suggestContent: {
-    gap: 14,
+    gap: 12,
     paddingBottom: 28,
   },
   suggestPrimaryButton: {
-    borderRadius: 8,
-    minHeight: 48,
-    overflow: 'hidden',
-  },
-  suggestPrimaryGradient: {
     alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 8,
     flexDirection: 'row',
     gap: 8,
     justifyContent: 'center',
     minHeight: 48,
+    paddingHorizontal: 14,
   },
   suggestPrimaryButtonText: {
     color: colors.panel,

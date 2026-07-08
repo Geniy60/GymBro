@@ -38,6 +38,19 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the exercise suggestion flow.
+
+Details:
+
+- Restyled the exercise suggestion screen's muscle-group picker and count picker as calmer framed control panels.
+- Replaced the remaining purple-pink suggestion gradient with the refreshed green primary action style.
+- Refined the suggestion preview empty hint and add-suggested-exercises action with matching icon treatment.
+- Kept suggestion generation, selected muscle groups, selected count, preview data, and add-to-workout behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the empty active-workout exercise state.
 
 Details:

@@ -15,7 +15,7 @@ export function SuggestMuscleGroupPicker({
   selectedMuscleGroups,
 }: SuggestMuscleGroupPickerProps) {
   return (
-    <>
+    <View style={styles.suggestSection}>
       <Text style={styles.suggestSectionTitle}>
         {strings.workouts.suggestMuscleGroupsTitle}
       </Text>
@@ -48,11 +48,19 @@ export function SuggestMuscleGroupPicker({
           );
         })}
       </View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  suggestSection: {
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 12,
+  },
   suggestSectionTitle: {
     color: colors.text,
     fontSize: 16,
@@ -64,8 +72,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   suggestChip: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: colors.background,
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
@@ -73,8 +81,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   selectedSuggestChip: {
-    backgroundColor: '#EAF7EF',
-    borderColor: colors.primary,
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
   },
   suggestChipText: {
     color: colors.text,

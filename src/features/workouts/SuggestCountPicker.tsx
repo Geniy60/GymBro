@@ -15,7 +15,7 @@ export function SuggestCountPicker({
   selectedCount,
 }: SuggestCountPickerProps) {
   return (
-    <>
+    <View style={styles.suggestSection}>
       <Text style={styles.suggestSectionTitle}>
         {strings.workouts.suggestCountTitle}
       </Text>
@@ -46,11 +46,19 @@ export function SuggestCountPicker({
           );
         })}
       </View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  suggestSection: {
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 12,
+  },
   suggestSectionTitle: {
     color: colors.text,
     fontSize: 16,
@@ -62,17 +70,18 @@ const styles = StyleSheet.create({
   },
   countButton: {
     alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: colors.background,
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
+    flex: 1,
     height: 42,
     justifyContent: 'center',
-    width: 50,
+    minWidth: 0,
   },
   selectedCountButton: {
-    backgroundColor: '#EAF7EF',
-    borderColor: colors.primary,
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
   },
   countButtonText: {
     color: colors.text,
