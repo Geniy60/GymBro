@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useMemo, useState } from 'react';
+import { type ComponentProps, useMemo, useState } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -21,6 +21,8 @@ type StatsOverviewProps = {
   stats: WorkoutStats;
 };
 
+type IoniconName = ComponentProps<typeof Ionicons>['name'];
+
 export function StatsOverview({
   maxMonthCount,
   onSelectHistoryItem,
@@ -38,24 +40,32 @@ export function StatsOverview({
     <View style={styles.content}>
       <View style={styles.summaryRow}>
         <StatTile
+          iconName="barbell-outline"
           label={strings.stats.totalWorkouts}
           value={String(stats.totalWorkouts)}
         />
         <StatTile
+          iconName="calendar-outline"
           label={strings.stats.monthWorkouts}
           value={String(stats.monthWorkoutCount)}
         />
       </View>
 
-      <View style={[styles.section, styles.chartSection]}>
-        <Text style={styles.sectionTitle}>{strings.stats.chartTitle}</Text>
+      <View style={styles.chartSection}>
+        <View style={styles.chartHeader}>
+          <Text style={styles.sectionTitle}>{strings.stats.chartTitle}</Text>
+          <View style={styles.chartBadge}>
+            <Ionicons color={colors.primary} name="trending-up-outline" size={15} />
+          </View>
+        </View>
         <View style={styles.chartRow}>
-          {stats.monthStats.map((monthStat) => (
+          {stats.monthStats.map((monthStat, index) => (
             <View key={monthStat.key} style={styles.chartItem}>
               <View style={styles.chartBarTrack}>
                 <View
                   style={[
                     styles.chartBar,
+                    index === stats.monthStats.length - 1 && styles.currentMonthChartBar,
                     {
                       height: `${Math.max((monthStat.count / maxMonthCount) * 100, 6)}%`,
                     },
@@ -69,7 +79,7 @@ export function StatsOverview({
         </View>
       </View>
 
-      <View style={[styles.section, styles.historySection]}>
+      <View style={styles.historySection}>
         <View style={styles.searchRow}>
           <Ionicons color={colors.muted} name="search-outline" size={18} />
           <TextInput
@@ -143,11 +153,24 @@ export function StatsOverview({
   );
 }
 
-function StatTile({ label, value }: { label: string; value: string }) {
+function StatTile({
+  iconName,
+  label,
+  value,
+}: {
+  iconName: IoniconName;
+  label: string;
+  value: string;
+}) {
   return (
     <View style={styles.statTile}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      <View style={styles.statIconBadge}>
+        <Ionicons color={colors.primary} name={iconName} size={18} />
+      </View>
+      <View style={styles.statTextBlock}>
+        <Text style={styles.statValue}>{value}</Text>
+        <Text style={styles.statLabel}>{label}</Text>
+      </View>
     </View>
   );
 }
@@ -193,20 +216,34 @@ const styles = StyleSheet.create({
   summaryRow: {
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 9,
+    marginBottom: 10,
   },
   statTile: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    alignItems: 'center',
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
+    flexDirection: 'row',
+    gap: 10,
     paddingHorizontal: 12,
-    paddingVertical: 7,
+    paddingVertical: 10,
+  },
+  statIconBadge: {
+    alignItems: 'center',
+    backgroundColor: '#EAF7F0',
+    borderRadius: 8,
+    height: 34,
+    justifyContent: 'center',
+    width: 34,
+  },
+  statTextBlock: {
+    flex: 1,
   },
   statValue: {
     color: colors.text,
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '800',
   },
   statLabel: {
@@ -215,25 +252,36 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 1,
   },
-  section: {
+  chartSection: {
     backgroundColor: colors.panel,
-    borderColor: colors.border,
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: 10,
     padding: 12,
+    paddingVertical: 11,
   },
   historySection: {
     flex: 1,
   },
-  chartSection: {
-    paddingVertical: 11,
+  chartHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 9,
+  },
+  chartBadge: {
+    alignItems: 'center',
+    backgroundColor: '#EAF7F0',
+    borderRadius: 8,
+    height: 28,
+    justifyContent: 'center',
+    width: 28,
   },
   sectionTitle: {
     color: colors.text,
     fontSize: 16,
     fontWeight: '800',
-    marginBottom: 9,
   },
   chartRow: {
     alignItems: 'flex-end',
@@ -249,15 +297,21 @@ const styles = StyleSheet.create({
   },
   chartBarTrack: {
     alignItems: 'center',
+    backgroundColor: '#F1F5F9',
+    borderRadius: 8,
     flex: 1,
     justifyContent: 'flex-end',
+    overflow: 'hidden',
     width: '100%',
   },
   chartBar: {
-    backgroundColor: colors.primary,
-    borderRadius: 6,
+    backgroundColor: '#A7C7B7',
+    borderRadius: 8,
     minHeight: 4,
-    width: '70%',
+    width: '100%',
+  },
+  currentMonthChartBar: {
+    backgroundColor: colors.primary,
   },
   chartValue: {
     color: colors.text,
@@ -273,20 +327,20 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    borderColor: colors.border,
+    backgroundColor: colors.panel,
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
     gap: 6,
-    height: 40,
-    marginBottom: 9,
-    paddingHorizontal: 10,
+    height: 44,
+    marginBottom: 10,
+    paddingHorizontal: 12,
   },
   searchInput: {
     color: colors.text,
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
     height: '100%',
     padding: 0,
   },

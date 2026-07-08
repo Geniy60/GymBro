@@ -38,6 +38,20 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the Stats overview visual layout.
+
+Details:
+
+- Made the total and monthly workout counters feel more like summary tiles with icons and softer accent styling.
+- Restyled the last-six-month chart with a calmer track/bar treatment and a current-month accent.
+- Removed the framed container around the stats exercise search/list area so the exercise cards no longer feel nested inside another card.
+- Slightly enlarged and softened the stats exercise search input.
+- Kept all stats data loading, search behavior, and exercise history navigation unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Removed the stats exercise history picker title.
 
 Details:
