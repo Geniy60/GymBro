@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 
 import { EmptyState } from '../../components/EmptyState';
 import { ListLoadingState } from '../../components/ListLoadingState';
@@ -62,7 +63,7 @@ export function MachinesScreen({
             pressed && styles.pressedButton,
           ]}
         >
-          <Text style={styles.addButtonText}>{strings.actions.addIcon}</Text>
+          <Ionicons color={colors.panel} name="add" size={24} />
         </Pressable>
       </View>
 
@@ -121,21 +122,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   addButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
+    borderColor: '#B7D8C5',
     borderRadius: 8,
+    borderWidth: 1,
     height: 44,
     justifyContent: 'center',
     width: 44,
-  },
-  addButtonText: {
-    color: colors.panel,
-    fontSize: 28,
-    fontWeight: '700',
-    lineHeight: 30,
   },
   list: {
     flex: 1,

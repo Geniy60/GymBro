@@ -99,6 +99,10 @@ export const strings = {
   machineImages: {
     noImage: 'Нет изображения',
   },
+  machineTracking: {
+    cardio: 'Кардио',
+    strength: 'Силовое',
+  },
   stats: {
     totalWorkouts: 'Всего',
     monthWorkouts: 'За месяц',

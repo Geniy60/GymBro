@@ -43,8 +43,8 @@ export function SearchInput({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   input: {
     color: colors.text,
-    fontSize: 16,
+    fontSize: 15,
     height: 44,
     paddingLeft: 12,
     paddingRight: 42,

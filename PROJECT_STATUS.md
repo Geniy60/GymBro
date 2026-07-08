@@ -38,6 +38,65 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Restored exercise tile image visibility.
+
+Details:
+
+- Removed the remaining custom background from the image area inside shared exercise tiles so exercise photos render like they did before the visual polish.
+- Kept the overall exercise tile border, title, tracking-type badge, selection state, and press behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Removed exercise tile image frame border.
+
+Details:
+
+- Removed the subtle extra border around the image area inside shared exercise tiles.
+- Kept the overall exercise tile border, image background, title, tracking-type badge, selection state, and press behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Reduced exercise tile title size.
+
+Details:
+
+- Reduced the shared exercise tile title font size by one point and adjusted line height so long Russian exercise names wrap less like a staircase.
+- Kept the shared exercise tile layout, image, tracking-type badge, selection state, and press behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Simplified exercise tile metadata.
+
+Details:
+
+- Removed muscle group text from the shared exercise tile so the compact tracking-type badge no longer competes with a second metadata line.
+- Kept muscle groups available in exercise search, editing, workout picker filtering, and stats filtering.
+- Kept the shared exercise tile image, title, tracking-type badge, selection state, and press behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Polished the exercise catalog visual layout.
+
+Details:
+
+- Restyled the shared exercise tile with a softer surface, lighter image frame, stronger title rhythm, and compact tracking-type badge.
+- Added centralized Russian labels for strength and cardio exercise tracking types.
+- Updated the Exercises tab add button to use a proper icon while keeping the same action and placement.
+- Softened the shared search input surface so the main list screens feel more consistent.
+- Kept exercise loading, search, edit navigation, stats history navigation, workout picker selection, and suggestion flows unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the workouts list visual layout.
 
 Details:

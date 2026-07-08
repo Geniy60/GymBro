@@ -8,7 +8,6 @@ import { MachineImageFrame } from './MachineImageFrame';
 type MachineTileProps = {
   accessibilityLabel: string;
   machine: Machine;
-  meta?: string;
   onPress: () => void;
   selected?: boolean;
 };
@@ -16,17 +15,10 @@ type MachineTileProps = {
 export function MachineTile({
   accessibilityLabel,
   machine,
-  meta,
   onPress,
   selected = false,
 }: MachineTileProps) {
-  const fallbackMeta =
-    machine.muscleGroups.length === 0
-      ? ''
-      : machine.muscleGroups
-          .map((muscleGroup) => strings.muscleGroups.labels[muscleGroup])
-          .join(', ');
-  const metaText = meta ?? fallbackMeta;
+  const trackingLabel = strings.machineTracking[machine.trackingType];
 
   return (
     <Pressable
@@ -43,11 +35,17 @@ export function MachineTile({
         <Text numberOfLines={2} style={styles.title}>
           {machine.name}
         </Text>
-        {metaText.length > 0 ? (
-          <Text numberOfLines={1} style={styles.meta}>
-            {metaText}
+        <View style={styles.badgeRow}>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.trackingBadge,
+              machine.trackingType === 'cardio' && styles.cardioBadge,
+            ]}
+          >
+            {trackingLabel}
           </Text>
-        ) : null}
+        </View>
       </View>
     </Pressable>
   );
@@ -55,8 +53,8 @@ export function MachineTile({
 
 const styles = StyleSheet.create({
   tile: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
@@ -64,7 +62,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   selectedTile: {
-    backgroundColor: '#DCFCE7',
+    backgroundColor: '#EAF7F0',
     borderColor: colors.primary,
   },
   tileImage: {
@@ -76,14 +74,32 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.text,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
+    lineHeight: 18,
   },
-  meta: {
-    color: colors.muted,
-    fontSize: 12,
-    fontWeight: '700',
-    marginTop: 4,
+  badgeRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 6,
+  },
+  trackingBadge: {
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
+    borderRadius: 8,
+    borderWidth: 1,
+    color: colors.primary,
+    flexShrink: 0,
+    fontSize: 11,
+    fontWeight: '800',
+    overflow: 'hidden',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+  },
+  cardioBadge: {
+    backgroundColor: '#FFFBEB',
+    borderColor: '#FBBF24',
+    color: '#D97706',
   },
   pressedButton: {
     opacity: 0.7,
