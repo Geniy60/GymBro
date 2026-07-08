@@ -25,7 +25,7 @@ export function SecondaryScreenHeader({
           pressed && styles.pressedButton,
         ]}
       >
-        <Ionicons name="arrow-back" size={22} color={colors.text} />
+        <Ionicons name="arrow-back" size={22} color={colors.primary} />
       </Pressable>
       <Text style={styles.secondaryTitle}>{title}</Text>
     </View>
@@ -40,18 +40,19 @@ const styles = StyleSheet.create({
   },
   backButton: {
     alignItems: 'center',
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
-    height: 37,
+    height: 40,
     justifyContent: 'center',
-    width: 37,
+    width: 40,
   },
   secondaryTitle: {
     color: colors.text,
     flex: 1,
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 21,
+    fontWeight: '800',
   },
   pressedButton: {
     opacity: 0.7,

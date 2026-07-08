@@ -38,6 +38,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the shared secondary screen header.
+
+Details:
+
+- Restyled the shared `SecondaryScreenHeader` back button with the refreshed soft surface and green icon.
+- Strengthened the secondary screen title typography slightly to match the newer app hierarchy.
+- Kept the existing header props, back behavior, screen-specific margins, and navigation flow unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Aligned the stats overview search with the shared search input.
 
 Details:
