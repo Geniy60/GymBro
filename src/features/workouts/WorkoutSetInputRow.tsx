@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { strings } from '../../strings';
@@ -21,6 +22,8 @@ type WorkoutSetInputRowProps = {
   workoutSet: WorkoutSet;
 };
 
+type FocusedSetInput = 'reps' | 'weightKg' | null;
+
 export function WorkoutSetInputRow({
   deleteSet,
   exerciseId,
@@ -33,6 +36,7 @@ export function WorkoutSetInputRow({
 }: WorkoutSetInputRowProps) {
   const isRecord = isRecordSet(workoutSet, previousMaxWeightKg);
   const hasVisibleNote = isNoteVisible || workoutSet.note.length > 0;
+  const [focusedInput, setFocusedInput] = useState<FocusedSetInput>(null);
 
   return (
     <View style={styles.setBlock}>
@@ -42,23 +46,44 @@ export function WorkoutSetInputRow({
           accessibilityLabel={strings.workouts.weightLabel}
           keyboardType="decimal-pad"
           onChangeText={(value) =>
-            updateSet(exerciseId, workoutSet.id, 'weightKg', value)
+            updateSet(
+              exerciseId,
+              workoutSet.id,
+              'weightKg',
+              stripInputUnit(value, strings.workouts.weightUnit),
+            )
           }
+          onBlur={() => setFocusedInput((currentInput) =>
+            currentInput === 'weightKg' ? null : currentInput
+          )}
+          onFocus={() => setFocusedInput('weightKg')}
           placeholder={strings.workouts.weightPlaceholder}
           placeholderTextColor={colors.muted}
           style={styles.smallInput}
-          value={workoutSet.weightKg}
+          value={formatWeightInputValue(
+            workoutSet.weightKg,
+            focusedInput === 'weightKg',
+          )}
         />
         <TextInput
           accessibilityLabel={strings.workouts.repsLabel}
           keyboardType="number-pad"
           onChangeText={(value) =>
-            updateSet(exerciseId, workoutSet.id, 'reps', value)
+            updateSet(
+              exerciseId,
+              workoutSet.id,
+              'reps',
+              stripInputUnit(value, strings.workouts.repsUnit),
+            )
           }
+          onBlur={() => setFocusedInput((currentInput) =>
+            currentInput === 'reps' ? null : currentInput
+          )}
+          onFocus={() => setFocusedInput('reps')}
           placeholder={strings.workouts.repsPlaceholder}
           placeholderTextColor={colors.muted}
           style={styles.smallInput}
-          value={workoutSet.reps}
+          value={formatRepsInputValue(workoutSet.reps, focusedInput === 'reps')}
         />
         <View style={styles.setActions}>
           <Pressable
@@ -111,6 +136,36 @@ export function WorkoutSetInputRow({
       ) : null}
     </View>
   );
+}
+
+function formatWeightInputValue(weightKg: string, isFocused: boolean): string {
+  const trimmedWeightKg = weightKg.trim();
+
+  if (isFocused || trimmedWeightKg.length === 0) {
+    return weightKg;
+  }
+
+  return strings.workouts.weightValue(trimmedWeightKg);
+}
+
+function formatRepsInputValue(reps: string, isFocused: boolean): string {
+  const trimmedReps = reps.trim();
+
+  if (isFocused || trimmedReps.length === 0) {
+    return reps;
+  }
+
+  return strings.workouts.repsValue(trimmedReps);
+}
+
+function stripInputUnit(value: string, unit: string): string {
+  const trimmedValue = value.trim();
+
+  return trimmedValue.replace(new RegExp(`\\s*${escapeRegExp(unit)}$`, 'i'), '');
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function isRecordSet(

@@ -223,6 +223,8 @@ export const strings = {
     resuggestMachines: 'Подобрать заново',
     repsLabel: 'Повторения',
     repsPlaceholder: 'Повт.',
+    repsUnit: 'р.',
+    repsValue: (reps: string) => `${reps} р.`,
     recordBadge: 'Рекорд',
     sessionTitle: 'Тренировка',
     saved: 'Тренировка сохранена.',
@@ -264,6 +266,8 @@ export const strings = {
     unknownMonth: 'Без даты',
     weightLabel: 'Вес, кг',
     weightPlaceholder: 'кг',
+    weightUnit: 'кг',
+    weightValue: (weightKg: string) => `${weightKg} кг`,
   },
   accessibility: {
     addMachine: 'Добавить упражнение',

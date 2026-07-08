@@ -38,6 +38,19 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Added display units to strength set inputs.
+
+Details:
+
+- Weight and reps inputs now show values as `10 кг` and `10 р.` when the field is not focused.
+- When editing a weight or reps input, the field switches back to the raw numeric value.
+- Stored workout draft values and saved workout payloads remain numeric strings without unit labels.
+- Added centralized Russian unit/value strings for strength set input display.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
 Removed duplicate exercise type text from the exercise history summary.
 
 Details:
