@@ -3,6 +3,8 @@ import { requireNativeModule } from 'expo-modules-core';
 
 type NativeRestTimerAlarmModule = {
   cancelRestTimerAlarmAsync: () => Promise<void>;
+  canScheduleRestTimerAlarmAsync: () => Promise<boolean>;
+  openRestTimerAlarmSettingsAsync: () => Promise<void>;
   scheduleRestTimerAlarmAsync: (
     seconds: number,
     title: string,
@@ -10,6 +12,11 @@ type NativeRestTimerAlarmModule = {
     channelName: string,
   ) => Promise<boolean>;
 };
+
+export type NativeRestTimerAlarmScheduleResult =
+  | 'permissionDenied'
+  | 'scheduled'
+  | 'unavailable';
 
 let nativeModule: NativeRestTimerAlarmModule | null | undefined;
 
@@ -23,19 +30,28 @@ export async function scheduleNativeRestTimerAlarm({
   channelName: string;
   seconds: number;
   title: string;
-}): Promise<boolean> {
+}): Promise<NativeRestTimerAlarmScheduleResult> {
   const RestTimerAlarmModule = getNativeRestTimerAlarmModule();
 
   if (RestTimerAlarmModule === null) {
-    return false;
+    return 'unavailable';
   }
 
-  return RestTimerAlarmModule.scheduleRestTimerAlarmAsync(
+  const canScheduleExactAlarm =
+    await RestTimerAlarmModule.canScheduleRestTimerAlarmAsync();
+
+  if (!canScheduleExactAlarm) {
+    return 'permissionDenied';
+  }
+
+  const didSchedule = await RestTimerAlarmModule.scheduleRestTimerAlarmAsync(
     seconds,
     title,
     body,
     channelName,
   );
+
+  return didSchedule ? 'scheduled' : 'permissionDenied';
 }
 
 export async function cancelNativeRestTimerAlarm(): Promise<void> {
@@ -46,6 +62,16 @@ export async function cancelNativeRestTimerAlarm(): Promise<void> {
   }
 
   await RestTimerAlarmModule.cancelRestTimerAlarmAsync();
+}
+
+export async function openNativeRestTimerAlarmSettings(): Promise<void> {
+  const RestTimerAlarmModule = getNativeRestTimerAlarmModule();
+
+  if (RestTimerAlarmModule === null) {
+    return;
+  }
+
+  await RestTimerAlarmModule.openRestTimerAlarmSettingsAsync();
 }
 
 function getNativeRestTimerAlarmModule(): NativeRestTimerAlarmModule | null {

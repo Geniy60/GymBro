@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { strings } from '../strings';
 import {
   cancelNativeRestTimerAlarm,
+  openNativeRestTimerAlarmSettings,
   scheduleNativeRestTimerAlarm,
 } from './nativeRestTimerAlarmService';
 
@@ -12,12 +13,17 @@ const REST_TIMER_VIBRATION_PATTERN = [0, 300, 200, 300];
 
 type ExpoNotifications = typeof import('expo-notifications');
 
+export type RestTimerNotificationScheduleResult = {
+  exactAlarmPermissionRequired: boolean;
+  notificationId: string | null;
+};
+
 let notificationsModule: ExpoNotifications | null = null;
 let hasConfiguredNotificationHandler = false;
 
 export async function scheduleRestTimerNotification(
   seconds: number,
-): Promise<string | null> {
+): Promise<RestTimerNotificationScheduleResult> {
   const Notifications = await loadNotificationsModule();
 
   await ensureRestTimerChannel(Notifications);
@@ -25,23 +31,30 @@ export async function scheduleRestTimerNotification(
   const hasPermission = await ensureNotificationPermission(Notifications);
 
   if (!hasPermission) {
-    return null;
+    return { exactAlarmPermissionRequired: false, notificationId: null };
   }
 
   if (Platform.OS === 'android') {
-    const didScheduleNativeAlarm = await scheduleNativeRestTimerAlarm({
+    const nativeAlarmResult = await scheduleNativeRestTimerAlarm({
       body: strings.restTimer.notificationBody,
       channelName: strings.restTimer.notificationChannelName,
       seconds,
       title: strings.restTimer.notificationTitle,
     });
 
-    if (didScheduleNativeAlarm) {
-      return NATIVE_REST_TIMER_ALARM_ID;
+    if (nativeAlarmResult === 'scheduled') {
+      return {
+        exactAlarmPermissionRequired: false,
+        notificationId: NATIVE_REST_TIMER_ALARM_ID,
+      };
+    }
+
+    if (nativeAlarmResult === 'permissionDenied') {
+      return { exactAlarmPermissionRequired: true, notificationId: null };
     }
   }
 
-  return Notifications.scheduleNotificationAsync({
+  const notificationId = await Notifications.scheduleNotificationAsync({
     content: {
       body: strings.restTimer.notificationBody,
       priority: Notifications.AndroidNotificationPriority.MAX,
@@ -55,6 +68,8 @@ export async function scheduleRestTimerNotification(
       type: Notifications.SchedulableTriggerInputTypes.DATE,
     },
   });
+
+  return { exactAlarmPermissionRequired: false, notificationId };
 }
 
 export async function cancelRestTimerNotification(
@@ -72,6 +87,10 @@ export async function cancelRestTimerNotification(
   const Notifications = await loadNotificationsModule();
 
   await Notifications.cancelScheduledNotificationAsync(notificationId);
+}
+
+export async function openRestTimerExactAlarmSettings(): Promise<void> {
+  await openNativeRestTimerAlarmSettings();
 }
 
 async function loadNotificationsModule(): Promise<ExpoNotifications> {

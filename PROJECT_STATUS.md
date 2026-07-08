@@ -38,6 +38,31 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Submitted an Android APK build for the rest timer exact-alarm fix.
+
+Details:
+
+- Incremented Android `versionCode` from 5 to 6 before starting the APK build.
+- Submitted an EAS Android build with the existing `apk` profile.
+- EAS build logs: https://expo.dev/accounts/geniy60/projects/gymbro/builds/ff07d691-4e00-4941-ac1a-be4e93390fa3
+- Stopped after EAS accepted the build instead of waiting for the cloud build to finish.
+
+Previous step:
+
+Handled missing Android exact-alarm permission for the rest timer.
+
+Details:
+
+- Added native Android methods to check whether the app can schedule exact rest timer alarms and to open the system exact-alarm settings screen.
+- Changed Android rest timer scheduling so a missing exact-alarm permission is not silently downgraded to the less reliable Expo scheduled notification fallback in APK builds.
+- Added a Russian alert that explains why Android may delay the timer while the screen is off and offers to open system settings.
+- Kept the native rest timer implementation on `AlarmManager.setExactAndAllowWhileIdle()` and did not switch to `setAlarmClock()`, so it should not appear as an upcoming alarm.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+- Native Kotlin compilation still needs verification through a new Android APK build because the repository does not include a standalone Android Gradle wrapper.
+
+Previous step:
+
 Added display units to strength set inputs.
 
 Details:

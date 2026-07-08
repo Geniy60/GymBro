@@ -69,6 +69,7 @@ export const strings = {
     editIcon: '✎',
     finish: 'Завершить',
     ok: 'ОК',
+    openSettings: 'Открыть настройки',
     restore: 'Восстановить',
     retry: 'Повторить',
     resetSearch: 'Сбросить поиск',
@@ -174,6 +175,9 @@ export const strings = {
     notificationPermissionTitle: 'Уведомления выключены',
     notificationPermissionMessage:
       'Таймер запущен, но телефон не покажет уведомление без разрешения.',
+    exactAlarmPermissionTitle: 'Точный таймер выключен',
+    exactAlarmPermissionMessage:
+      'Android может откладывать таймер при выключенном экране. Разреши приложению будильники и напоминания в системных настройках, затем запусти таймер еще раз.',
     storageLoadTitle: 'Не удалось загрузить данные',
     storageLoadMessage: 'Проверь подключение к интернету и попробуй еще раз.',
     storageSaveTitle: 'Не удалось сохранить данные',

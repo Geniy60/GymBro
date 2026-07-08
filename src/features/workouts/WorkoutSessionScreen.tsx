@@ -20,6 +20,7 @@ import { createId } from '../../createId';
 import { queryKeys } from '../../queryClient';
 import {
   cancelRestTimerNotification,
+  openRestTimerExactAlarmSettings,
   scheduleRestTimerNotification,
 } from '../../services/restTimerNotificationService';
 import {
@@ -460,11 +461,33 @@ export function WorkoutSessionScreen({
     setRestTimerEndsAt(nextEndsAt);
 
     try {
-      restTimerNotificationIdRef.current = await scheduleRestTimerNotification(
+      const scheduleResult = await scheduleRestTimerNotification(
         restTimerSeconds,
       );
+      restTimerNotificationIdRef.current = scheduleResult.notificationId;
 
-      if (restTimerNotificationIdRef.current === null) {
+      if (scheduleResult.exactAlarmPermissionRequired) {
+        setRestTimerEndsAt(null);
+        showAppAlert(
+          strings.alerts.exactAlarmPermissionTitle,
+          strings.alerts.exactAlarmPermissionMessage,
+          [
+            {
+              text: strings.actions.cancel,
+              style: 'cancel',
+            },
+            {
+              text: strings.actions.openSettings,
+              onPress: () => {
+                void openRestTimerExactAlarmSettings();
+              },
+            },
+          ],
+        );
+        return;
+      }
+
+      if (scheduleResult.notificationId === null) {
         showAppAlert(
           strings.alerts.notificationPermissionTitle,
           strings.alerts.notificationPermissionMessage,
