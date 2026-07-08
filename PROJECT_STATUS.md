@@ -38,6 +38,57 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Submitted Android APK build version 5.
+
+Details:
+
+- Incremented Android `versionCode` from 4 to 5.
+- Submitted EAS Android internal-distribution APK build with profile `apk` and `--no-wait`.
+- Build URL: https://expo.dev/accounts/geniy60/projects/gymbro/builds/3e729962-a874-4256-a5e4-cf7e4c48a802
+- Did not wait for the final cloud build result, per the APK build workflow.
+
+Previous step:
+
+Added a native Android exact alarm for the rest timer.
+
+Details:
+
+- Added a local Android-only Expo module `gymbro-rest-timer-alarm`.
+- The module schedules the rest timer with `AlarmManager.setExactAndAllowWhileIdle()` and does not use `setAlarmClock()`, so it should not appear as an upcoming system alarm.
+- Added a native `BroadcastReceiver` that shows the rest timer notification when the exact alarm fires.
+- The React Native timer service now requests notification permission first, then uses the native Android alarm in APK builds, with the existing `expo-notifications` path as a fallback for Expo Go and non-Android platforms.
+- Added the local module dependency and updated `package-lock.json`.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+- Verified `npx.cmd expo-modules-autolinking search --platform android` finds `gymbro-rest-timer-alarm`.
+
+Previous step:
+
+Added the Android exact alarm install-time permission for the rest timer.
+
+Details:
+
+- Added `USE_EXACT_ALARM` alongside `SCHEDULE_EXACT_ALARM` in the Android app config so a personal APK can schedule exact rest timer alarms that wake the device while the screen is off.
+- This complements the existing rest timer notification change that schedules by date on the high-priority rest timer notification channel.
+- A new APK build and install is required before this native permission can affect phone behavior.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Improved rest timer notification reliability while the app is backgrounded.
+
+Details:
+
+- Changed the rest timer notification setup to create the Android notification channel before requesting notification permission.
+- Moved rest timer notifications to a new high-priority Android channel with max importance, vibration, and public lock-screen visibility.
+- Changed rest timer scheduling from a relative time interval trigger to a specific date trigger.
+- Added the Android `SCHEDULE_EXACT_ALARM` permission to support exact timer delivery in a new APK build.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Updated stats exercise search cards.
 
 Details:

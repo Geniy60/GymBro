@@ -1,0 +1,11 @@
+{
+  "name": "gymbro-rest-timer-alarm",
+  "version": "1.0.0",
+  "description": "Android exact alarm module for GymBro rest timer.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "private": true,
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

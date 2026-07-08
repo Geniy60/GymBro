@@ -1,0 +1,83 @@
+package com.gymbro.resttimeralarm
+
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+
+class RestTimerAlarmModule : Module() {
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  override fun definition() = ModuleDefinition {
+    Name("GymbroRestTimerAlarm")
+
+    AsyncFunction("scheduleRestTimerAlarmAsync") { seconds: Int, title: String, body: String, channelName: String ->
+      return@AsyncFunction scheduleRestTimerAlarm(seconds, title, body, channelName)
+    }
+
+    AsyncFunction("cancelRestTimerAlarmAsync") {
+      cancelRestTimerAlarm()
+    }
+  }
+
+  private fun scheduleRestTimerAlarm(
+    seconds: Int,
+    title: String,
+    body: String,
+    channelName: String,
+  ): Boolean {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+      return false
+    }
+
+    val triggerAtMillis = System.currentTimeMillis() + seconds.coerceAtLeast(1) * 1000L
+    val pendingIntent = createAlarmPendingIntent(title, body, channelName)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      alarmManager.setExactAndAllowWhileIdle(
+        AlarmManager.RTC_WAKEUP,
+        triggerAtMillis,
+        pendingIntent,
+      )
+      return true
+    }
+
+    alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+    return true
+  }
+
+  private fun cancelRestTimerAlarm() {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    alarmManager.cancel(createAlarmPendingIntent())
+  }
+
+  private fun createAlarmPendingIntent(
+    title: String? = null,
+    body: String? = null,
+    channelName: String? = null,
+  ): PendingIntent {
+    val intent = Intent(context, RestTimerAlarmReceiver::class.java).apply {
+      action = RestTimerAlarmConstants.ACTION_REST_TIMER_ALARM
+
+      if (title != null && body != null && channelName != null) {
+        putExtra(RestTimerAlarmConstants.EXTRA_TITLE, title)
+        putExtra(RestTimerAlarmConstants.EXTRA_BODY, body)
+        putExtra(RestTimerAlarmConstants.EXTRA_CHANNEL_NAME, channelName)
+      }
+    }
+
+    return PendingIntent.getBroadcast(
+      context,
+      RestTimerAlarmConstants.REQUEST_CODE,
+      intent,
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+    )
+  }
+}

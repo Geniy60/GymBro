@@ -17,7 +17,11 @@
     },
     "android": {
       "package": "com.evgeniy.gymbro",
-      "versionCode": 4,
+      "permissions": [
+        "SCHEDULE_EXACT_ALARM",
+        "USE_EXACT_ALARM"
+      ],
+      "versionCode": 5,
       "adaptiveIcon": {
         "backgroundColor": "#FDE5B2",
         "foregroundImage": "./assets/android-icon-foreground-arms.png",
