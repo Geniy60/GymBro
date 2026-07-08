@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
     lineHeight: 13,
   },
   cardioInput: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#CBD5E1',
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,

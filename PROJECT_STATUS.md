@@ -38,6 +38,20 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the active workout visual layout.
+
+Details:
+
+- Made the workout name row feel more like a compact toolbar with a softer input surface and matching add-exercise action.
+- Restyled the active workout bottom action area as a single contained control bar while keeping the existing Save, Finish, and rest timer behavior unchanged.
+- Refined workout exercise cards with a softer border, subtle left accent, calmer collapsed state, and better long-title wrapping.
+- Aligned set and cardio input surfaces with the refreshed card palette.
+- Kept workout data entry, autosave, rest timer, collapse, delete, clear, and finish behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the Stats overview visual layout.
 
 Details:

@@ -52,7 +52,9 @@ export function WorkoutExerciseCard({
         ]}
       >
         <View style={styles.exerciseTitleBlock}>
-          <Text style={styles.exerciseTitle}>{exercise.machineName}</Text>
+          <Text numberOfLines={2} style={styles.exerciseTitle}>
+            {exercise.machineName}
+          </Text>
         </View>
         <View style={styles.exerciseHeaderActions}>
           {isCollapsed ? null : (
@@ -158,15 +160,17 @@ export function WorkoutExerciseCard({
 const styles = StyleSheet.create({
   exerciseCard: {
     backgroundColor: colors.panel,
-    borderColor: colors.border,
+    borderColor: '#E4E9F2',
     borderRadius: 8,
+    borderLeftColor: '#B7D8C5',
+    borderLeftWidth: 3,
     borderWidth: 1,
-    marginBottom: 9,
-    paddingHorizontal: 10,
-    paddingVertical: 9,
+    marginBottom: 10,
+    paddingHorizontal: 11,
+    paddingVertical: 10,
   },
   collapsedExerciseCard: {
-    backgroundColor: '#FCFDFE',
+    backgroundColor: '#FBFDFB',
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
@@ -195,6 +199,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 16,
     fontWeight: '800',
+    lineHeight: 20,
   },
   smallIconButton: {
     alignItems: 'center',
@@ -206,11 +211,11 @@ const styles = StyleSheet.create({
   },
   collapseButton: {
     backgroundColor: '#F8FAFC',
-    borderColor: '#CBD5E1',
+    borderColor: '#D9E0EA',
   },
   smallClearButton: {
-    backgroundColor: '#F0FDF4',
-    borderColor: colors.primary,
+    backgroundColor: '#F4FBF7',
+    borderColor: '#B7D8C5',
   },
   smallDeleteButton: {
     backgroundColor: '#FFF7F7',
@@ -218,12 +223,12 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     alignItems: 'center',
-    backgroundColor: '#F0FDF4',
-    borderColor: '#86CFA8',
+    backgroundColor: '#F4FBF7',
+    borderColor: '#B7D8C5',
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
-    minHeight: 38,
+    minHeight: 40,
   },
   secondaryButtonText: {
     color: colors.primary,

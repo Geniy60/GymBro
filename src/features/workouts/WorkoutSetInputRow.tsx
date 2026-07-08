@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   setNumber: {
-    backgroundColor: '#EEF2F7',
+    backgroundColor: '#F1F5F9',
     borderColor: '#D9E0EA',
     borderRadius: 8,
     borderWidth: 1,
@@ -170,8 +170,8 @@ const styles = StyleSheet.create({
     width: 32,
   },
   smallInput: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#CBD5E1',
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -185,8 +185,8 @@ const styles = StyleSheet.create({
     width: 74,
   },
   setNoteInput: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#CBD5E1',
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
   smallNoteButton: {
     backgroundColor: '#F8FAFC',
-    borderColor: '#CBD5E1',
+    borderColor: '#D9E0EA',
   },
   activeSmallNoteButton: {
     backgroundColor: '#EDE9FE',

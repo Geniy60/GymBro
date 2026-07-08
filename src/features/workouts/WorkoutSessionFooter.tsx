@@ -5,7 +5,7 @@ import { strings } from '../../strings';
 import { colors } from '../../theme/colors';
 
 const restTimerColor = '#D97706';
-const restTimerBorderColor = '#FCD34D';
+const restTimerBorderColor = '#FBBF24';
 const restTimerActiveBackgroundColor = '#FFFBEB';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -117,8 +117,8 @@ function getSaveStatusText(saveStatus: SaveStatus): string {
 
 const styles = StyleSheet.create({
   saveStatusText: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
     color: colors.muted,
@@ -137,14 +137,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 10,
-    minHeight: 44,
+    minHeight: 46,
   },
   footerButton: {
     alignItems: 'center',
     borderRadius: 8,
     flex: 1,
     justifyContent: 'center',
-    minHeight: 44,
+    minHeight: 46,
     paddingHorizontal: 6,
   },
   restTimerButton: {
@@ -164,14 +164,14 @@ const styles = StyleSheet.create({
     color: restTimerColor,
   },
   saveDraftButton: {
-    backgroundColor: colors.panel,
-    borderColor: colors.primary,
+    backgroundColor: '#F8FAFC',
+    borderColor: '#B7D8C5',
     borderWidth: 1,
   },
   saveDraftButtonText: {
     color: colors.primary,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   finishButton: {
     backgroundColor: colors.primary,
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   finishButtonText: {
     color: colors.panel,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   disabledButton: {
     opacity: 0.45,
