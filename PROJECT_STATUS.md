@@ -38,6 +38,20 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Polished the workouts list visual layout.
+
+Details:
+
+- Restyled workout list cards with a softer border, subtle left accent, stronger title hierarchy, and calmer action buttons.
+- Added the workout date and time to each workout card using the existing `startedAt` summary data.
+- Restyled month dividers as compact soft badges so the list is easier to scan.
+- Updated the Start Workout button with a matching icon and slightly stronger primary-action styling.
+- Kept workout loading, search, edit, repeat, delete, pagination, and start-workout behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Polished the active workout visual layout.
 
 Details:

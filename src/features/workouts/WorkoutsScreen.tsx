@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -143,7 +144,9 @@ export function WorkoutsScreen({
         onEndReachedThreshold={0.6}
         renderItem={({ item }) =>
           item.type === 'month' ? (
-            <Text style={styles.monthDivider}>{item.title}</Text>
+            <View style={styles.monthDivider}>
+              <Text style={styles.monthDividerText}>{item.title}</Text>
+            </View>
           ) : (
             <WorkoutCard
               onDelete={() => onDeleteWorkout(item.workout)}
@@ -164,6 +167,7 @@ export function WorkoutsScreen({
           pressed && styles.pressedButton,
         ]}
       >
+        <Ionicons color={colors.panel} name="barbell-outline" size={20} />
         <Text style={styles.startWorkoutButtonText}>
           {strings.workouts.startWorkout}
         </Text>
@@ -229,7 +233,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   list: {
     flex: 1,
@@ -240,10 +244,19 @@ const styles = StyleSheet.create({
     paddingBottom: 88,
   },
   monthDivider: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#EAF7F0',
+    borderColor: '#DCE9E2',
+    borderRadius: 8,
+    borderWidth: 1,
+    marginTop: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  monthDividerText: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '800',
-    marginTop: 4,
     textTransform: 'uppercase',
   },
   footerText: {
@@ -256,11 +269,15 @@ const styles = StyleSheet.create({
   startWorkoutButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
+    borderColor: '#B7D8C5',
     borderRadius: 8,
+    borderWidth: 1,
     bottom: 12,
+    flexDirection: 'row',
+    gap: 8,
     justifyContent: 'center',
     left: 20,
-    minHeight: 48,
+    minHeight: 50,
     position: 'absolute',
     right: 20,
   },
