@@ -3,6 +3,7 @@ import {
   Image,
   type ImageSourcePropType,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -40,7 +41,7 @@ export function UserSelectScreen({
 
   return (
     <SafeAreaView edges={['top', 'right', 'bottom', 'left']} style={styles.safeArea}>
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.secondaryHeader}>
           {onBack === undefined ? null : (
             <Pressable
@@ -63,6 +64,10 @@ export function UserSelectScreen({
           {orderedUsers.map((user) => {
             const isSelected = user.id === currentUserId;
             const userImage = userImages[user.id];
+            const imageFrameStyle =
+              user.id === 'gymbro-user-zhenya'
+                ? styles.zhenyaImageFrame
+                : styles.nastyaImageFrame;
 
             return (
               <Pressable
@@ -76,7 +81,7 @@ export function UserSelectScreen({
                 ]}
               >
                 {userImage === undefined ? null : (
-                  <View style={styles.userImageFrame}>
+                  <View style={[styles.userImageFrame, imageFrameStyle]}>
                     <Image
                       resizeMode="contain"
                       source={userImage}
@@ -96,7 +101,7 @@ export function UserSelectScreen({
             );
           })}
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -113,19 +118,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.userSelectBackground,
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 20,
+    paddingBottom: 24,
     paddingTop: 8,
   },
   secondaryHeader: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 18,
+    marginBottom: 12,
   },
   backButton: {
     alignItems: 'center',
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#DCE9E2',
     borderRadius: 8,
     borderWidth: 1,
     height: 37,
@@ -135,46 +142,53 @@ const styles = StyleSheet.create({
   secondaryTitle: {
     color: colors.text,
     flex: 1,
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 24,
+    fontWeight: '800',
   },
   helperText: {
     color: colors.muted,
     fontSize: 15,
     lineHeight: 21,
-    marginBottom: 16,
+    marginBottom: 18,
   },
   userList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 12,
   },
   userButton: {
     alignItems: 'center',
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
+    backgroundColor: '#FBFDFB',
+    borderColor: '#E4E9F2',
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
     justifyContent: 'center',
-    minHeight: 250,
+    minHeight: 258,
     minWidth: 140,
     overflow: 'hidden',
-    padding: 10,
+    padding: 8,
   },
   selectedUserButton: {
-    backgroundColor: '#DCFCE7',
-    borderColor: colors.primary,
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
   },
   userImageFrame: {
     alignItems: 'center',
     alignSelf: 'stretch',
-    backgroundColor: '#EEF2FF',
-    borderRadius: 6,
-    height: 190,
+    borderColor: '#E4E9F2',
+    borderRadius: 7,
+    borderWidth: 1,
+    height: 198,
     justifyContent: 'center',
     marginBottom: 10,
     overflow: 'hidden',
+  },
+  nastyaImageFrame: {
+    backgroundColor: '#F4F7F6',
+  },
+  zhenyaImageFrame: {
+    backgroundColor: '#EEF7FF',
   },
   userImage: {
     height: '100%',
@@ -182,11 +196,11 @@ const styles = StyleSheet.create({
   },
   userButtonText: {
     color: colors.text,
-    fontSize: 17,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '800',
   },
   selectedUserButtonText: {
-    color: '#166534',
+    color: colors.primary,
   },
   pressedButton: {
     opacity: 0.7,

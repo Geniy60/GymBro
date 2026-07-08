@@ -38,6 +38,30 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Adjusted the user selection screen alignment.
+
+Details:
+
+- Removed vertical centering from the user selection screen content after it made the first-run layout feel visually awkward.
+- Kept the updated neutral background, refreshed user cards, image frames, selected state, and short-screen scrolling behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
+Polished the user selection visual layout.
+
+Details:
+
+- Changed the first-run user selection background from the older yellow tint to the app's calmer neutral background.
+- Restyled the user selection cards, selected state, back button, title, and image frames to match the refreshed green-accent visual system.
+- Added scrollable content for the user selection screen so the two user cards remain reachable on shorter screens.
+- Kept user ordering, current-user selection, user images, save flow, and all selection behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 35 tests across 9 test files.
+
+Previous step:
+
 Softened Nastya's app background.
 
 Details:
