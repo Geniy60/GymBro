@@ -38,6 +38,33 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Made workout exercise titles toggle collapse state.
+
+Details:
+
+- The active workout exercise title area now expands or collapses the exercise card when tapped.
+- Kept the existing small collapse/expand icon button for discoverability.
+- Kept clear, delete, add-set, set-note, cardio inputs, strength inputs, and workout state behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
+Changed the Android rest timer to use a foreground service.
+
+Details:
+
+- Added a native Android foreground service for the rest timer instead of relying on frequent exact alarms during workouts.
+- The service shows a quiet ongoing notification while the rest timer is running, shows the existing high-priority completion notification when the timer finishes, and stops itself.
+- Added a short partial wake lock for the timer duration plus a small buffer so the timer can continue while the screen is off.
+- Added Android foreground service and wake-lock permissions in the native module manifest and app config.
+- Kept the JS rest timer start/cancel flow unchanged and kept the older exact alarm code as a fallback/legacy path.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+- Native Kotlin compilation still needs verification through a new Android APK build.
+
+Previous step:
+
 Submitted an Android APK build for the rest timer exact-alarm fix.
 
 Details:

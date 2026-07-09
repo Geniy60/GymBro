@@ -10,6 +10,8 @@ type NativeRestTimerAlarmModule = {
     title: string,
     body: string,
     channelName: string,
+    ongoingTitle: string,
+    ongoingBody: string,
   ) => Promise<boolean>;
 };
 
@@ -23,11 +25,15 @@ let nativeModule: NativeRestTimerAlarmModule | null | undefined;
 export async function scheduleNativeRestTimerAlarm({
   body,
   channelName,
+  ongoingBody,
+  ongoingTitle,
   seconds,
   title,
 }: {
   body: string;
   channelName: string;
+  ongoingBody: string;
+  ongoingTitle: string;
   seconds: number;
   title: string;
 }): Promise<NativeRestTimerAlarmScheduleResult> {
@@ -37,18 +43,13 @@ export async function scheduleNativeRestTimerAlarm({
     return 'unavailable';
   }
 
-  const canScheduleExactAlarm =
-    await RestTimerAlarmModule.canScheduleRestTimerAlarmAsync();
-
-  if (!canScheduleExactAlarm) {
-    return 'permissionDenied';
-  }
-
   const didSchedule = await RestTimerAlarmModule.scheduleRestTimerAlarmAsync(
     seconds,
     title,
     body,
     channelName,
+    ongoingTitle,
+    ongoingBody,
   );
 
   return didSchedule ? 'scheduled' : 'permissionDenied';

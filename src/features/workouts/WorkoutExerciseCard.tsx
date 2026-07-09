@@ -51,11 +51,24 @@ export function WorkoutExerciseCard({
           isCollapsed && styles.collapsedExerciseHeader,
         ]}
       >
-        <View style={styles.exerciseTitleBlock}>
+        <Pressable
+          accessibilityLabel={
+            isCollapsed
+              ? strings.workouts.expandExercise
+              : strings.workouts.collapseExercise
+          }
+          accessibilityRole="button"
+          hitSlop={6}
+          onPress={() => toggleExerciseCollapse(exercise.id)}
+          style={({ pressed }) => [
+            styles.exerciseTitleBlock,
+            pressed && styles.pressedButton,
+          ]}
+        >
           <Text numberOfLines={2} style={styles.exerciseTitle}>
             {exercise.machineName}
           </Text>
-        </View>
+        </Pressable>
         <View style={styles.exerciseHeaderActions}>
           {isCollapsed ? null : (
             <>

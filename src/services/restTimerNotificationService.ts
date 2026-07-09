@@ -38,6 +38,8 @@ export async function scheduleRestTimerNotification(
     const nativeAlarmResult = await scheduleNativeRestTimerAlarm({
       body: strings.restTimer.notificationBody,
       channelName: strings.restTimer.notificationChannelName,
+      ongoingBody: strings.restTimer.ongoingNotificationBody,
+      ongoingTitle: strings.restTimer.ongoingNotificationTitle,
       seconds,
       title: strings.restTimer.notificationTitle,
     });

@@ -91,6 +91,8 @@ export const strings = {
     notificationBody: 'Пора продолжать тренировку.',
     notificationChannelName: 'Таймер отдыха',
     notificationTitle: 'Отдых закончился',
+    ongoingNotificationBody: 'Телефон сообщит, когда отдых закончится.',
+    ongoingNotificationTitle: 'Таймер отдыха идет',
     secondsLabel: 'Секунды',
     secondsPlaceholder: '90',
     settingTitle: 'Таймер отдыха',
