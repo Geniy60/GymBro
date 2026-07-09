@@ -38,6 +38,30 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Aligned collapsed workout exercise tracking badges with exercise-list colors.
+
+Details:
+
+- Moved the collapsed exercise tracking badge to the right side of the header beside the collapse icon.
+- Matched badge colors to the exercise image cards: strength uses the green badge and cardio uses the amber badge.
+- Kept the collapsed header in one row and kept expanded cards unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
+Added one-line tracking badges to collapsed workout exercise headers.
+
+Details:
+
+- Collapsed active workout exercise headers now show the exercise tracking type as a compact `Strength/Cardio` badge beside the title.
+- Kept the badge and title in a single row so collapsed cards do not become taller.
+- Kept expanded exercise cards, title tap-to-collapse behavior, action buttons, inputs, and workout state unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
 Made workout exercise titles toggle collapse state.
 
 Details:

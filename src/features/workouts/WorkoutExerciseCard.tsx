@@ -65,7 +65,7 @@ export function WorkoutExerciseCard({
             pressed && styles.pressedButton,
           ]}
         >
-          <Text numberOfLines={2} style={styles.exerciseTitle}>
+          <Text numberOfLines={isCollapsed ? 1 : 2} style={styles.exerciseTitle}>
             {exercise.machineName}
           </Text>
         </Pressable>
@@ -104,6 +104,24 @@ export function WorkoutExerciseCard({
               </Pressable>
             </>
           )}
+          {isCollapsed ? (
+            <View
+              style={[
+                styles.trackingBadge,
+                exercise.trackingType === 'cardio' && styles.cardioBadge,
+              ]}
+            >
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.trackingBadgeText,
+                  exercise.trackingType === 'cardio' && styles.cardioBadgeText,
+                ]}
+              >
+                {strings.machineTracking[exercise.trackingType]}
+              </Text>
+            </View>
+          ) : null}
           <Pressable
             accessibilityLabel={
               isCollapsed
@@ -210,9 +228,32 @@ const styles = StyleSheet.create({
   },
   exerciseTitle: {
     color: colors.text,
+    flexShrink: 1,
     fontSize: 16,
     fontWeight: '800',
     lineHeight: 20,
+  },
+  trackingBadge: {
+    backgroundColor: '#EAF7F0',
+    borderColor: '#B7D8C5',
+    borderRadius: 8,
+    borderWidth: 1,
+    flexShrink: 0,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+  },
+  cardioBadge: {
+    backgroundColor: '#FFFBEB',
+    borderColor: '#FBBF24',
+  },
+  trackingBadgeText: {
+    color: colors.primary,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 14,
+  },
+  cardioBadgeText: {
+    color: '#D97706',
   },
   exerciseBody: {
     borderTopColor: '#E8EDF5',
