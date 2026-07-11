@@ -12,7 +12,7 @@ import { showAppAlert } from './src/appAlert';
 import {
   createNewWorkout,
   createRepeatedWorkout,
-  getUserBackgroundColor,
+  getAppBackgroundColor,
 } from './src/appModel';
 import { AppHeader } from './src/components/AppHeader';
 import { AppAlertHost } from './src/components/AppAlertHost';
@@ -101,7 +101,7 @@ function AppContent() {
   const selectedUser =
     users.find((user) => user.id === selectedUserId) ?? null;
   const machines = machinesQuery.data ?? [];
-  const appBackgroundColor = getUserBackgroundColor(selectedUserId);
+  const appBackgroundColor = getAppBackgroundColor();
 
   useEffect(() => {
     void loadStoredSelectedUser();

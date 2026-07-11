@@ -18,7 +18,7 @@ vi.mock('./createId', () => ({
 import {
   createNewWorkout,
   createRepeatedWorkout,
-  getUserBackgroundColor,
+  getAppBackgroundColor,
 } from './appModel';
 import { colors } from './theme/colors';
 import type { Workout } from './types';
@@ -106,10 +106,7 @@ describe('appModel', () => {
     });
   });
 
-  it('returns the user-specific app background color', () => {
-    expect(getUserBackgroundColor('gymbro-user-nastya')).toBe(colors.nastyaBackground);
-    expect(getUserBackgroundColor('gymbro-user-zhenya')).toBe(colors.zhenyaBackground);
-    expect(getUserBackgroundColor(null)).toBe(colors.background);
-    expect(getUserBackgroundColor('unknown-user')).toBe(colors.background);
+  it('returns the shared app background color', () => {
+    expect(getAppBackgroundColor()).toBe(colors.appBackground);
   });
 });

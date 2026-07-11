@@ -38,6 +38,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Unified the app background color across users.
+
+Details:
+
+- Removed selected-user based app background color switching.
+- Kept the shared app background matching the previous Zhenya appearance for both users.
+- Kept user selection, user-scoped workouts and measurements, and shared exercises unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
 Aligned collapsed workout exercise tracking badges with exercise-list colors.
 
 Details:

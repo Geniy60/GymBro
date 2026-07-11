@@ -36,16 +36,8 @@ export function createRepeatedWorkout({
   };
 }
 
-export function getUserBackgroundColor(userId: string | null): string {
-  if (userId === 'gymbro-user-nastya') {
-    return colors.nastyaBackground;
-  }
-
-  if (userId === 'gymbro-user-zhenya') {
-    return colors.zhenyaBackground;
-  }
-
-  return colors.background;
+export function getAppBackgroundColor(): string {
+  return colors.appBackground;
 }
 
 function createDefaultWorkoutName() {
