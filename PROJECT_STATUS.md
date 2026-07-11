@@ -40,6 +40,32 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Made the workout history list flat.
+
+Details:
+
+- Replaced spaced workout cards with month groups that share one bordered surface.
+- Added thin row separators inside each month group, following the Fridge grouped-list pattern.
+- Kept month labels, workout actions, loading, pagination, and search behavior unchanged.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
+Migrated top-level navigation to React Navigation JavaScript Stack.
+
+Details:
+
+- Added the same navigation packages used by Fridge: `@react-navigation/native`, `@react-navigation/stack`, gesture handler, reanimated, and screens.
+- Replaced the manual `screen` / `setScreen` switch in `App.tsx` with a typed `RootStackParamList` and a JavaScript Stack navigator.
+- Moved the home, user selection, settings, forms, and workout session transitions to `navigate`, `goBack`, `replace`, and `popToTop`.
+- Kept the current app workflows, including selected-user persistence, draft workout restore, deletes, saves, and theme-aware status bar behavior.
+- Configured stack screens with no animation and no native header, matching the Fridge project.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
 Added a top separator to scrollable lists.
 
 Details:

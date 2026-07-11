@@ -16,17 +16,11 @@ import type { WorkoutPage, WorkoutSummary } from '../../types';
 import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 import { WorkoutCard } from './WorkoutCard';
 
-type WorkoutListItem =
-  | {
-      id: string;
-      title: string;
-      type: 'month';
-    }
-  | {
-      id: string;
-      type: 'workout';
-      workout: WorkoutSummary;
-    };
+type WorkoutMonthGroup = {
+  id: string;
+  title: string;
+  workouts: WorkoutSummary[];
+};
 
 type WorkoutsScreenProps = {
   onStartWorkout: () => void;
@@ -145,20 +139,23 @@ export function WorkoutsScreen({
           }
         }}
         onEndReachedThreshold={0.6}
-        renderItem={({ item }) =>
-          item.type === 'month' ? (
-            <View style={styles.monthDivider}>
-              <Text style={styles.monthDividerText}>{item.title}</Text>
+        renderItem={({ item }) => (
+          <View style={styles.monthSection}>
+            <Text style={styles.monthTitle}>{item.title}</Text>
+            <View style={styles.monthGroup}>
+              {item.workouts.map((workout, index) => (
+                <WorkoutCard
+                  key={workout.id}
+                  isFirstInGroup={index === 0}
+                  onDelete={() => onDeleteWorkout(workout)}
+                  onEdit={() => onEditWorkout(workout)}
+                  onRepeat={() => onRepeatWorkout(workout)}
+                  workout={workout}
+                />
+              ))}
             </View>
-          ) : (
-            <WorkoutCard
-              onDelete={() => onDeleteWorkout(item.workout)}
-              onEdit={() => onEditWorkout(item.workout)}
-              onRepeat={() => onRepeatWorkout(item.workout)}
-              workout={item.workout}
-            />
-          )
-        }
+          </View>
+        )}
         style={styles.list}
       />
 
@@ -179,9 +176,10 @@ export function WorkoutsScreen({
   );
 }
 
-function createWorkoutListItems(workouts: WorkoutSummary[]): WorkoutListItem[] {
-  const listItems: WorkoutListItem[] = [];
+function createWorkoutListItems(workouts: WorkoutSummary[]): WorkoutMonthGroup[] {
+  const listItems: WorkoutMonthGroup[] = [];
   let currentMonthKey = '';
+  let currentGroup: WorkoutMonthGroup | null = null;
 
   for (const workout of workouts) {
     const date = new Date(workout.startedAt);
@@ -189,18 +187,15 @@ function createWorkoutListItems(workouts: WorkoutSummary[]): WorkoutListItem[] {
 
     if (monthKey !== currentMonthKey) {
       currentMonthKey = monthKey;
-      listItems.push({
+      currentGroup = {
         id: `month-${monthKey}`,
         title: formatWorkoutMonthTitle(date),
-        type: 'month',
-      });
+        workouts: [],
+      };
+      listItems.push(currentGroup);
     }
 
-    listItems.push({
-      id: `workout-${workout.id}`,
-      type: 'workout',
-      workout,
-    });
+    currentGroup?.workouts.push(workout);
   }
 
   return listItems;
@@ -247,25 +242,24 @@ function createStyles(colors: AppThemeColors) {
   },
   listContent: {
     flexGrow: 1,
-    gap: 10,
     paddingBottom: 88,
     paddingTop: 10,
   },
-  monthDivider: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.active,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginTop: 2,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+  monthSection: {
+    marginBottom: 14,
   },
-  monthDividerText: {
+  monthTitle: {
     color: colors.muted,
     fontSize: 12,
     fontWeight: '800',
+    marginBottom: 6,
+    paddingHorizontal: 2,
     textTransform: 'uppercase',
+  },
+  monthGroup: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderWidth: 1,
   },
   footerText: {
     color: colors.muted,

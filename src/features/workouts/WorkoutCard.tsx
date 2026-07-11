@@ -7,6 +7,7 @@ import type { AppThemeColors } from '../../theme/colors';
 import type { WorkoutSummary } from '../../types';
 
 type WorkoutCardProps = {
+  isFirstInGroup: boolean;
   onDelete: () => void;
   onEdit: () => void;
   onRepeat: () => void;
@@ -14,6 +15,7 @@ type WorkoutCardProps = {
 };
 
 export function WorkoutCard({
+  isFirstInGroup,
   onDelete,
   onEdit,
   onRepeat,
@@ -27,7 +29,11 @@ export function WorkoutCard({
     <Pressable
       accessibilityLabel={strings.accessibility.editWorkout}
       onPress={onEdit}
-      style={({ pressed }) => [styles.card, pressed && styles.pressedButton]}
+      style={({ pressed }) => [
+        styles.card,
+        isFirstInGroup && styles.firstCard,
+        pressed && styles.pressedButton,
+      ]}
     >
       <View style={styles.cardTextBlock}>
         <Text numberOfLines={2} style={styles.cardTitle}>
@@ -97,17 +103,16 @@ function createStyles(colors: AppThemeColors) {
   return StyleSheet.create({
   card: {
     alignItems: 'stretch',
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderLeftColor: colors.activeBorder,
-    borderLeftWidth: 3,
-    borderWidth: 1,
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     minHeight: 78,
     paddingHorizontal: 14,
     paddingVertical: 11,
+  },
+  firstCard: {
+    borderTopWidth: 0,
   },
   cardTextBlock: {
     flex: 1,
