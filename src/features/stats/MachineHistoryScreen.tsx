@@ -105,6 +105,7 @@ export function MachineHistoryScreen({
           }
           renderItem={({ item }) => <CardioHistoryRow item={item} />}
           showsVerticalScrollIndicator={false}
+          style={styles.historyList}
         />
       ) : (
         <FlatList
@@ -123,6 +124,7 @@ export function MachineHistoryScreen({
           }
           renderItem={({ item }) => <MachineHistoryRow item={item} />}
           showsVerticalScrollIndicator={false}
+          style={styles.historyList}
         />
       )}
     </View>
@@ -265,6 +267,13 @@ function createStyles(colors: AppThemeColors) {
     flexGrow: 1,
     gap: 9,
     paddingBottom: 24,
+    paddingTop: 10,
+  },
+  historyList: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
+    flex: 1,
+    marginTop: 2,
   },
   historyRow: {
     alignItems: 'center',

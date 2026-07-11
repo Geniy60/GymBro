@@ -240,12 +240,16 @@ function createStyles(colors: AppThemeColors) {
     marginBottom: 10,
   },
   list: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
     flex: 1,
+    marginTop: 2,
   },
   listContent: {
     flexGrow: 1,
     gap: 10,
     paddingBottom: 88,
+    paddingTop: 10,
   },
   monthDivider: {
     alignSelf: 'flex-start',

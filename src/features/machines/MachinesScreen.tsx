@@ -139,12 +139,16 @@ function createStyles(colors: AppThemeColors) {
     width: 44,
   },
   list: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
     flex: 1,
+    marginTop: 2,
   },
   listContent: {
     flexGrow: 1,
     gap: 10,
     paddingBottom: 24,
+    paddingTop: 10,
   },
   gridItem: {
     flex: 1,

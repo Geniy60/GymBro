@@ -690,11 +690,15 @@ function createStyles(colors: AppThemeColors) {
     marginBottom: 0,
   },
   exercisesList: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
     flex: 1,
+    marginTop: 2,
   },
   exercisesListContent: {
     flexGrow: 1,
     paddingBottom: 8,
+    paddingTop: 10,
   },
   bottomControls: {
     backgroundColor: colors.panel,

@@ -134,6 +134,7 @@ export function StatsOverview({
             </View>
           )}
           showsVerticalScrollIndicator={false}
+          style={styles.historyList}
         />
       </View>
     </View>
@@ -324,6 +325,13 @@ function createStyles(colors: AppThemeColors) {
     flexGrow: 1,
     gap: 10,
     paddingBottom: 12,
+    paddingTop: 10,
+  },
+  historyList: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
+    flex: 1,
+    marginTop: 2,
   },
   historyGridRow: {
     gap: 10,

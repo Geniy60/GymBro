@@ -663,9 +663,13 @@ function createStyles(colors: AppThemeColors) {
     flexGrow: 1,
     gap: 10,
     paddingBottom: 24,
+    paddingTop: 10,
   },
   measurementsList: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
     flex: 1,
+    marginTop: 2,
   },
   metricRow: {
     flexDirection: 'row',

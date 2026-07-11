@@ -40,6 +40,17 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Added a top separator to scrollable lists.
+
+Details:
+
+- Added the thin border and small top gap used by the Fridge settings list to the main GymBro lists and related history, picker, measurements, and workout-exercise lists.
+- The separator stays visible above the scrolling area so the first row no longer looks clipped under fixed screen controls.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
+
 Added saved light and dark theme selection.
 
 Details:

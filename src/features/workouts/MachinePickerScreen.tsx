@@ -119,10 +119,14 @@ function createStyles(colors: AppThemeColors) {
     lineHeight: 21,
   },
   machinePickerList: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
     flex: 1,
+    marginTop: 2,
   },
   machinePickerListContent: {
     paddingBottom: 24,
+    paddingTop: 10,
     rowGap: 10,
   },
   machinePickerRow: {
