@@ -33,7 +33,8 @@ import {
   updateBodyMeasurement,
 } from '../../services/bodyMeasurementsService';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type {
   BodyMeasurement,
   BodyMeasurementDraft,
@@ -68,6 +69,8 @@ export function BodyMeasurementsScreen({
   onBack,
   userId,
 }: BodyMeasurementsScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const [draft, setDraft] = useState<BodyMeasurementDraft>(EMPTY_DRAFT);
   const [selectedMetric, setSelectedMetric] =
     useState<BodyMeasurementMetric>('weightKg');
@@ -261,6 +264,8 @@ function MeasurementMetricPicker({
   onSelectMetric: (metric: BodyMeasurementMetric) => void;
   selectedMetric: BodyMeasurementMetric;
 }) {
+  const styles = useAppStyles(createStyles);
+
   return (
     <View style={styles.metricRow}>
       {METRICS.map((metric) => {
@@ -300,6 +305,8 @@ function MeasurementChart({
   measurements: BodyMeasurement[];
   selectedMetric: BodyMeasurementMetric;
 }) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const [chartWidth, setChartWidth] = useState(0);
   const chartPoints = measurements
     .map((measurement) => ({
@@ -431,6 +438,8 @@ function MeasurementForm({
   onChangeDraft: (draft: BodyMeasurementDraft) => void;
   onSave: () => void;
 }) {
+  const styles = useAppStyles(createStyles);
+
   return (
     <View style={styles.formBlock}>
       <Text style={styles.sectionTitle}>
@@ -502,6 +511,9 @@ function MeasurementInput({
   onChangeText: (value: string) => void;
   value: string;
 }) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
+
   return (
     <View style={styles.inputBlock}>
       <Text style={styles.inputLabel}>{label}</Text>
@@ -526,6 +538,9 @@ function MeasurementRow({
   onDelete: () => void;
   onEdit: () => void;
 }) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
+
   return (
     <View style={styles.measurementRow}>
       <View style={styles.measurementTextBlock}>
@@ -634,7 +649,8 @@ function formatFullDate(value: string): string {
     : date.toLocaleDateString('ru-RU');
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
   },
@@ -659,8 +675,8 @@ const styles = StyleSheet.create({
   },
   metricButton: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flexBasis: '31%',
@@ -669,8 +685,8 @@ const styles = StyleSheet.create({
     minHeight: 40,
   },
   selectedMetricButton: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
   },
   metricButtonText: {
     color: colors.muted,
@@ -682,14 +698,14 @@ const styles = StyleSheet.create({
   },
   chartBlock: {
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     marginBottom: 12,
   },
   chartEmptyBlock: {
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     marginBottom: 12,
@@ -699,7 +715,7 @@ const styles = StyleSheet.create({
   },
   formBlock: {
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     marginBottom: 12,
@@ -728,8 +744,8 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   input: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -740,7 +756,7 @@ const styles = StyleSheet.create({
   saveButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderColor: '#B7D8C5',
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
@@ -748,8 +764,8 @@ const styles = StyleSheet.create({
   },
   cancelEditButton: {
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.subtleBackground,
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
@@ -772,9 +788,9 @@ const styles = StyleSheet.create({
   measurementRow: {
     alignItems: 'center',
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
-    borderLeftColor: '#B7D8C5',
+    borderLeftColor: colors.activeBorder,
     borderLeftWidth: 3,
     borderWidth: 1,
     flexDirection: 'row',
@@ -803,7 +819,7 @@ const styles = StyleSheet.create({
   },
   measurementActionButton: {
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.subtleBackground,
     borderColor: colors.primary,
     borderRadius: 8,
     borderWidth: 1,
@@ -812,7 +828,7 @@ const styles = StyleSheet.create({
     width: 36,
   },
   deleteActionButton: {
-    backgroundColor: '#FFF7F7',
+    backgroundColor: colors.errorBackground,
     borderColor: colors.destructiveBorder,
   },
   emptyText: {
@@ -824,4 +840,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

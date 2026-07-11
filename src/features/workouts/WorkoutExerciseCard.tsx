@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { WorkoutExercise, WorkoutSet } from '../../types';
 import { CardioWorkoutInputBlock } from './CardioWorkoutInputBlock';
 import { WorkoutSetInputRow } from './WorkoutSetInputRow';
@@ -39,6 +40,8 @@ export function WorkoutExerciseCard({
   updateSet,
   visibleSetNoteIds,
 }: WorkoutExerciseCardProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const isCollapsed = collapsedExerciseIds.includes(exercise.id);
   const isCardioExercise = exercise.trackingType === 'cardio';
   const cardioSet = exercise.sets[0];
@@ -189,12 +192,13 @@ export function WorkoutExerciseCard({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   exerciseCard: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
-    borderLeftColor: '#B7D8C5',
+    borderLeftColor: colors.activeBorder,
     borderLeftWidth: 3,
     borderWidth: 1,
     marginBottom: 10,
@@ -202,7 +206,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   collapsedExerciseCard: {
-    backgroundColor: '#FBFDFB',
+    backgroundColor: colors.surface,
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
@@ -234,8 +238,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   trackingBadge: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     flexShrink: 0,
@@ -243,8 +247,8 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   cardioBadge: {
-    backgroundColor: '#FFFBEB',
-    borderColor: '#FBBF24',
+    backgroundColor: colors.warningBackground,
+    borderColor: colors.warningBorder,
   },
   trackingBadgeText: {
     color: colors.primary,
@@ -253,18 +257,18 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
   cardioBadgeText: {
-    color: '#D97706',
+    color: colors.warning,
   },
   exerciseBody: {
-    borderTopColor: '#E8EDF5',
+    borderTopColor: colors.border,
     borderTopWidth: 1,
     marginTop: 9,
     paddingTop: 9,
   },
   smallIconButton: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     height: 38,
@@ -272,21 +276,21 @@ const styles = StyleSheet.create({
     width: 38,
   },
   collapseButton: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
   },
   smallClearButton: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
   },
   smallDeleteButton: {
-    backgroundColor: '#FEF3F2',
+    backgroundColor: colors.errorBackground,
     borderColor: colors.destructiveBorder,
   },
   secondaryButton: {
     alignItems: 'center',
-    backgroundColor: '#F4FBF7',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
@@ -302,4 +306,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

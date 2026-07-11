@@ -11,7 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { AppUser } from '../../types';
 
 type UserSelectScreenProps = {
@@ -34,6 +35,8 @@ export function UserSelectScreen({
   onSelectUser,
   users,
 }: UserSelectScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const orderedUsers = [...users].sort(
     (firstUser, secondUser) =>
       getUserDisplayIndex(firstUser.id) - getUserDisplayIndex(secondUser.id),
@@ -112,7 +115,8 @@ function getUserDisplayIndex(userId: string): number {
   return userIndex === -1 ? userDisplayOrder.length : userIndex;
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.userSelectBackground,
@@ -131,8 +135,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     height: 37,
@@ -158,8 +162,8 @@ const styles = StyleSheet.create({
   },
   userButton: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
@@ -170,13 +174,13 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   selectedUserButton: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
   },
   userImageFrame: {
     alignItems: 'center',
     alignSelf: 'stretch',
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 7,
     borderWidth: 1,
     height: 198,
@@ -185,10 +189,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   nastyaImageFrame: {
-    backgroundColor: '#F4F7F6',
+    backgroundColor: colors.subtleBackground,
   },
   zhenyaImageFrame: {
-    backgroundColor: '#EEF7FF',
+    backgroundColor: colors.appBackground,
   },
   userImage: {
     height: '100%',
@@ -205,4 +209,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

@@ -1,6 +1,6 @@
 import { createId } from './createId';
 import { strings } from './strings';
-import { colors } from './theme/colors';
+import { lightColors } from './theme/colors';
 import type { Workout } from './types';
 
 export function createNewWorkout(userId: string): Workout {
@@ -37,7 +37,7 @@ export function createRepeatedWorkout({
 }
 
 export function getAppBackgroundColor(): string {
-  return colors.appBackground;
+  return lightColors.appBackground;
 }
 
 function createDefaultWorkoutName() {

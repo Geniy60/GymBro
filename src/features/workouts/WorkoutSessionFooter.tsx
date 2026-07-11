@@ -2,11 +2,8 @@ import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
-
-const restTimerColor = '#D97706';
-const restTimerBorderColor = '#FBBF24';
-const restTimerActiveBackgroundColor = '#FFFBEB';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -27,6 +24,8 @@ export function WorkoutSessionFooter({
   restTimerLabel,
   saveStatus,
 }: WorkoutSessionFooterProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const isSaving = saveStatus === 'saving';
 
   return (
@@ -115,10 +114,11 @@ function getSaveStatusText(saveStatus: SaveStatus): string {
   return '';
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   saveStatusText: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.muted,
@@ -148,11 +148,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   restTimerButton: {
-    backgroundColor: restTimerColor,
+    backgroundColor: colors.warning,
   },
   activeRestTimerButton: {
-    backgroundColor: restTimerActiveBackgroundColor,
-    borderColor: restTimerBorderColor,
+    backgroundColor: colors.warningBackground,
+    borderColor: colors.warningBorder,
     borderWidth: 1,
   },
   restTimerButtonText: {
@@ -161,11 +161,11 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   activeRestTimerButtonText: {
-    color: restTimerColor,
+    color: colors.warning,
   },
   saveDraftButton: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.subtleBackground,
+    borderColor: colors.activeBorder,
     borderWidth: 1,
   },
   saveDraftButtonText: {
@@ -187,4 +187,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

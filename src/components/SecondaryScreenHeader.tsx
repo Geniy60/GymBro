@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../strings';
-import { colors } from '../theme/colors';
+import { useAppStyles, useAppTheme } from '../ThemeProvider';
+import type { AppThemeColors } from '../theme/colors';
 
 type SecondaryScreenHeaderProps = {
   marginBottom?: number;
@@ -15,6 +16,8 @@ export function SecondaryScreenHeader({
   onBack,
   title,
 }: SecondaryScreenHeaderProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   return (
     <View style={[styles.secondaryHeader, { marginBottom }]}>
       <Pressable
@@ -32,7 +35,8 @@ export function SecondaryScreenHeader({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   secondaryHeader: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -40,8 +44,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     height: 40,
@@ -57,4 +61,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

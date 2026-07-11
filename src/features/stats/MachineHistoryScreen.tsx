@@ -5,7 +5,8 @@ import { EmptyState } from '../../components/EmptyState';
 import { ListLoadingState } from '../../components/ListLoadingState';
 import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type {
   CardioHistoryItem,
   ExerciseHistorySummary,
@@ -39,6 +40,8 @@ export function MachineHistoryScreen({
   onBack,
   selectedItem,
 }: MachineHistoryScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const historyCount =
     mode === 'cardio' ? cardioHistoryItems.length : historyItems.length;
 
@@ -127,6 +130,8 @@ export function MachineHistoryScreen({
 }
 
 function SummaryMetric({ label, value }: { label: string; value: string }) {
+  const styles = useAppStyles(createStyles);
+
   return (
     <View style={styles.summaryMetric}>
       <Text style={styles.summaryMetricLabel}>{label}</Text>
@@ -138,6 +143,9 @@ function SummaryMetric({ label, value }: { label: string; value: string }) {
 }
 
 function CardioHistoryRow({ item }: { item: CardioHistoryItem }) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
+
   return (
     <View style={styles.historyRow}>
       <View style={styles.historyIconBadge}>
@@ -153,6 +161,9 @@ function CardioHistoryRow({ item }: { item: CardioHistoryItem }) {
 }
 
 function MachineHistoryRow({ item }: { item: MachineHistoryItem }) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
+
   return (
     <View style={styles.historyRow}>
       <View style={styles.historyIconBadge}>
@@ -179,14 +190,15 @@ function formatCardioValue(item: CardioHistoryItem): string {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
   },
   exerciseSummary: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     gap: 12,
@@ -200,8 +212,8 @@ const styles = StyleSheet.create({
   },
   exerciseIconBadge: {
     alignItems: 'center',
-    backgroundColor: '#EAF7F0',
-    borderColor: '#D5EBDD',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     height: 40,
@@ -230,7 +242,7 @@ const styles = StyleSheet.create({
   },
   summaryMetric: {
     backgroundColor: colors.background,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
@@ -256,8 +268,8 @@ const styles = StyleSheet.create({
   },
   historyRow: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
@@ -268,7 +280,7 @@ const styles = StyleSheet.create({
   },
   historyIconBadge: {
     alignItems: 'center',
-    backgroundColor: '#EAF7F0',
+    backgroundColor: colors.active,
     borderRadius: 8,
     height: 34,
     justifyContent: 'center',
@@ -298,4 +310,5 @@ const styles = StyleSheet.create({
     maxWidth: '48%',
     textAlign: 'right',
   },
-});
+  });
+}

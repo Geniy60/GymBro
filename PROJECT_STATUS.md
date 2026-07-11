@@ -4,6 +4,8 @@
 
 The project is now a minimal Expo SDK 54 / React Native / TypeScript mobile app for a personal gym assistant.
 
+The app supports manually selected light and dark themes. The selection is available from Settings, applies immediately, and is saved locally on the phone. The dark palette uses the same muted green direction as the sibling Fridge app while preserving GymBro's existing green accent and warning/destructive states.
+
 The app now uses the shared Supabase project used by the sibling Vacation app.
 
 The initial app shell is in place with a compact header, safe-area handling, and two main tabs:
@@ -37,6 +39,20 @@ The main header has a manual refresh action next to settings. It invalidates the
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Added saved light and dark theme selection.
+
+Details:
+
+- Added light and dark color palettes plus a shared theme provider, following the sibling Fridge app pattern.
+- Added a Russian Settings entry and a dedicated theme selection screen with light and dark options.
+- Saved the selected theme locally with AsyncStorage and updated the Android status-bar icon color to match.
+- Converted app UI colors, including alerts, loading placeholders, charts, forms, cards, and workout controls, to theme-aware tokens.
+- Kept light mode as the default and retained all existing user, workout, and data behavior.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 36 tests across 9 test files.
+
+Previous step:
 
 Unified the app background color across users.
 

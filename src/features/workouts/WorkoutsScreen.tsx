@@ -10,7 +10,8 @@ import { SearchInput } from '../../components/SearchInput';
 import { queryKeys } from '../../queryClient';
 import { loadWorkoutSummaries } from '../../services/workoutsService';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { WorkoutPage, WorkoutSummary } from '../../types';
 import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 import { WorkoutCard } from './WorkoutCard';
@@ -42,6 +43,8 @@ export function WorkoutsScreen({
   onStartWorkout,
   userId,
 }: WorkoutsScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const [searchText, setSearchText] = useState('');
   const [debouncedSearchText, setDebouncedSearchText] = useState('');
   const keyboardBottomInset = useKeyboardBottomInset();
@@ -224,7 +227,8 @@ function formatWorkoutMonthTitle(date: Date): string {
   return month.charAt(0).toLocaleUpperCase('ru-RU') + month.slice(1);
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
@@ -245,8 +249,8 @@ const styles = StyleSheet.create({
   },
   monthDivider: {
     alignSelf: 'flex-start',
-    backgroundColor: '#EAF7F0',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.active,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     marginTop: 2,
@@ -269,7 +273,7 @@ const styles = StyleSheet.create({
   startWorkoutButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderColor: '#B7D8C5',
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     bottom: 12,
@@ -289,4 +293,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

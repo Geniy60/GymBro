@@ -3,7 +3,8 @@ import { type ComponentProps } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../strings';
-import { colors } from '../theme/colors';
+import { useAppStyles, useAppTheme } from '../ThemeProvider';
+import type { AppThemeColors } from '../theme/colors';
 import type { MainTab } from '../types';
 
 type TabConfig = {
@@ -36,6 +37,8 @@ const tabs: TabConfig[] = [
 ];
 
 export function MainTabs({ activeTab, onSelectTab }: MainTabsProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   return (
     <View style={styles.tabRow}>
       {tabs.map((tab) => {
@@ -76,10 +79,11 @@ export function MainTabs({ activeTab, onSelectTab }: MainTabsProps) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   tabRow: {
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
@@ -103,8 +107,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   activeTab: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
   },
   tabLabel: {
     color: colors.muted,
@@ -119,4 +123,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

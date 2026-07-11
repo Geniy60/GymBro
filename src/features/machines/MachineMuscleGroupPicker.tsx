@@ -2,7 +2,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { muscleGroups } from '../../muscleGroups';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { MuscleGroup } from '../../types';
 
 type MachineMuscleGroupPickerProps = {
@@ -14,6 +15,8 @@ export function MachineMuscleGroupPicker({
   onToggleMuscleGroup,
   selectedMuscleGroups,
 }: MachineMuscleGroupPickerProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   return (
     <View style={styles.formField}>
       <Text style={styles.fieldLabel}>{strings.forms.machine.muscleGroupLabel}</Text>
@@ -51,7 +54,8 @@ export function MachineMuscleGroupPicker({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   formField: {
     gap: 8,
     marginBottom: 16,
@@ -72,8 +76,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tagButton: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
@@ -82,8 +86,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   selectedTagButton: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
   },
   tagButtonText: {
     color: colors.text,
@@ -96,4 +100,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

@@ -5,6 +5,7 @@ export type AppScreen =
   | 'machineForm'
   | 'bodyMeasurements'
   | 'settings'
+  | 'themeSettings'
   | 'restTimerSettings'
   | 'userSelect'
   | 'workoutSession';

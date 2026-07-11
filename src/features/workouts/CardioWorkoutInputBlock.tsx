@@ -1,7 +1,8 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { WorkoutSet } from '../../types';
 
 type CardioWorkoutInputBlockProps = {
@@ -34,6 +35,8 @@ export function CardioWorkoutInputBlock({
   updateSet,
   workoutSet,
 }: CardioWorkoutInputBlockProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const setupFields: CardioField[] = [
     {
       field: 'speedKmh',
@@ -107,7 +110,8 @@ export function CardioWorkoutInputBlock({
   }
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   cardioBlock: {
     gap: 7,
   },
@@ -132,8 +136,8 @@ const styles = StyleSheet.create({
     lineHeight: 13,
   },
   cardioInput: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -145,4 +149,5 @@ const styles = StyleSheet.create({
     paddingTop: 1,
     textAlignVertical: 'center',
   },
-});
+  });
+}

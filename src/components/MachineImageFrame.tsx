@@ -3,7 +3,8 @@ import { Image, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'r
 
 import { getMachineImage } from '../machineImages';
 import { strings } from '../strings';
-import { colors } from '../theme/colors';
+import { useAppStyles, useAppTheme } from '../ThemeProvider';
+import type { AppThemeColors } from '../theme/colors';
 
 type MachineImageFrameProps = {
   machineId: string;
@@ -11,6 +12,8 @@ type MachineImageFrameProps = {
 };
 
 export function MachineImageFrame({ machineId, style }: MachineImageFrameProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const machineImage = getMachineImage(machineId);
 
   return (
@@ -27,7 +30,8 @@ export function MachineImageFrame({ machineId, style }: MachineImageFrameProps) 
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   frame: {
     alignItems: 'center',
     borderRadius: 8,
@@ -51,4 +55,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
   },
-});
+  });
+}

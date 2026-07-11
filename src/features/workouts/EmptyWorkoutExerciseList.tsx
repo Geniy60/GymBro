@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 
 type EmptyWorkoutExerciseListProps = {
   onSuggestMachines: () => void;
@@ -11,6 +12,8 @@ type EmptyWorkoutExerciseListProps = {
 export function EmptyWorkoutExerciseList({
   onSuggestMachines,
 }: EmptyWorkoutExerciseListProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   return (
     <View style={styles.emptyExercisesBlock}>
       <View style={styles.emptyIconBadge}>
@@ -34,11 +37,12 @@ export function EmptyWorkoutExerciseList({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   emptyExercisesBlock: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     gap: 12,
@@ -46,8 +50,8 @@ const styles = StyleSheet.create({
   },
   emptyIconBadge: {
     alignItems: 'center',
-    backgroundColor: '#EAF7F0',
-    borderColor: '#D5EBDD',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     height: 48,
@@ -79,4 +83,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

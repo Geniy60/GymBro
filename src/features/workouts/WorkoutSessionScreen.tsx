@@ -33,7 +33,8 @@ import {
 } from '../../storage/workoutDraftStorage';
 import { loadRestTimerSeconds } from '../../storage/restTimerSettingsStorage';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type {
   Machine,
   MuscleGroup,
@@ -87,6 +88,8 @@ export function WorkoutSessionScreen({
   userId,
   workout,
 }: WorkoutSessionScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const [sessionState, dispatchSession] = useReducer(
     workoutSessionDraftReducer,
     workout,
@@ -654,7 +657,8 @@ export function WorkoutSessionScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
   },
@@ -670,8 +674,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   formInput: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -694,7 +698,7 @@ const styles = StyleSheet.create({
   },
   bottomControls: {
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     paddingBottom: 8,
@@ -704,7 +708,7 @@ const styles = StyleSheet.create({
   addMachineIconButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderColor: '#B7D8C5',
+    borderColor: colors.activeBorder,
     borderWidth: 1,
     borderRadius: 8,
     height: 46,
@@ -714,4 +718,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

@@ -12,7 +12,6 @@ import { showAppAlert } from './src/appAlert';
 import {
   createNewWorkout,
   createRepeatedWorkout,
-  getAppBackgroundColor,
 } from './src/appModel';
 import { AppHeader } from './src/components/AppHeader';
 import { AppAlertHost } from './src/components/AppAlertHost';
@@ -22,6 +21,7 @@ import { MachinesScreen } from './src/features/machines/MachinesScreen';
 import { BodyMeasurementsScreen } from './src/features/settings/BodyMeasurementsScreen';
 import { RestTimerSettingsScreen } from './src/features/settings/RestTimerSettingsScreen';
 import { SettingsScreen } from './src/features/settings/SettingsScreen';
+import { ThemeSettingsScreen } from './src/features/settings/ThemeSettingsScreen';
 import { StatsScreen } from './src/features/stats/StatsScreen';
 import { UserSelectScreen } from './src/features/users/UserSelectScreen';
 import { WorkoutSessionScreen } from './src/features/workouts/WorkoutSessionScreen';
@@ -52,6 +52,7 @@ import {
   loadWorkoutDraft,
 } from './src/storage/workoutDraftStorage';
 import { strings } from './src/strings';
+import { ThemeProvider, useAppTheme } from './src/ThemeProvider';
 import type {
   AppScreen,
   AppUser,
@@ -66,12 +67,15 @@ const MIN_REFRESH_FEEDBACK_MS = 600;
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
 
 function AppContent() {
+  const { colors, themeName } = useAppTheme();
   const [activeTab, setActiveTab] = useState<MainTab>('workouts');
   const [screen, setScreen] = useState<AppScreen>('home');
   const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
@@ -101,7 +105,7 @@ function AppContent() {
   const selectedUser =
     users.find((user) => user.id === selectedUserId) ?? null;
   const machines = machinesQuery.data ?? [];
-  const appBackgroundColor = getAppBackgroundColor();
+  const appBackgroundColor = colors.appBackground;
 
   useEffect(() => {
     void loadStoredSelectedUser();
@@ -149,6 +153,7 @@ function AppContent() {
     if (
       screen !== 'machineForm' &&
       screen !== 'settings' &&
+      screen !== 'themeSettings' &&
       screen !== 'restTimerSettings' &&
       screen !== 'bodyMeasurements'
     ) {
@@ -283,6 +288,10 @@ function AppContent() {
 
   function openRestTimerSettings() {
     setScreen('restTimerSettings');
+  }
+
+  function openThemeSettings() {
+    setScreen('themeSettings');
   }
 
   function openBodyMeasurements() {
@@ -449,7 +458,7 @@ function AppContent() {
           }}
           users={users}
         />
-        <StatusBar style="dark" />
+        <StatusBar style={themeName === 'dark' ? 'light' : 'dark'} />
         <AppAlertHost />
       </SafeAreaProvider>
     );
@@ -465,8 +474,9 @@ function AppContent() {
           onChangeUser={openUserSelect}
           onOpenBodyMeasurements={openBodyMeasurements}
           onOpenRestTimerSettings={openRestTimerSettings}
+          onOpenThemeSettings={openThemeSettings}
         />
-        <StatusBar style="dark" />
+        <StatusBar style={themeName === 'dark' ? 'light' : 'dark'} />
         <AppAlertHost />
       </SafeAreaProvider>
     );
@@ -479,7 +489,17 @@ function AppContent() {
           backgroundColor={appBackgroundColor}
           onBack={openSettings}
         />
-        <StatusBar style="dark" />
+        <StatusBar style={themeName === 'dark' ? 'light' : 'dark'} />
+        <AppAlertHost />
+      </SafeAreaProvider>
+    );
+  }
+
+  if (screen === 'themeSettings') {
+    return (
+      <SafeAreaProvider>
+        <ThemeSettingsScreen backgroundColor={appBackgroundColor} onBack={openSettings} />
+        <StatusBar style={themeName === 'dark' ? 'light' : 'dark'} />
         <AppAlertHost />
       </SafeAreaProvider>
     );
@@ -493,7 +513,7 @@ function AppContent() {
           onBack={openSettings}
           userId={selectedUserId}
         />
-        <StatusBar style="dark" />
+        <StatusBar style={themeName === 'dark' ? 'light' : 'dark'} />
         <AppAlertHost />
       </SafeAreaProvider>
     );
@@ -511,7 +531,7 @@ function AppContent() {
             void handleSaveMachine(machine);
           }}
         />
-        <StatusBar style="dark" />
+        <StatusBar style={themeName === 'dark' ? 'light' : 'dark'} />
         <AppAlertHost />
       </SafeAreaProvider>
     );
@@ -529,7 +549,7 @@ function AppContent() {
           userId={selectedUserId ?? editingWorkout.userId}
           workout={editingWorkout}
         />
-        <StatusBar style="dark" />
+        <StatusBar style={themeName === 'dark' ? 'light' : 'dark'} />
         <AppAlertHost />
       </SafeAreaProvider>
     );
@@ -574,7 +594,7 @@ function AppContent() {
           />
         )}
 
-        <StatusBar style="dark" />
+        <StatusBar style={themeName === 'dark' ? 'light' : 'dark'} />
         <AppAlertHost />
       </SafeAreaView>
     </SafeAreaProvider>

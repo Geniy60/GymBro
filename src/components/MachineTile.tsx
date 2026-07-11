@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../strings';
-import { colors } from '../theme/colors';
+import { useAppStyles, useAppTheme } from '../ThemeProvider';
+import type { AppThemeColors } from '../theme/colors';
 import type { Machine } from '../types';
 import { MachineImageFrame } from './MachineImageFrame';
 
@@ -18,6 +19,8 @@ export function MachineTile({
   onPress,
   selected = false,
 }: MachineTileProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const trackingLabel = strings.machineTracking[machine.trackingType];
 
   return (
@@ -51,10 +54,11 @@ export function MachineTile({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   tile: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
@@ -62,7 +66,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   selectedTile: {
-    backgroundColor: '#EAF7F0',
+    backgroundColor: colors.active,
     borderColor: colors.primary,
   },
   tileImage: {
@@ -84,8 +88,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   trackingBadge: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.primary,
@@ -97,11 +101,12 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   cardioBadge: {
-    backgroundColor: '#FFFBEB',
-    borderColor: '#FBBF24',
-    color: '#D97706',
+    backgroundColor: colors.warningBackground,
+    borderColor: colors.warningBorder,
+    color: colors.warning,
   },
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

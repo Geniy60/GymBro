@@ -16,7 +16,8 @@ import {
   saveRestTimerSeconds,
 } from '../../storage/restTimerSettingsStorage';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 
 type RestTimerSettingsScreenProps = {
@@ -28,6 +29,8 @@ export function RestTimerSettingsScreen({
   backgroundColor,
   onBack,
 }: RestTimerSettingsScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const [secondsText, setSecondsText] = useState('');
   const [errorText, setErrorText] = useState('');
   const keyboardBottomInset = useKeyboardBottomInset();
@@ -109,7 +112,8 @@ export function RestTimerSettingsScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
   },
@@ -120,7 +124,7 @@ const styles = StyleSheet.create({
   },
   formCard: {
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     gap: 12,
@@ -135,8 +139,8 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   input: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -153,7 +157,7 @@ const styles = StyleSheet.create({
   saveButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderColor: '#B7D8C5',
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
@@ -167,4 +171,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

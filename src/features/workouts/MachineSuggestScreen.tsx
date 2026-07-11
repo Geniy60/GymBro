@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { Machine, MuscleGroup } from '../../types';
 import { SuggestCountPicker } from './SuggestCountPicker';
 import { SuggestedMachinesPreview } from './SuggestedMachinesPreview';
@@ -35,6 +36,8 @@ export function MachineSuggestScreen({
   suggestMachineCount,
   suggestedMachines,
 }: MachineSuggestScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const canSuggest = selectedSuggestMuscleGroups.length > 0;
 
   return (
@@ -97,7 +100,8 @@ export function MachineSuggestScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
   },
@@ -131,4 +135,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

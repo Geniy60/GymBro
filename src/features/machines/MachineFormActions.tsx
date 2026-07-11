@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { Machine } from '../../types';
 
 type MachineFormActionsProps = {
@@ -16,6 +17,8 @@ export function MachineFormActions({
   onDelete,
   onSave,
 }: MachineFormActionsProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   return (
     <>
       <Pressable
@@ -46,11 +49,12 @@ export function MachineFormActions({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   saveButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderColor: '#B7D8C5',
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
@@ -63,7 +67,7 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     alignItems: 'center',
-    backgroundColor: '#FFF7F7',
+    backgroundColor: colors.errorBackground,
     borderColor: colors.destructiveBorder,
     borderRadius: 8,
     borderWidth: 1,
@@ -81,4 +85,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

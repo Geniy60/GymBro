@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { MachineTile } from '../../components/MachineTile';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { Machine } from '../../types';
 
 type SuggestedMachinesPreviewProps = {
@@ -19,6 +20,8 @@ export function SuggestedMachinesPreview({
   onAddSuggestedMachines,
   suggestedMachines,
 }: SuggestedMachinesPreviewProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   if (suggestedMachines.length === 0) {
     return (
       <View style={styles.helperBlock}>
@@ -86,11 +89,12 @@ function getSuggestEmptyMessage({
 
 function noop() {}
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   helperBlock: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
@@ -139,4 +143,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

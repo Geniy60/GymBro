@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors } from '../theme/colors';
+import { useAppStyles, useAppTheme } from '../ThemeProvider';
+import type { AppThemeColors } from '../theme/colors';
 
 type EmptyStateProps = {
   message: string;
@@ -16,6 +17,8 @@ export function EmptyState({
   resetLabel,
   title,
 }: EmptyStateProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   return (
     <View style={styles.emptyState}>
       <View
@@ -44,11 +47,12 @@ export function EmptyState({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   emptyState: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
@@ -58,8 +62,8 @@ const styles = StyleSheet.create({
   },
   emptyVisual: {
     alignItems: 'center',
-    backgroundColor: '#EAF7F0',
-    borderColor: '#D5EBDD',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     height: 58,
@@ -69,7 +73,7 @@ const styles = StyleSheet.create({
   },
   emptyVisualInner: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
+    backgroundColor: colors.surface,
     borderRadius: 8,
     height: 42,
     justifyContent: 'center',
@@ -90,8 +94,8 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     alignItems: 'center',
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
@@ -107,4 +111,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

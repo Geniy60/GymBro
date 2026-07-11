@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { strings } from '../strings';
-import { colors } from '../theme/colors';
+import { useAppStyles, useAppTheme } from '../ThemeProvider';
+import type { AppThemeColors } from '../theme/colors';
 
 type SearchInputProps = {
   onChangeText: (text: string) => void;
@@ -16,6 +17,8 @@ export function SearchInput({
   placeholder,
   value,
 }: SearchInputProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const hasValue = value.length > 0;
   const [isFocused, setIsFocused] = useState(false);
 
@@ -53,11 +56,12 @@ export function SearchInput({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
@@ -68,7 +72,7 @@ const styles = StyleSheet.create({
   },
   focusedContainer: {
     backgroundColor: colors.panel,
-    borderColor: '#B7D8C5',
+    borderColor: colors.activeBorder,
   },
   searchIcon: {
     marginRight: 8,
@@ -87,4 +91,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 40,
   },
-});
+  });
+}

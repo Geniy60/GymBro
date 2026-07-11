@@ -7,7 +7,8 @@ import { ListLoadingState } from '../../components/ListLoadingState';
 import { MachineTile } from '../../components/MachineTile';
 import { SearchInput } from '../../components/SearchInput';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { Machine } from '../../types';
 import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 
@@ -24,6 +25,8 @@ export function MachinesScreen({
   onAddMachine,
   onEditMachine,
 }: MachinesScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const [searchText, setSearchText] = useState('');
   const keyboardBottomInset = useKeyboardBottomInset();
 
@@ -113,7 +116,8 @@ export function MachinesScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
@@ -127,7 +131,7 @@ const styles = StyleSheet.create({
   addButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderColor: '#B7D8C5',
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     height: 44,
@@ -152,4 +156,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../strings';
-import { colors } from '../theme/colors';
+import { useAppStyles, useAppTheme } from '../ThemeProvider';
+import type { AppThemeColors } from '../theme/colors';
 
 type AppHeaderProps = {
   isRefreshingAllData: boolean;
@@ -15,6 +16,8 @@ export function AppHeader({
   onOpenSettings,
   onRefreshAllData,
 }: AppHeaderProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   return (
     <View style={styles.header}>
       <Text style={styles.appTitle}>{strings.app.title}</Text>
@@ -49,7 +52,8 @@ export function AppHeader({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   header: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -70,8 +74,8 @@ const styles = StyleSheet.create({
   },
   headerIconButton: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     height: 42,
@@ -81,4 +85,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

@@ -11,7 +11,8 @@ import {
 import { MachineTile } from '../../components/MachineTile';
 import { SearchInput } from '../../components/SearchInput';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { ExerciseHistorySummary, Machine, WorkoutStats } from '../../types';
 import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 
@@ -28,6 +29,8 @@ export function StatsOverview({
   onSelectHistoryItem,
   stats,
 }: StatsOverviewProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const [historySearchText, setHistorySearchText] = useState('');
   const keyboardBottomInset = useKeyboardBottomInset();
   const filteredHistoryItems = useMemo(
@@ -146,6 +149,9 @@ function StatTile({
   label: string;
   value: string;
 }) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
+
   return (
     <View style={styles.statTile}>
       <View style={styles.statIconBadge}>
@@ -192,7 +198,8 @@ function createMachineFromHistoryItem(item: ExerciseHistorySummary): Machine {
   };
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
@@ -204,8 +211,8 @@ const styles = StyleSheet.create({
   },
   statTile: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
@@ -216,7 +223,7 @@ const styles = StyleSheet.create({
   },
   statIconBadge: {
     alignItems: 'center',
-    backgroundColor: '#EAF7F0',
+    backgroundColor: colors.active,
     borderRadius: 8,
     height: 34,
     justifyContent: 'center',
@@ -238,7 +245,7 @@ const styles = StyleSheet.create({
   },
   chartSection: {
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     marginBottom: 10,
@@ -256,7 +263,7 @@ const styles = StyleSheet.create({
   },
   chartBadge: {
     alignItems: 'center',
-    backgroundColor: '#EAF7F0',
+    backgroundColor: colors.active,
     borderRadius: 8,
     height: 28,
     justifyContent: 'center',
@@ -281,7 +288,7 @@ const styles = StyleSheet.create({
   },
   chartBarTrack: {
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.subtleBackground,
     borderRadius: 8,
     flex: 1,
     justifyContent: 'flex-end',
@@ -289,7 +296,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   chartBar: {
-    backgroundColor: '#A7C7B7',
+    backgroundColor: colors.chartMuted,
     borderRadius: 8,
     minHeight: 4,
     width: '100%',
@@ -336,7 +343,7 @@ const styles = StyleSheet.create({
   resetSearchButton: {
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: '#F0FDF4',
+    backgroundColor: colors.active,
     borderColor: colors.primary,
     borderRadius: 8,
     borderWidth: 1,
@@ -352,4 +359,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

@@ -2,7 +2,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { muscleGroups } from '../../muscleGroups';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { MuscleGroup } from '../../types';
 
 type SuggestMuscleGroupPickerProps = {
@@ -14,6 +15,8 @@ export function SuggestMuscleGroupPicker({
   onToggleMuscleGroup,
   selectedMuscleGroups,
 }: SuggestMuscleGroupPickerProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   return (
     <View style={styles.suggestSection}>
       <Text style={styles.suggestSectionTitle}>
@@ -52,10 +55,11 @@ export function SuggestMuscleGroupPicker({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   suggestSection: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     gap: 10,
@@ -73,7 +77,7 @@ const styles = StyleSheet.create({
   },
   suggestChip: {
     backgroundColor: colors.background,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
@@ -81,8 +85,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   selectedSuggestChip: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
   },
   suggestChipText: {
     color: colors.text,
@@ -95,4 +99,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

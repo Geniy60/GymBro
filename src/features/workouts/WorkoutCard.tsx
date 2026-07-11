@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { WorkoutSummary } from '../../types';
 
 type WorkoutCardProps = {
@@ -18,6 +19,8 @@ export function WorkoutCard({
   onRepeat,
   workout,
 }: WorkoutCardProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const workoutDateLabel = formatWorkoutCardDate(workout.startedAt);
 
   return (
@@ -90,13 +93,14 @@ function formatWorkoutCardDate(startedAt: string): string {
   return `${dateText} · ${timeText}`;
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   card: {
     alignItems: 'stretch',
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
-    borderLeftColor: '#B7D8C5',
+    borderLeftColor: colors.activeBorder,
     borderLeftWidth: 3,
     borderWidth: 1,
     flexDirection: 'row',
@@ -135,8 +139,8 @@ const styles = StyleSheet.create({
   },
   cardActionButton: {
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    borderColor: '#D9E0EA',
+    backgroundColor: colors.subtleBackground,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     height: 40,
@@ -144,10 +148,11 @@ const styles = StyleSheet.create({
     width: 40,
   },
   destructiveActionButton: {
-    backgroundColor: '#FFF7F7',
+    backgroundColor: colors.errorBackground,
     borderColor: colors.destructiveBorder,
   },
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

@@ -5,7 +5,8 @@ import { EmptyState } from '../../components/EmptyState';
 import { SearchInput } from '../../components/SearchInput';
 import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { Machine, Workout } from '../../types';
 import { useKeyboardBottomInset } from '../../useKeyboardBottomInset';
 import { MachinePickerButton } from './MachinePickerButton';
@@ -31,6 +32,8 @@ export function MachinePickerScreen({
   onChangeSearchText,
   workout,
 }: MachinePickerScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const keyboardBottomInset = useKeyboardBottomInset();
 
   return (
@@ -96,7 +99,8 @@ export function MachinePickerScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
   },
@@ -131,4 +135,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

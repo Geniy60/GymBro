@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { WorkoutSet } from '../../types';
 
 type WorkoutSetInputRowProps = {
@@ -34,6 +35,8 @@ export function WorkoutSetInputRow({
   updateSet,
   workoutSet,
 }: WorkoutSetInputRowProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const isRecord = isRecordSet(workoutSet, previousMaxWeightKg);
   const hasVisibleNote = isNoteVisible || workoutSet.note.length > 0;
   const [focusedInput, setFocusedInput] = useState<FocusedSetInput>(null);
@@ -119,7 +122,7 @@ export function WorkoutSetInputRow({
             style={[styles.recordBadge, !isRecord && styles.hiddenRecordBadge]}
           >
             {isRecord ? (
-              <Ionicons name="trophy-outline" size={17} color="#92400E" />
+              <Ionicons name="trophy-outline" size={17} color={colors.warning} />
             ) : null}
           </View>
         </View>
@@ -193,7 +196,8 @@ function parseWeightKg(weightKg: string): number | null {
   return Number.isFinite(parsedWeightKg) ? parsedWeightKg : null;
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   setRow: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -211,8 +215,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   setNumber: {
-    backgroundColor: '#F1F5F9',
-    borderColor: '#D9E0EA',
+    backgroundColor: colors.subtleBackground,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -225,8 +229,8 @@ const styles = StyleSheet.create({
     width: 32,
   },
   smallInput: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -240,8 +244,8 @@ const styles = StyleSheet.create({
     width: 74,
   },
   setNoteInput: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -251,8 +255,8 @@ const styles = StyleSheet.create({
   },
   recordBadge: {
     alignItems: 'center',
-    backgroundColor: '#FFF7D6',
-    borderColor: '#F59E0B',
+    backgroundColor: colors.warningBackground,
+    borderColor: colors.warningBorder,
     borderRadius: 8,
     borderWidth: 1,
     height: 38,
@@ -272,18 +276,19 @@ const styles = StyleSheet.create({
     width: 38,
   },
   smallNoteButton: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#D9E0EA',
+    backgroundColor: colors.subtleBackground,
+    borderColor: colors.border,
   },
   activeSmallNoteButton: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
   },
   smallDeleteButton: {
-    backgroundColor: '#FFF7F7',
+    backgroundColor: colors.errorBackground,
     borderColor: colors.destructiveBorder,
   },
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

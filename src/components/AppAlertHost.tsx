@@ -7,8 +7,11 @@ import {
   subscribeToAppAlerts,
 } from '../appAlert';
 import { strings } from '../strings';
+import { useAppStyles } from '../ThemeProvider';
+import type { AppThemeColors } from '../theme/colors';
 
 export function AppAlertHost() {
+  const styles = useAppStyles(createStyles);
   const [alertConfig, setAlertConfig] = useState<AppAlertConfig | null>(null);
   const buttons = useMemo(
     () =>
@@ -76,17 +79,18 @@ function getCancelButton(buttons: AppAlertButton[]) {
   return buttons.find((button) => button.style === 'cancel');
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   overlay: {
     alignItems: 'center',
-    backgroundColor: 'rgba(23, 32, 51, 0.36)',
+    backgroundColor: 'rgba(0, 0, 0, 0.46)',
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
   card: {
-    backgroundColor: '#F2F7FF',
-    borderColor: '#D7DCE7',
+    backgroundColor: colors.appBackground,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     maxWidth: 420,
@@ -94,12 +98,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   title: {
-    color: '#172033',
+    color: colors.text,
     fontSize: 20,
     fontWeight: '700',
   },
   message: {
-    color: '#4B5563',
+    color: colors.muted,
     fontSize: 16,
     fontWeight: '600',
     lineHeight: 22,
@@ -111,7 +115,7 @@ const styles = StyleSheet.create({
   },
   button: {
     alignItems: 'center',
-    backgroundColor: '#1F7A4D',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     justifyContent: 'center',
     minHeight: 42,
@@ -119,25 +123,26 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   cancelButton: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#8B95A7',
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
     borderWidth: 1,
   },
   destructiveButton: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#C94B4B',
+    backgroundColor: colors.panel,
+    borderColor: colors.destructiveBorder,
     borderWidth: 1,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: colors.panel,
     fontSize: 15,
     fontWeight: '700',
     textAlign: 'center',
   },
   cancelButtonText: {
-    color: '#4B5563',
+    color: colors.muted,
   },
   destructiveButtonText: {
-    color: '#C94B4B',
+    color: colors.destructive,
   },
-});
+  });
+}

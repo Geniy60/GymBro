@@ -1,5 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
+import { useAppStyles } from '../ThemeProvider';
+import type { AppThemeColors } from '../theme/colors';
+
 type ListLoadingStateProps = {
   rowCount?: number;
 };
@@ -7,6 +10,7 @@ type ListLoadingStateProps = {
 export function ListLoadingState({
   rowCount = 4,
 }: ListLoadingStateProps) {
+  const styles = useAppStyles(createStyles);
   return (
     <View style={styles.container}>
       <View style={styles.rows}>
@@ -35,7 +39,8 @@ export function ListLoadingState({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   container: {
     alignSelf: 'stretch',
   },
@@ -44,8 +49,8 @@ const styles = StyleSheet.create({
   },
   skeletonRow: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#E4E9F2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
@@ -56,8 +61,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   skeletonAccent: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#D5EBDD',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
     borderRadius: 7,
     borderWidth: 1,
     height: 42,
@@ -68,7 +73,7 @@ const styles = StyleSheet.create({
     gap: 9,
   },
   skeletonTitle: {
-    backgroundColor: '#E1E8EF',
+    backgroundColor: colors.subtleBackground,
     borderRadius: 6,
     height: 16,
     width: '68%',
@@ -77,7 +82,7 @@ const styles = StyleSheet.create({
     width: '52%',
   },
   skeletonMeta: {
-    backgroundColor: '#EEF2F6',
+    backgroundColor: colors.subtleBackground,
     borderRadius: 6,
     height: 12,
     width: '38%',
@@ -86,11 +91,12 @@ const styles = StyleSheet.create({
     width: '48%',
   },
   skeletonAction: {
-    backgroundColor: '#F2F6F3',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.subtleBackground,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     height: 36,
     width: 36,
   },
-});
+  });
+}

@@ -14,7 +14,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { SecondaryScreenHeader } from '../../components/SecondaryScreenHeader';
 import { createId } from '../../createId';
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type {
   Machine,
   MachineDraft,
@@ -47,6 +48,8 @@ export function MachineFormScreen({
   onDelete,
   onSave,
 }: MachineFormScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   const [machineDraft, setMachineDraft] = useState<MachineDraft>(() =>
     machine === null
       ? emptyMachineDraft
@@ -223,7 +226,8 @@ export function MachineFormScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
   },
@@ -248,8 +252,8 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   formInput: {
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.text,
@@ -259,7 +263,7 @@ const styles = StyleSheet.create({
   },
   trackingTypeControl: {
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
@@ -274,8 +278,8 @@ const styles = StyleSheet.create({
     minHeight: 38,
   },
   selectedTrackingTypeButton: {
-    backgroundColor: '#EAF7F0',
-    borderColor: '#B7D8C5',
+    backgroundColor: colors.active,
+    borderColor: colors.activeBorder,
     borderWidth: 1,
   },
   trackingTypeButtonText: {
@@ -300,4 +304,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}

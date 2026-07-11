@@ -4,7 +4,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { strings } from '../../strings';
-import { colors } from '../../theme/colors';
+import { useAppStyles, useAppTheme } from '../../ThemeProvider';
+import type { AppThemeColors } from '../../theme/colors';
 import type { AppUser } from '../../types';
 
 type SettingsScreenProps = {
@@ -13,6 +14,7 @@ type SettingsScreenProps = {
   onBack: () => void;
   onOpenBodyMeasurements: () => void;
   onOpenRestTimerSettings: () => void;
+  onOpenThemeSettings: () => void;
   onChangeUser: () => void;
 };
 
@@ -22,8 +24,11 @@ export function SettingsScreen({
   onBack,
   onOpenBodyMeasurements,
   onOpenRestTimerSettings,
+  onOpenThemeSettings,
   onChangeUser,
 }: SettingsScreenProps) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
   return (
     <SafeAreaView
       edges={['top', 'right', 'bottom', 'left']}
@@ -69,19 +74,27 @@ export function SettingsScreen({
         </View>
 
         <SettingsActionRow
-          accessibilityLabel={strings.accessibility.restTimerSettings}
-          description={strings.settings.restTimerDescription}
-          iconName="timer-outline"
-          onPress={onOpenRestTimerSettings}
-          title={strings.settings.restTimer}
-        />
-
-        <SettingsActionRow
           accessibilityLabel={strings.accessibility.bodyMeasurements}
           description={strings.settings.bodyMeasurementsDescription}
           iconName="analytics-outline"
           onPress={onOpenBodyMeasurements}
           title={strings.settings.bodyMeasurements}
+        />
+
+        <SettingsActionRow
+          accessibilityLabel={strings.accessibility.themeSettings}
+          description={strings.settings.themeDescription}
+          iconName="color-palette-outline"
+          onPress={onOpenThemeSettings}
+          title={strings.settings.theme}
+        />
+
+        <SettingsActionRow
+          accessibilityLabel={strings.accessibility.restTimerSettings}
+          description={strings.settings.restTimerDescription}
+          iconName="timer-outline"
+          onPress={onOpenRestTimerSettings}
+          title={strings.settings.restTimer}
         />
       </View>
     </SafeAreaView>
@@ -101,6 +114,9 @@ function SettingsActionRow({
   onPress: () => void;
   title: string;
 }) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
+
   return (
     <Pressable
       accessibilityLabel={accessibilityLabel}
@@ -122,7 +138,8 @@ function SettingsActionRow({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
   },
@@ -139,8 +156,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     alignItems: 'center',
-    backgroundColor: '#FBFDFB',
-    borderColor: '#DCE9E2',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     height: 37,
@@ -156,7 +173,7 @@ const styles = StyleSheet.create({
   settingsRow: {
     alignItems: 'center',
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
@@ -169,7 +186,7 @@ const styles = StyleSheet.create({
   settingsActionRow: {
     alignItems: 'center',
     backgroundColor: colors.panel,
-    borderColor: '#E4E9F2',
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
@@ -181,7 +198,7 @@ const styles = StyleSheet.create({
   },
   settingsIconBadge: {
     alignItems: 'center',
-    backgroundColor: '#EAF7F0',
+    backgroundColor: colors.active,
     borderRadius: 8,
     height: 38,
     justifyContent: 'center',
@@ -203,7 +220,7 @@ const styles = StyleSheet.create({
   changeButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderColor: '#B7D8C5',
+    borderColor: colors.activeBorder,
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: 'center',
@@ -218,4 +235,5 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.7,
   },
-});
+  });
+}
