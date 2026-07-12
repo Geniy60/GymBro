@@ -120,6 +120,7 @@ export function StatsScreen({ userId }: StatsScreenProps) {
         mode="strength"
         onBack={() => setSelectedHistoryItem(null)}
         selectedItem={selectedHistoryItem}
+        userId={userId ?? ''}
       />
     );
   }

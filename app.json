@@ -24,7 +24,7 @@
         "USE_EXACT_ALARM",
         "WAKE_LOCK"
       ],
-      "versionCode": 6,
+      "versionCode": 7,
       "adaptiveIcon": {
         "backgroundColor": "#FDE5B2",
         "foregroundImage": "./assets/android-icon-foreground-arms.png",

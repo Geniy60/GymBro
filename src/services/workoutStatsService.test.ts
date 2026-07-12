@@ -9,7 +9,11 @@ vi.mock('../supabaseClient', () => ({
   supabase: supabaseMock,
 }));
 
-import { loadCardioHistory, loadWorkoutStats } from './workoutStatsService';
+import {
+  loadCardioHistory,
+  loadMachineHistorySets,
+  loadWorkoutStats,
+} from './workoutStatsService';
 
 beforeEach(() => {
   supabaseMock.from.mockReset();
@@ -140,6 +144,40 @@ describe('workoutStatsService cardio mapping', () => {
     ]);
     expect(supabaseMock.rpc).toHaveBeenCalledWith('gymbro_cardio_history', {
       p_machine_id: 'standard-treadmill',
+      p_user_id: 'user-1',
+    });
+  });
+
+  it('loads sets for one expanded strength history entry', async () => {
+    supabaseMock.rpc.mockResolvedValueOnce({
+      data: [
+        {
+          id: 'set-1',
+          note: 'Controlled tempo',
+          reps: '12',
+          set_number: 1,
+          weight_kg: 50,
+        },
+      ],
+      error: null,
+    });
+
+    await expect(
+      loadMachineHistorySets({
+        historyItemId: 'workout-1-exercise-1',
+        userId: 'user-1',
+      }),
+    ).resolves.toEqual([
+      {
+        id: 'set-1',
+        note: 'Controlled tempo',
+        reps: '12',
+        setNumber: 1,
+        weightKg: 50,
+      },
+    ]);
+    expect(supabaseMock.rpc).toHaveBeenCalledWith('gymbro_machine_history_sets', {
+      p_history_item_id: 'workout-1-exercise-1',
       p_user_id: 'user-1',
     });
   });

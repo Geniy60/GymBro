@@ -263,6 +263,19 @@ export type Database = {
           started_at: string;
         }[];
       };
+      gymbro_machine_history_sets: {
+        Args: {
+          p_history_item_id: string;
+          p_user_id: string;
+        };
+        Returns: {
+          id: string;
+          note: string;
+          reps: string;
+          set_number: number;
+          weight_kg: number | null;
+        }[];
+      };
       gymbro_machine_maxes: {
         Args: {
           p_user_id: string;

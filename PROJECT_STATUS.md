@@ -40,6 +40,31 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Submitted an Android APK build.
+
+Details:
+
+- Incremented Android `versionCode` from 6 to 7 before starting the build.
+- Submitted the EAS Android build with the `apk` profile.
+- The build is in progress: https://expo.dev/accounts/geniy60/projects/gymbro/builds/8ecc5632-1a93-4061-9c61-345786e19483
+- Stopped after EAS confirmed the build submission instead of waiting for cloud completion.
+
+Previous step:
+
+Added expandable strength-set details to exercise history.
+
+Details:
+
+- Tapping a strength history date now expands it to show every saved set with weight, repetitions, and an optional note.
+- Kept the collapsed date, set count, and maximum-weight summary unchanged.
+- Loads set details only for the currently expanded history entry.
+- Added and applied `20260712100000_gymbro_machine_history_sets.sql` with the required Supabase RPC.
+- Added a service-level test for history-set mapping.
+- Verified `npx.cmd tsc --noEmit` passes.
+- Verified `npm.cmd test` passes with 37 tests across 9 test files.
+
+Previous step:
+
 Added the seated horizontal row exercise.
 
 Details:

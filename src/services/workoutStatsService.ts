@@ -5,6 +5,7 @@ import type {
   ExerciseHistorySummary,
   MachineTrackingType,
   MachineHistoryItem,
+  MachineHistorySet,
   MonthWorkoutStat,
   MuscleGroup,
   WorkoutStats,
@@ -15,6 +16,14 @@ type MachineHistoryRow = {
   max_weight_kg: number | null;
   set_count: number;
   started_at: string;
+};
+
+type MachineHistorySetRow = {
+  id: string;
+  note: string;
+  reps: string;
+  set_number: number;
+  weight_kg: number | null;
 };
 
 type MachineRow = {
@@ -107,6 +116,31 @@ export async function loadMachineHistory({
     id: row.id,
     maxWeightKg: row.max_weight_kg,
     setCount: row.set_count,
+  }));
+}
+
+export async function loadMachineHistorySets({
+  historyItemId,
+  userId,
+}: {
+  historyItemId: string;
+  userId: string;
+}): Promise<MachineHistorySet[]> {
+  const { data, error } = await supabase.rpc('gymbro_machine_history_sets', {
+    p_history_item_id: historyItemId,
+    p_user_id: userId,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return ((data ?? []) as unknown as MachineHistorySetRow[]).map((row) => ({
+    id: row.id,
+    note: row.note,
+    reps: row.reps,
+    setNumber: row.set_number,
+    weightKg: row.weight_kg,
   }));
 }
 

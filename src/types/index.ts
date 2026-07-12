@@ -126,6 +126,14 @@ export type MachineHistoryItem = {
   setCount: number;
 };
 
+export type MachineHistorySet = {
+  id: string;
+  note: string;
+  reps: string;
+  setNumber: number;
+  weightKg: number | null;
+};
+
 export type CardioHistoryItem = CardioSummary;
 
 export type WorkoutStats = {
