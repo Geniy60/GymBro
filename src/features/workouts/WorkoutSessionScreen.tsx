@@ -48,7 +48,7 @@ import { EmptyWorkoutExerciseList } from './EmptyWorkoutExerciseList';
 import { MachinePickerScreen } from './MachinePickerScreen';
 import { MachineSuggestScreen } from './MachineSuggestScreen';
 import { WorkoutExerciseCard } from './WorkoutExerciseCard';
-import { RestTimerControl } from './RestTimerControl';
+import { formatRestTimerLabel } from './RestTimerControl';
 import {
   type SaveStatus,
   WorkoutSessionFooter,
@@ -643,27 +643,12 @@ export function WorkoutSessionScreen({
               void saveWorkout(false);
             }}
             restTimerActive={restTimerEndsAt !== null}
-            restTimerLabel={
-              <RestTimerControl
-                isActive={restTimerEndsAt !== null}
-                remainingSeconds={
-                  restTimerEndsAt === null
-                    ? restTimerSeconds
-                    : Math.max(0, Math.ceil((restTimerEndsAt - restTimerNow) / 1000))
-                }
-              />
-            }
-            restTimerProgress={
+            restTimerLabel={formatRestTimerLabel(
+              restTimerEndsAt !== null,
               restTimerEndsAt === null
-                ? 0
-                : Math.max(
-                    0,
-                    Math.min(
-                      1,
-                      (restTimerEndsAt - restTimerNow) / (restTimerSeconds * 1000),
-                    ),
-                  )
-            }
+                ? restTimerSeconds
+                : Math.max(0, Math.ceil((restTimerEndsAt - restTimerNow) / 1000)),
+            )}
             saveStatus={saveStatus}
           />
         </View>

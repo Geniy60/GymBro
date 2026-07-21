@@ -1,14 +1,9 @@
 import { strings } from '../../strings';
 
-type RestTimerControlProps = {
-  isActive: boolean;
-  remainingSeconds: number;
-};
-
-export function RestTimerControl({
-  isActive,
-  remainingSeconds,
-}: RestTimerControlProps) {
+export function formatRestTimerLabel(
+  isActive: boolean,
+  remainingSeconds: number,
+): string {
   return isActive
     ? strings.restTimer.activeLabel(formatRemainingTime(remainingSeconds))
     : strings.restTimer.startLabel;

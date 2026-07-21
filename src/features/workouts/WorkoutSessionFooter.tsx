@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { strings } from '../../strings';
@@ -11,9 +10,8 @@ type WorkoutSessionFooterProps = {
   onFinish: () => void;
   onRestTimerPress: () => void;
   onSave: () => void;
-  restTimerLabel: ReactNode;
+  restTimerLabel: string;
   restTimerActive: boolean;
-  restTimerProgress: number;
   saveStatus: SaveStatus;
 };
 
@@ -23,7 +21,6 @@ export function WorkoutSessionFooter({
   onSave,
   restTimerActive,
   restTimerLabel,
-  restTimerProgress,
   saveStatus,
 }: WorkoutSessionFooterProps) {
   const { colors } = useAppTheme();
@@ -59,15 +56,6 @@ export function WorkoutSessionFooter({
             pressed && styles.pressedButton,
           ]}
         >
-          {restTimerActive ? (
-            <View
-              pointerEvents="none"
-              style={[
-                styles.restTimerProgress,
-                { width: `${Math.max(0, Math.min(1, restTimerProgress)) * 100}%` },
-              ]}
-            />
-          ) : null}
           <Text
             numberOfLines={1}
             style={[
@@ -160,20 +148,11 @@ function createStyles(colors: AppThemeColors) {
   },
   restTimerButton: {
     backgroundColor: colors.warning,
-    overflow: 'hidden',
   },
   activeRestTimerButton: {
     backgroundColor: colors.warningBackground,
     borderColor: colors.warningBorder,
     borderWidth: 1,
-  },
-  restTimerProgress: {
-    backgroundColor: colors.warning,
-    bottom: 0,
-    left: 0,
-    opacity: 0.25,
-    position: 'absolute',
-    top: 0,
   },
   restTimerButtonText: {
     color: colors.panel,
