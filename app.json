@@ -18,11 +18,8 @@
     "android": {
       "package": "com.evgeniy.gymbro",
       "permissions": [
-        "FOREGROUND_SERVICE",
-        "FOREGROUND_SERVICE_SPECIAL_USE",
         "SCHEDULE_EXACT_ALARM",
-        "USE_EXACT_ALARM",
-        "WAKE_LOCK"
+        "USE_EXACT_ALARM"
       ],
       "versionCode": 7,
       "adaptiveIcon": {

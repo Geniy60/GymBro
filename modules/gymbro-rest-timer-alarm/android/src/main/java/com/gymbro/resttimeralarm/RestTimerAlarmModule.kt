@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.core.content.ContextCompat
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -19,19 +18,12 @@ class RestTimerAlarmModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("GymbroRestTimerAlarm")
 
-    AsyncFunction("scheduleRestTimerAlarmAsync") { seconds: Int, title: String, body: String, channelName: String, ongoingTitle: String, ongoingBody: String ->
-      return@AsyncFunction startRestTimerService(
-        seconds,
-        title,
-        body,
-        channelName,
-        ongoingTitle,
-        ongoingBody,
-      )
+    AsyncFunction("scheduleRestTimerAlarmAsync") { seconds: Int, title: String, body: String, channelName: String ->
+      return@AsyncFunction scheduleRestTimerAlarm(seconds, title, body, channelName)
     }
 
     AsyncFunction("cancelRestTimerAlarmAsync") {
-      cancelRestTimer()
+      cancelRestTimerAlarm()
     }
 
     AsyncFunction("canScheduleRestTimerAlarmAsync") {
@@ -41,33 +33,6 @@ class RestTimerAlarmModule : Module() {
     AsyncFunction("openRestTimerAlarmSettingsAsync") {
       openRestTimerAlarmSettings()
     }
-  }
-
-  private fun startRestTimerService(
-    seconds: Int,
-    title: String,
-    body: String,
-    channelName: String,
-    ongoingTitle: String,
-    ongoingBody: String,
-  ): Boolean {
-    val intent = Intent(context, RestTimerForegroundService::class.java).apply {
-      action = RestTimerAlarmConstants.ACTION_START_REST_TIMER_SERVICE
-      putExtra(RestTimerAlarmConstants.EXTRA_SECONDS, seconds)
-      putExtra(RestTimerAlarmConstants.EXTRA_TITLE, title)
-      putExtra(RestTimerAlarmConstants.EXTRA_BODY, body)
-      putExtra(RestTimerAlarmConstants.EXTRA_CHANNEL_NAME, channelName)
-      putExtra(RestTimerAlarmConstants.EXTRA_ONGOING_TITLE, ongoingTitle)
-      putExtra(RestTimerAlarmConstants.EXTRA_ONGOING_BODY, ongoingBody)
-    }
-
-    ContextCompat.startForegroundService(context, intent)
-    return true
-  }
-
-  private fun cancelRestTimer() {
-    cancelRestTimerAlarm()
-    context.stopService(Intent(context, RestTimerForegroundService::class.java))
   }
 
   private fun canScheduleRestTimerAlarm(): Boolean {

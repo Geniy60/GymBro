@@ -40,6 +40,19 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Reworked the rest timer to fire reliably with the screen off or the app backgrounded.
+
+Details:
+
+- The native rest timer now schedules an exact `AlarmManager.setExactAndAllowWhileIdle` (RTC_WAKEUP) alarm instead of running a foreground service with a `CountDownTimer` and a wake lock.
+- The previous approach relied on `CountDownTimer`, which counts on `uptimeMillis` and freezes while the CPU sleeps, so the finish notification only appeared after the screen turned back on.
+- The exact alarm is registered with the OS and wakes the device at the target time regardless of screen state or Doze, then the existing broadcast receiver posts the finish notification.
+- Removed the now-unused foreground service, its manifest entry, and the FOREGROUND_SERVICE / WAKE_LOCK permissions. Kept SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM.
+- Dropped the ongoing "rest in progress" notification; only the finish notification remains, plus the in-app countdown.
+- Requires a new APK build to verify, since this is a native change that Fast Refresh cannot apply.
+
+Previous step:
+
 Fixed the selected user not persisting across app launches.
 
 Details:
