@@ -102,6 +102,7 @@ export function CardioWorkoutInputBlock({
           }
           placeholder={field.placeholder}
           placeholderTextColor={colors.muted}
+          selectTextOnFocus
           style={styles.cardioInput}
           value={field.value}
         />

@@ -62,6 +62,7 @@ export function WorkoutSetInputRow({
           onFocus={() => setFocusedInput('weightKg')}
           placeholder={strings.workouts.weightPlaceholder}
           placeholderTextColor={colors.muted}
+          selectTextOnFocus
           style={styles.smallInput}
           value={formatWeightInputValue(
             workoutSet.weightKg,
@@ -85,6 +86,7 @@ export function WorkoutSetInputRow({
           onFocus={() => setFocusedInput('reps')}
           placeholder={strings.workouts.repsPlaceholder}
           placeholderTextColor={colors.muted}
+          selectTextOnFocus
           style={styles.smallInput}
           value={formatRepsInputValue(workoutSet.reps, focusedInput === 'reps')}
         />
