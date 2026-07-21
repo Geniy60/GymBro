@@ -21,7 +21,7 @@
         "SCHEDULE_EXACT_ALARM",
         "USE_EXACT_ALARM"
       ],
-      "versionCode": 7,
+      "versionCode": 8,
       "adaptiveIcon": {
         "backgroundColor": "#FDE5B2",
         "foregroundImage": "./assets/android-icon-foreground-arms.png",
