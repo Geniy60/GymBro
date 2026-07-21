@@ -40,6 +40,18 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Submitted an Android APK build with the accumulated changes.
+
+Details:
+
+- Incremented Android `versionCode` from 7 to 8 before starting the build.
+- Submitted the EAS Android build with the `apk` profile using remote Android credentials.
+- Build queued: https://expo.dev/accounts/geniy60/projects/gymbro/builds/1492c44a-d241-4cc4-a81a-5eeac54941aa
+- Stopped after EAS confirmed the submission instead of waiting for cloud completion.
+- This build is the first APK to include the native exact-alarm rest timer fix, the persisted selected user, input select-on-focus, the finish vibration, and the grouped/table exercise history.
+
+Previous step:
+
 Added a finish vibration to the rest timer and reverted the in-button progress bar.
 
 Details:
