@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '../../components/EmptyState';
@@ -54,6 +54,14 @@ export function MachineHistoryScreen({
   const [expandedHistoryItemId, setExpandedHistoryItemId] = useState<string | null>(
     null,
   );
+  const cardioMonthGroups = useMemo(
+    () => groupHistoryByMonth(cardioHistoryItems),
+    [cardioHistoryItems],
+  );
+  const strengthMonthGroups = useMemo(
+    () => groupHistoryByMonth(historyItems),
+    [historyItems],
+  );
 
   return (
     <View style={styles.content}>
@@ -101,8 +109,8 @@ export function MachineHistoryScreen({
       {mode === 'cardio' ? (
         <FlatList
           contentContainerStyle={styles.historyListContent}
-          data={cardioHistoryItems}
-          keyExtractor={(historyItem) => historyItem.id}
+          data={cardioMonthGroups}
+          keyExtractor={(group) => group.id}
           ListEmptyComponent={
             isLoadingHistory ? (
               <ListLoadingState rowCount={3} />
@@ -113,8 +121,19 @@ export function MachineHistoryScreen({
               />
             )
           }
-          renderItem={({ index, item }) => (
-            <CardioHistoryRow isFirst={index === 0} item={item} />
+          renderItem={({ item: group }) => (
+            <View style={styles.monthSection}>
+              <Text style={styles.monthTitle}>{group.title}</Text>
+              <View style={styles.monthGroup}>
+                {group.items.map((historyItem, index) => (
+                  <CardioHistoryRow
+                    isFirst={index === 0}
+                    item={historyItem}
+                    key={historyItem.id}
+                  />
+                ))}
+              </View>
+            </View>
           )}
           showsVerticalScrollIndicator={false}
           style={styles.historyList}
@@ -122,8 +141,8 @@ export function MachineHistoryScreen({
       ) : (
         <FlatList
           contentContainerStyle={styles.historyListContent}
-          data={historyItems}
-          keyExtractor={(historyItem) => historyItem.id}
+          data={strengthMonthGroups}
+          keyExtractor={(group) => group.id}
           ListEmptyComponent={
             isLoadingHistory ? (
               <ListLoadingState rowCount={3} />
@@ -134,18 +153,26 @@ export function MachineHistoryScreen({
               />
             )
           }
-          renderItem={({ index, item }) => (
-            <MachineHistoryRow
-              isExpanded={expandedHistoryItemId === item.id}
-              isFirst={index === 0}
-              item={item}
-              onToggle={() =>
-                setExpandedHistoryItemId((currentItemId) =>
-                  currentItemId === item.id ? null : item.id,
-                )
-              }
-              userId={userId}
-            />
+          renderItem={({ item: group }) => (
+            <View style={styles.monthSection}>
+              <Text style={styles.monthTitle}>{group.title}</Text>
+              <View style={styles.monthGroup}>
+                {group.items.map((historyItem, index) => (
+                  <MachineHistoryRow
+                    isExpanded={expandedHistoryItemId === historyItem.id}
+                    isFirst={index === 0}
+                    item={historyItem}
+                    key={historyItem.id}
+                    onToggle={() =>
+                      setExpandedHistoryItemId((currentItemId) =>
+                        currentItemId === historyItem.id ? null : historyItem.id,
+                      )
+                    }
+                    userId={userId}
+                  />
+                ))}
+              </View>
+            </View>
           )}
           showsVerticalScrollIndicator={false}
           style={styles.historyList}
@@ -299,6 +326,54 @@ function formatCardioValue(item: CardioHistoryItem): string {
   );
 }
 
+type HistoryMonthGroup<T> = {
+  id: string;
+  items: T[];
+  title: string;
+};
+
+function groupHistoryByMonth<T extends { id: string; startedAt: string }>(
+  items: T[],
+): HistoryMonthGroup<T>[] {
+  const groups: HistoryMonthGroup<T>[] = [];
+  let currentKey = '';
+  let currentGroup: HistoryMonthGroup<T> | null = null;
+
+  for (const item of items) {
+    const date = new Date(item.startedAt);
+    const monthKey = Number.isNaN(date.getTime())
+      ? item.startedAt
+      : `${date.getFullYear()}-${date.getMonth()}`;
+
+    if (monthKey !== currentKey || currentGroup === null) {
+      currentKey = monthKey;
+      currentGroup = {
+        id: `month-${monthKey}`,
+        items: [],
+        title: formatHistoryMonthTitle(date),
+      };
+      groups.push(currentGroup);
+    }
+
+    currentGroup.items.push(item);
+  }
+
+  return groups;
+}
+
+function formatHistoryMonthTitle(date: Date): string {
+  if (Number.isNaN(date.getTime())) {
+    return strings.workouts.unknownMonth;
+  }
+
+  const month = date.toLocaleDateString('ru-RU', {
+    month: 'long',
+    year: 'numeric',
+  });
+
+  return month.charAt(0).toLocaleUpperCase('ru-RU') + month.slice(1);
+}
+
 function createStyles(colors: AppThemeColors) {
   return StyleSheet.create({
   content: {
@@ -371,16 +446,31 @@ function createStyles(colors: AppThemeColors) {
     lineHeight: 18,
   },
   historyListContent: {
-    backgroundColor: colors.panel,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginBottom: 24,
-    marginTop: 2,
-    overflow: 'hidden',
+    flexGrow: 1,
+    paddingBottom: 24,
+    paddingTop: 10,
   },
   historyList: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
     flex: 1,
+    marginTop: 2,
+  },
+  monthSection: {
+    marginBottom: 14,
+  },
+  monthTitle: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    marginBottom: 6,
+    paddingHorizontal: 2,
+    textTransform: 'uppercase',
+  },
+  monthGroup: {
+    backgroundColor: colors.panel,
+    borderColor: colors.border,
+    borderWidth: 1,
   },
   historyRow: {
     borderTopColor: colors.border,

@@ -117,6 +117,7 @@ export type CardioSummary = {
   elevationMeters: number | null;
   id: string;
   machineName: string;
+  startedAt: string;
 };
 
 export type MachineHistoryItem = {
@@ -124,6 +125,7 @@ export type MachineHistoryItem = {
   id: string;
   maxWeightKg: number | null;
   setCount: number;
+  startedAt: string;
 };
 
 export type MachineHistorySet = {

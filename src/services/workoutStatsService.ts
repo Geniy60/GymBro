@@ -116,6 +116,7 @@ export async function loadMachineHistory({
     id: row.id,
     maxWeightKg: row.max_weight_kg,
     setCount: row.set_count,
+    startedAt: row.started_at,
   }));
 }
 
@@ -265,6 +266,7 @@ function mapCardioRow(row: CardioRow, id: string): CardioSummary {
     elevationMeters: row.elevation_meters,
     id,
     machineName: row.machine_name,
+    startedAt: row.started_at,
   };
 }
 

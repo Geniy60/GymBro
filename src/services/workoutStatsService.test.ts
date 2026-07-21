@@ -140,6 +140,7 @@ describe('workoutStatsService cardio mapping', () => {
         elevationMeters: 80,
         id: 'exercise-1',
         machineName: 'Treadmill',
+        startedAt: '2026-01-01T10:00:00.000Z',
       },
     ]);
     expect(supabaseMock.rpc).toHaveBeenCalledWith('gymbro_cardio_history', {
