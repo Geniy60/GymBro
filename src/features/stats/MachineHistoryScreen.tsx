@@ -113,7 +113,9 @@ export function MachineHistoryScreen({
               />
             )
           }
-          renderItem={({ item }) => <CardioHistoryRow item={item} />}
+          renderItem={({ index, item }) => (
+            <CardioHistoryRow isFirst={index === 0} item={item} />
+          )}
           showsVerticalScrollIndicator={false}
           style={styles.historyList}
         />
@@ -132,9 +134,10 @@ export function MachineHistoryScreen({
               />
             )
           }
-          renderItem={({ item }) => (
+          renderItem={({ index, item }) => (
             <MachineHistoryRow
               isExpanded={expandedHistoryItemId === item.id}
+              isFirst={index === 0}
               item={item}
               onToggle={() =>
                 setExpandedHistoryItemId((currentItemId) =>
@@ -165,12 +168,18 @@ function SummaryMetric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function CardioHistoryRow({ item }: { item: CardioHistoryItem }) {
+function CardioHistoryRow({
+  isFirst,
+  item,
+}: {
+  isFirst: boolean;
+  item: CardioHistoryItem;
+}) {
   const { colors } = useAppTheme();
   const styles = useAppStyles(createStyles);
 
   return (
-    <View style={styles.historyRow}>
+    <View style={[styles.historyRow, isFirst && styles.firstHistoryRow]}>
       <View style={styles.historyRowHeader}>
         <View style={styles.historyIconBadge}>
           <Ionicons name="walk-outline" size={17} color={colors.primary} />
@@ -187,11 +196,13 @@ function CardioHistoryRow({ item }: { item: CardioHistoryItem }) {
 
 function MachineHistoryRow({
   isExpanded,
+  isFirst,
   item,
   onToggle,
   userId,
 }: {
   isExpanded: boolean;
+  isFirst: boolean;
   item: MachineHistoryItem;
   onToggle: () => void;
   userId: string;
@@ -206,7 +217,7 @@ function MachineHistoryRow({
   const historySets = historySetsQuery.data ?? [];
 
   return (
-    <View style={styles.historyRow}>
+    <View style={[styles.historyRow, isFirst && styles.firstHistoryRow]}>
       <Pressable
         accessibilityLabel={strings.accessibility.toggleHistorySets(item.dateLabel)}
         onPress={onToggle}
@@ -360,22 +371,23 @@ function createStyles(colors: AppThemeColors) {
     lineHeight: 18,
   },
   historyListContent: {
-    flexGrow: 1,
-    gap: 9,
-    paddingBottom: 24,
-    paddingTop: 10,
-  },
-  historyList: {
-    borderTopColor: colors.border,
-    borderTopWidth: 1,
-    flex: 1,
-    marginTop: 2,
-  },
-  historyRow: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.panel,
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
+    marginBottom: 24,
+    marginTop: 2,
+    overflow: 'hidden',
+  },
+  historyList: {
+    flex: 1,
+  },
+  historyRow: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
+  },
+  firstHistoryRow: {
+    borderTopWidth: 0,
   },
   historyRowHeader: {
     alignItems: 'center',
