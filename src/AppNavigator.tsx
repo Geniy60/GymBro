@@ -229,6 +229,7 @@ function MainStack() {
             selectedUser={selectedUser}
             selectedUserId={selectedUserId}
             setActiveTab={setActiveTab}
+            usersLoaded={usersQuery.isSuccess}
           />
         )}
       </Stack.Screen>
@@ -334,6 +335,7 @@ type HomeScreenExtraProps = {
   selectedUser: AppUser | null;
   selectedUserId: string | null;
   setActiveTab: (tab: MainTab) => void;
+  usersLoaded: boolean;
 };
 
 function HomeScreen({
@@ -349,15 +351,16 @@ function HomeScreen({
   selectedUser,
   selectedUserId,
   setActiveTab,
+  usersLoaded,
 }: HomeScreenProps & HomeScreenExtraProps) {
   const { colors } = useAppTheme();
   const [checkedDraftUserId, setCheckedDraftUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (hasLoadedSelectedUser && selectedUser === null) {
+    if (hasLoadedSelectedUser && usersLoaded && selectedUser === null) {
       navigation.replace('UserSelect');
     }
-  }, [hasLoadedSelectedUser, navigation, selectedUser]);
+  }, [hasLoadedSelectedUser, navigation, selectedUser, usersLoaded]);
 
   useEffect(() => {
     if (selectedUser === null || checkedDraftUserId === selectedUser.id) {

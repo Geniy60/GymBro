@@ -40,6 +40,16 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Fixed the selected user not persisting across app launches.
+
+Details:
+
+- The startup redirect to the user selection screen now waits until the users list finishes loading from Supabase.
+- Previously the local selected user id restored faster than the remote users list, so the matching user was momentarily missing and the selection screen was shown on every launch.
+- A saved user now opens directly; the selection screen still appears on first launch or when the saved id is no longer in the users list.
+
+Previous step:
+
 Submitted an Android APK build.
 
 Details:
