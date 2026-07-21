@@ -40,13 +40,13 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
-Polished the active rest timer with a progress bar and a finish vibration.
+Added a finish vibration to the rest timer and reverted the in-button progress bar.
 
 Details:
 
-- The rest timer button now shows a subtle progress fill that shrinks as the remaining rest time counts down.
 - When the timer finishes while the workout screen is open, the phone gives a short vibration in addition to the OS notification.
-- Both changes are pure React Native (no new dependencies) and verify in Expo Go without an APK build.
+- A progress fill rendered inside the rest timer button was tried but removed: on Android it broke the button's native text, so the label disappeared after the timer was cancelled. The button is back to its known-good text-only structure.
+- If a rest progress indicator is wanted later, render it as a separate bar outside the timer button, never as a sibling of the button text.
 
 Previous step:
 
