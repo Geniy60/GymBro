@@ -171,14 +171,16 @@ function CardioHistoryRow({ item }: { item: CardioHistoryItem }) {
 
   return (
     <View style={styles.historyRow}>
-      <View style={styles.historyIconBadge}>
-        <Ionicons name="walk-outline" size={17} color={colors.primary} />
+      <View style={styles.historyRowHeader}>
+        <View style={styles.historyIconBadge}>
+          <Ionicons name="walk-outline" size={17} color={colors.primary} />
+        </View>
+        <View style={styles.historyTextBlock}>
+          <Text style={styles.historyDate}>{item.dateLabel}</Text>
+          <Text style={styles.historyMeta}>{strings.machineTracking.cardio}</Text>
+        </View>
+        <Text style={styles.historyMax}>{formatCardioValue(item)}</Text>
       </View>
-      <View style={styles.historyTextBlock}>
-        <Text style={styles.historyDate}>{item.dateLabel}</Text>
-        <Text style={styles.historyMeta}>{strings.machineTracking.cardio}</Text>
-      </View>
-      <Text style={styles.historyMax}>{formatCardioValue(item)}</Text>
     </View>
   );
 }
