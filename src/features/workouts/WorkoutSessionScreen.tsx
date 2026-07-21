@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  Vibration,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -65,6 +66,8 @@ import {
   createWorkoutSessionDraftState,
   workoutSessionDraftReducer,
 } from './workoutSessionReducer';
+
+const REST_TIMER_FINISH_VIBRATION = [0, 300, 200, 300];
 
 type WorkoutSessionScreenProps = {
   backgroundColor: string;
@@ -185,6 +188,7 @@ export function WorkoutSessionScreen({
       if (nextNow >= restTimerEndsAt) {
         setRestTimerEndsAt(null);
         restTimerNotificationIdRef.current = null;
+        Vibration.vibrate(REST_TIMER_FINISH_VIBRATION);
       }
     }, 1000);
 
@@ -648,6 +652,17 @@ export function WorkoutSessionScreen({
                     : Math.max(0, Math.ceil((restTimerEndsAt - restTimerNow) / 1000))
                 }
               />
+            }
+            restTimerProgress={
+              restTimerEndsAt === null
+                ? 0
+                : Math.max(
+                    0,
+                    Math.min(
+                      1,
+                      (restTimerEndsAt - restTimerNow) / (restTimerSeconds * 1000),
+                    ),
+                  )
             }
             saveStatus={saveStatus}
           />
