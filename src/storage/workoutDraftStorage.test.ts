@@ -22,7 +22,32 @@ const validDraft: StoredWorkoutDraft = {
   savedAt: '2026-01-01T10:00:00.000Z',
   userId: 'user-1',
   workout: {
-    exercises: [],
+    exercises: [
+      {
+        id: 'group-exercise',
+        machineId: 'pilates',
+        machineName: 'Pilates',
+        trackingType: 'group',
+        sets: [],
+      },
+      {
+        id: 'strength-exercise',
+        machineId: 'chest-press',
+        machineName: 'Chest Press',
+        trackingType: 'strength',
+        sets: [{
+          id: 'set-1',
+          distanceKm: '',
+          durationMinutes: '',
+          elevationMeters: '',
+          inclinePercent: '',
+          note: 'Controlled movement',
+          reps: '12',
+          speedKmh: '',
+          weightKg: '50',
+        }],
+      },
+    ],
     id: 'workout-1',
     name: 'Workout',
     startedAt: '2026-01-01T09:00:00.000Z',
@@ -37,7 +62,7 @@ describe('workoutDraftStorage', () => {
     asyncStorageMock.setItem.mockReset();
   });
 
-  it('loads a valid stored workout draft', async () => {
+  it('loads a stored workout draft with exercise order and entered sets intact', async () => {
     asyncStorageMock.getItem.mockResolvedValueOnce(JSON.stringify(validDraft));
 
     await expect(loadWorkoutDraft()).resolves.toEqual(validDraft);

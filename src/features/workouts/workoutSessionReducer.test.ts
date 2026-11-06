@@ -70,6 +70,107 @@ describe('workoutSessionDraftReducer', () => {
     expect(state.draftWorkout.name).toBe('Leg day');
   });
 
+  it('collapses the dragged card and leaves it collapsed without changing workout data', () => {
+    const initialState = {
+      ...createWorkoutSessionDraftState(workout),
+      collapsedExerciseIds: [],
+      visibleSetNoteIds: ['set-1'],
+    };
+    const collapsedState = workoutSessionDraftReducer(initialState, {
+      exerciseId: 'exercise-1', type: 'collapseExercise',
+    });
+
+    expect(collapsedState.collapsedExerciseIds).toEqual(['exercise-1']);
+    expect(collapsedState.draftWorkout).toBe(initialState.draftWorkout);
+    expect(collapsedState.visibleSetNoteIds).toEqual(['set-1']);
+    expect(workoutSessionDraftReducer(collapsedState, {
+      exerciseId: 'exercise-1', type: 'collapseExercise',
+    })).toBe(collapsedState);
+    expect(workoutSessionDraftReducer(collapsedState, {
+      exerciseId: 'exercise-1', toIndex: 0, type: 'moveExercise',
+    }).collapsedExerciseIds).toEqual(['exercise-1']);
+    expect(workoutSessionDraftReducer(initialState, {
+      exerciseId: 'removed-exercise', type: 'collapseExercise',
+    })).toBe(initialState);
+  });
+
+  it('moves mixed exercise cards while preserving edited values and local card state', () => {
+    const mixedWorkout: Workout = {
+      ...workout,
+      exercises: [
+        ...workout.exercises,
+        {
+          id: 'cardio-exercise',
+          machineId: 'treadmill',
+          machineName: 'Treadmill',
+          trackingType: 'cardio',
+          sets: [{
+            ...emptyCardioFields,
+            id: 'cardio-set',
+            durationMinutes: '20',
+            note: 'Steady pace',
+            reps: '',
+            speedKmh: '6',
+            weightKg: '',
+          }],
+        },
+        {
+          id: 'group-exercise',
+          machineId: 'pilates',
+          machineName: 'Pilates',
+          trackingType: 'group',
+          sets: [],
+        },
+      ],
+    };
+    const initialState = {
+      ...createWorkoutSessionDraftState(mixedWorkout),
+      collapsedExerciseIds: ['cardio-exercise'],
+      visibleSetNoteIds: ['set-1'],
+    };
+    const editedState = workoutSessionDraftReducer(initialState, {
+      exerciseId: 'exercise-1',
+      field: 'reps',
+      setId: 'set-1',
+      type: 'updateSet',
+      value: '12',
+    });
+    const movedUp = workoutSessionDraftReducer(editedState, {
+      exerciseId: 'group-exercise', toIndex: 0, type: 'moveExercise',
+    });
+    const movedDown = workoutSessionDraftReducer(movedUp, {
+      exerciseId: 'exercise-1', toIndex: 2, type: 'moveExercise',
+    });
+
+    expect(movedUp.draftWorkout.exercises.map((exercise) => exercise.id))
+      .toEqual(['group-exercise', 'exercise-1', 'cardio-exercise']);
+    expect(movedDown.draftWorkout.exercises.map((exercise) => exercise.id))
+      .toEqual(['group-exercise', 'cardio-exercise', 'exercise-1']);
+    expect(movedDown.draftWorkout.exercises[2])
+      .toBe(editedState.draftWorkout.exercises[0]);
+    expect(movedDown.draftWorkout.exercises[2].sets[0].reps).toBe('12');
+    expect(movedDown.draftWorkout.exercises[1]).toBe(mixedWorkout.exercises[1]);
+    expect(movedDown.collapsedExerciseIds).toEqual(['cardio-exercise']);
+    expect(movedDown.visibleSetNoteIds).toEqual(['set-1']);
+    expect(mixedWorkout.exercises.map((exercise) => exercise.id))
+      .toEqual(['exercise-1', 'cardio-exercise', 'group-exercise']);
+  });
+
+  it('ignores cancelled, stale, or out-of-range moves without changing the draft', () => {
+    const state = createWorkoutSessionDraftState(workout);
+
+    for (const [exerciseId, toIndex] of [
+      ['exercise-1', 0],
+      ['exercise-1', -1],
+      ['exercise-1', 1],
+      ['removed-exercise', 0],
+    ] as const) {
+      expect(workoutSessionDraftReducer(state, {
+        exerciseId, toIndex, type: 'moveExercise',
+      })).toBe(state);
+    }
+  });
+
   it('adds exercises and collapses existing exercises', () => {
     const state = workoutSessionDraftReducer(
       createWorkoutSessionDraftState(workout),

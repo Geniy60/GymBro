@@ -19,6 +19,8 @@ Exercise tracking now supports strength, cardio, and group activities. Group act
 
 The workout exercise clear action resets only strength repetitions or cardio distance, elevation, and duration. It preserves set rows, weights, cardio speed and incline, notes, and note visibility.
 
+Workout exercise cards can now be reordered using the drag handle next to their title. The dragged card collapses at drag start and stays collapsed after release. The order is autosaved in the local draft and persisted to Supabase with the normal workout save action.
+
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically. Active workout drafts are autosaved locally on the phone and can be restored after app restart before they are saved to Supabase. The active workout screen has separate Save and Finish actions: Save persists without closing the workout, while Finish saves and returns to the workout list.
 
 The active workout screen now has a rest timer button. The timer duration is stored locally on the phone, defaults to 90 seconds, can be changed from Settings, and schedules a local device notification through `expo-notifications` when started. Notification support is loaded lazily when the timer starts. Expo Go may still show its known `expo-notifications` limitation warning even though local timer notifications arrive.
@@ -43,6 +45,40 @@ The main header has a manual refresh action next to settings. It invalidates the
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Switched Expo Go phone testing back to the ngrok tunnel after intermittent startup download failures.
+
+Details:
+
+- The phone reported `Error while reading multipart response` with HTTP 200 while downloading the Android bundle through the SDK 58 default `on.expo.app` tunnel. Earlier diagnostic downloads through that tunnel also stalled or timed out.
+- Confirmed the same Android multipart bundle completes locally, so the observed failure occurs during dev-server bundle delivery before app JavaScript starts; the precise network cause is not proven.
+- Updated `Start Expo Go Tunnel.cmd` to use the CLI-supported `--tunnel=ngrok --go` flags with the existing `@expo/ngrok` dependency.
+- Removed the unconditional `--clear` from normal startup so the bundler can reuse its transform cache; manual cache clearing remains available when needed.
+- Restarted the active Expo Go server with ngrok. The current phone URL is `exp://icqvsgs-geniy60-8081.exp.direct`.
+- Verified the exact Android-style multipart bundle request through ngrok completes with HTTP 200 and the closing multipart boundary (approximately 11.2 MB in 14.6 seconds on the successful warm download).
+- A trial minified request did not reduce this dev bundle, so minification was not added to the launcher.
+- Verified `npx.cmd tsc --noEmit` and `npm.cmd test` pass (44 tests in 9 files). Phone confirmation of startup reliability remains pending.
+
+Previous step:
+
+Added drag-and-drop ordering for workout exercise cards.
+
+Details:
+
+- Added `react-native-sortables` 1.10.1 through Expo; the library supports the installed Reanimated 4 and Gesture Handler 3 and handles variable-height cards and edge autoscrolling.
+- Wrapped the app in `GestureHandlerRootView` and replaced only the workout exercise scrolling area with a one-column sortable grid inside an animated ScrollView. The header, exercise picker action, and workout footer remain outside the scroller.
+- Added a dedicated hold-to-drag handle to strength, cardio, and group activity cards with centralized Russian accessibility text.
+- Removed the drag activation delay at the user's request; dragging starts immediately from the dedicated handle.
+- Drag start collapses only the dragged card and leaves it collapsed after release, including a drop without a position change. Removed `autoAdjustOffsetDuringDrag` after the user reported that collapsed cards moved visually but would not commit their new order; the library's offset adjustment internally disables reordering while compensating for size changes. Phone confirmation of the fix is pending.
+- Reordering uses the current reducer state and the dragged exercise ID, preserving the latest entered set values, notes, the other cards' expanded/collapsed state, and visible note state. Cancelled, stale, and out-of-range moves leave workout data unchanged.
+- Reused existing draft autosave and the workout save RPC's `sort_order` behavior; no database migration was needed.
+- Kept sorting animation on the UI runtime, disabled extra scale and entry/exit effects, and respected reduced-motion settings for pickup/drop animation.
+- Verified `npx.cmd tsc --noEmit` and `npm.cmd test` pass (44 tests in 9 files), including drag-start collapse without changing set data. The earlier Expo Doctor (20/20) and dependency compatibility checks also passed.
+- Verified the production Android JavaScript/Hermes export succeeds (1,996 modules).
+- Verified actual database saving under the `anon` role in a rolled-back transaction: reordered strength/cardio/group entries reload in the new `sort_order` with their set IDs, notes, weights, repetitions, and cardio metrics intact.
+- Device feel and gesture interaction still require phone verification, especially expanded cards, keyboard input, and autoscrolling at the list edges. No APK build or repository push was requested.
+
+Previous step:
 
 Made the workout exercise clear action reset results while preserving exercise setup.
 
@@ -2642,7 +2678,7 @@ Verified:
 
 ## Next Proposed Step
 
-Verify selective clearing on the phone for one cardio and one strength exercise. When requested, build a new APK to include the recent changes and validate the custom Android exact-alarm module and migrated splash configuration.
+Open the ngrok Expo Go URL on the phone and confirm startup reliability, then continue checking drag-and-drop interaction and saved exercise order. When requested, build a new APK to verify release performance and the existing native timer.
 
 ## Important Decisions
 

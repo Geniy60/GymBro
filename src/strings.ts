@@ -223,6 +223,8 @@ export const strings = {
     addSet: 'Добавить подход',
     clearExerciseSets: 'Очистить повторения',
     collapseExercise: 'Свернуть упражнение',
+    reorderExercise: (name: string) => `Переместить ${name}`,
+    reorderExerciseHint: 'Удерживай ручку и перетаскивай упражнение вверх или вниз.',
     defaultName: 'Тренировка',
     defaultNameWithDate: (weekday: string, date: string) => `${weekday} ${date}`,
     deleteExercise: 'Удалить упражнение',

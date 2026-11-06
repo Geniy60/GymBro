@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Sortable from 'react-native-sortables';
 
 import { strings } from '../../strings';
 import { useAppStyles, useAppTheme } from '../../ThemeProvider';
@@ -45,11 +46,24 @@ export function WorkoutExerciseCard({
   const isCollapsed = collapsedExerciseIds.includes(exercise.id);
   const isCardioExercise = exercise.trackingType === 'cardio';
   const cardioSet = exercise.sets[0];
+  const dragHandle = (
+    <Sortable.Handle style={styles.smallIconButton}>
+      <View
+        accessible
+        accessibilityLabel={strings.workouts.reorderExercise(exercise.machineName)}
+        accessibilityHint={strings.workouts.reorderExerciseHint}
+        accessibilityRole="button"
+      >
+        <Ionicons color={colors.muted} name="reorder-three-outline" size={22} />
+      </View>
+    </Sortable.Handle>
+  );
 
   if (exercise.trackingType === 'group') {
     return (
       <View style={[styles.exerciseCard, styles.collapsedExerciseCard]}>
         <View style={[styles.exerciseHeader, styles.collapsedExerciseHeader]}>
+          {dragHandle}
           <View style={styles.exerciseTitleBlock}>
             <Text numberOfLines={2} style={styles.exerciseTitle}>
               {exercise.machineName}
@@ -82,6 +96,7 @@ export function WorkoutExerciseCard({
           isCollapsed && styles.collapsedExerciseHeader,
         ]}
       >
+        {dragHandle}
         <Pressable
           accessibilityLabel={
             isCollapsed

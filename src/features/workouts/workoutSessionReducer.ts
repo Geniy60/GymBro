@@ -21,8 +21,17 @@ export type WorkoutSessionDraftAction =
       exerciseId: string;
     }
   | {
+      type: 'collapseExercise';
+      exerciseId: string;
+    }
+  | {
       type: 'deleteExercise';
       exerciseId: string;
+    }
+  | {
+      type: 'moveExercise';
+      exerciseId: string;
+      toIndex: number;
     }
   | {
       type: 'deleteSet';
@@ -87,6 +96,41 @@ export function workoutSessionDraftReducer(
 
     case 'clearExerciseSets':
       return clearExerciseSets(state, action.exerciseId);
+
+    case 'collapseExercise':
+      if (
+        state.collapsedExerciseIds.includes(action.exerciseId) ||
+        !state.draftWorkout.exercises.some((exercise) => exercise.id === action.exerciseId)
+      ) {
+        return state;
+      }
+
+      return {
+        ...state,
+        collapsedExerciseIds: [...state.collapsedExerciseIds, action.exerciseId],
+      };
+
+    case 'moveExercise': {
+      const exercises = [...state.draftWorkout.exercises];
+      const fromIndex = exercises.findIndex((exercise) => exercise.id === action.exerciseId);
+
+      if (
+        fromIndex < 0 ||
+        action.toIndex < 0 ||
+        action.toIndex >= exercises.length ||
+        fromIndex === action.toIndex
+      ) {
+        return state;
+      }
+
+      const [exercise] = exercises.splice(fromIndex, 1);
+      exercises.splice(action.toIndex, 0, exercise);
+
+      return {
+        ...state,
+        draftWorkout: { ...state.draftWorkout, exercises },
+      };
+    }
 
     case 'deleteExercise':
       return {

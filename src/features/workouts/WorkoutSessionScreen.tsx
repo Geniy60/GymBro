@@ -3,7 +3,7 @@ import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   BackHandler,
-  FlatList,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,6 +13,8 @@ import {
   Vibration,
   View,
 } from 'react-native';
+import Animated, { useAnimatedRef, useReducedMotion } from 'react-native-reanimated';
+import Sortable from 'react-native-sortables';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { showAppAlert } from '../../appAlert';
@@ -114,6 +116,8 @@ export function WorkoutSessionScreen({
   const [restTimerEndsAt, setRestTimerEndsAt] = useState<number | null>(null);
   const [restTimerNow, setRestTimerNow] = useState(() => Date.now());
   const keyboardBottomInset = useKeyboardBottomInset();
+  const exercisesScrollRef = useAnimatedRef<Animated.ScrollView>();
+  const reducedMotion = useReducedMotion();
   const restTimerNotificationIdRef = useRef<string | null>(null);
   const {
     collapsedExerciseIds,
@@ -607,31 +611,57 @@ export function WorkoutSessionScreen({
         </View>
 
         <View style={styles.exercisesBlock}>
-          <FlatList
+          <Animated.ScrollView
             contentContainerStyle={styles.exercisesListContent}
-            data={draftWorkout.exercises}
             keyboardShouldPersistTaps="handled"
-            keyExtractor={(exercise) => exercise.id}
-            ListEmptyComponent={
+            ref={exercisesScrollRef}
+            style={styles.exercisesList}
+          >
+            {draftWorkout.exercises.length === 0 ? (
               <EmptyWorkoutExerciseList onSuggestMachines={openMachineSuggest} />
-            }
-            renderItem={({ item: exercise }) => (
-              <WorkoutExerciseCard
-                addSet={addSet}
-                clearExerciseSets={clearExerciseSets}
-                collapsedExerciseIds={collapsedExerciseIds}
-                deleteExercise={confirmDeleteExercise}
-                deleteSet={deleteSet}
-                exercise={exercise}
-                previousMaxWeightKg={previousMaxesQuery.data?.get(exercise.machineId)}
-                toggleExerciseCollapse={toggleExerciseCollapse}
-                toggleSetNote={toggleSetNote}
-                updateSet={updateSet}
-                visibleSetNoteIds={visibleSetNoteIds}
+            ) : (
+              <Sortable.Grid
+                activationAnimationDuration={reducedMotion ? 0 : 300}
+                activeItemScale={1}
+                activeItemShadowOpacity={0}
+                columns={1}
+                customHandle
+                data={draftWorkout.exercises}
+                dragActivationDelay={0}
+                dropAnimationDuration={reducedMotion ? 0 : 300}
+                enableActiveItemSnap={false}
+                itemEntering={null}
+                itemExiting={null}
+                itemsLayoutTransitionMode="reorder"
+                keyExtractor={(exercise) => exercise.id}
+                onDragStart={({ key }) => {
+                  Keyboard.dismiss();
+                  dispatchSession({ exerciseId: key, type: 'collapseExercise' });
+                }}
+                onDragEnd={({ key, toIndex }) => {
+                  dispatchSession({ exerciseId: key, toIndex, type: 'moveExercise' });
+                }}
+                overDrag="vertical"
+                renderItem={({ item: exercise }) => (
+                  <WorkoutExerciseCard
+                    addSet={addSet}
+                    clearExerciseSets={clearExerciseSets}
+                    collapsedExerciseIds={collapsedExerciseIds}
+                    deleteExercise={confirmDeleteExercise}
+                    deleteSet={deleteSet}
+                    exercise={exercise}
+                    previousMaxWeightKg={previousMaxesQuery.data?.get(exercise.machineId)}
+                    toggleExerciseCollapse={toggleExerciseCollapse}
+                    toggleSetNote={toggleSetNote}
+                    updateSet={updateSet}
+                    visibleSetNoteIds={visibleSetNoteIds}
+                  />
+                )}
+                scrollableRef={exercisesScrollRef}
+                sortEnabled={draftWorkout.exercises.length > 1 && saveStatus !== 'saving'}
               />
             )}
-            style={styles.exercisesList}
-          />
+          </Animated.ScrollView>
         </View>
 
         <View
