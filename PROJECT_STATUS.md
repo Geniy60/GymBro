@@ -2,7 +2,7 @@
 
 ## Current State
 
-The project is now a minimal Expo SDK 54 / React Native / TypeScript mobile app for a personal gym assistant.
+The project is now a minimal Expo SDK 58 / React Native / TypeScript mobile app for a personal gym assistant.
 
 The app supports manually selected light and dark themes. The selection is available from Settings, applies immediately, and is saved locally on the phone. The dark palette uses the same muted green direction as the sibling Fridge app while preserving GymBro's existing green accent and warning/destructive states.
 
@@ -39,6 +39,22 @@ The main header has a manual refresh action next to settings. It invalidates the
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Upgraded the project from Expo SDK 54 to SDK 58 for compatibility with the installed Expo Go app.
+
+Details:
+
+- Updated Expo to `~58.0.23`, React Native to `0.88.1`, React to `19.3.0`, and TypeScript to `~6.0.3` using Expo's SDK dependency alignment.
+- Updated existing Expo and React Native native libraries to the SDK 58 compatible versions; kept React Navigation and all existing app workflows.
+- Migrated the removed `expo.splash` config to the official `expo-splash-screen` config plugin with the existing splash image, resize mode, and background color.
+- Imported `requireNativeModule` through the public `expo` export instead of relying on a transitive `expo-modules-core` dependency.
+- Changed an absent FlatList footer from `null` to `undefined` to satisfy the new React Native strict API types without disabling strict checking.
+- Verified `npx.cmd tsc --noEmit`, `npm.cmd test` (37 tests in 9 files), `npx.cmd expo-doctor@latest` (20/20 checks), and `npx.cmd expo install --check` pass.
+- Started the SDK 58 Expo Go tunnel and verified the public Android manifest reports SDK 58 and its JavaScript bundle returns HTTP 200.
+- Verified production Android JavaScript/Hermes export succeeds (1,835 modules); exported only to a temporary directory, without generating native projects or submitting an APK build.
+- The user confirmed the upgraded app launches in Expo Go on the phone. The custom Android exact-alarm module still requires an APK build for native compilation and device verification; no APK build was requested or submitted.
+
+Previous step:
 
 Submitted an Android APK build with the accumulated changes.
 
@@ -2564,7 +2580,7 @@ Verified:
 
 ## Next Proposed Step
 
-When the EAS build finishes, download and install the APK on the phone to verify the updated launcher icon and startup assets.
+Continue checking navigation, saved user and theme, workout editing, measurements, and the rest timer fallback in Expo Go. When requested, build a new APK to validate the custom Android exact-alarm module and the migrated splash configuration.
 
 ## Important Decisions
 
@@ -2579,7 +2595,7 @@ When the EAS build finishes, download and install the APK on the phone to verify
 - Run type checking and tests after code changes.
 - For Expo Android APK builds, increment `versionCode`, submit the EAS APK build, report submission or queue status, and do not wait for the full cloud build result unless explicitly asked.
 - Use Expo / React Native / TypeScript for the initial mobile MVP.
-- Stay on Expo SDK 54 for now because this SDK level was requested and matches the already tested sibling project setup.
+- Use Expo SDK 58 following the user's approved upgrade to match the installed Expo Go app.
 - Use the shared Supabase project from Vacation for GymBro persistence.
 - Use `Start Expo Go Tunnel.cmd` for phone testing through Expo Go when LAN discovery is unreliable.
 - Use TanStack Query for server data loaded from Supabase.

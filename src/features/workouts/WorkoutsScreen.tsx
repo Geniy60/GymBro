@@ -128,7 +128,7 @@ export function WorkoutsScreen({
         ListFooterComponent={
           workoutSummariesQuery.isFetchingNextPage ? (
             <Text style={styles.footerText}>{strings.workouts.loadingMore}</Text>
-          ) : null
+          ) : undefined
         }
         onEndReached={() => {
           if (
