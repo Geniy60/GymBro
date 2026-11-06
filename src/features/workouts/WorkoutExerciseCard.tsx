@@ -46,6 +46,34 @@ export function WorkoutExerciseCard({
   const isCardioExercise = exercise.trackingType === 'cardio';
   const cardioSet = exercise.sets[0];
 
+  if (exercise.trackingType === 'group') {
+    return (
+      <View style={[styles.exerciseCard, styles.collapsedExerciseCard]}>
+        <View style={[styles.exerciseHeader, styles.collapsedExerciseHeader]}>
+          <View style={styles.exerciseTitleBlock}>
+            <Text numberOfLines={2} style={styles.exerciseTitle}>
+              {exercise.machineName}
+            </Text>
+            <Text style={styles.trackingBadgeText}>
+              {strings.machineTracking.group}
+            </Text>
+          </View>
+          <Pressable
+            accessibilityLabel={strings.workouts.deleteGroupActivity}
+            onPress={() => deleteExercise(exercise.id)}
+            style={({ pressed }) => [
+              styles.smallIconButton,
+              styles.smallDeleteButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Ionicons color={colors.destructive} name="trash-outline" size={18} />
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.exerciseCard, isCollapsed && styles.collapsedExerciseCard]}>
       <View

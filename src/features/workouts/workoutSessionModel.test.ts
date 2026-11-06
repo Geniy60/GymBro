@@ -19,6 +19,7 @@ import type { Machine, Workout, WorkoutExercise, WorkoutSet } from '../../types'
 import {
   addSetToExercise,
   createEmptySets,
+  createEmptySetsForTrackingType,
   createSetsForMachine,
   createSetsFromHistory,
   filterMachines,
@@ -177,6 +178,31 @@ describe('workoutSessionModel', () => {
 
     expect(cardioExercise.sets).toHaveLength(1);
     expect(addSetToExercise(cardioExercise)).toBe(cardioExercise);
+  });
+
+  it('keeps group activities free of sets when adding or clearing them', () => {
+    const pilates: Machine = {
+      id: 'pilates',
+      muscleGroups: [],
+      name: 'Pilates',
+      note: '',
+      trackingType: 'group',
+    };
+    const historySets: WorkoutSet[] = [
+      { ...emptyCardioFields, id: 'old-set', note: '', reps: '10', weightKg: '20' },
+    ];
+    const exercise: WorkoutExercise = {
+      id: 'group-exercise',
+      machineId: pilates.id,
+      machineName: pilates.name,
+      trackingType: 'group',
+      sets: createSetsForMachine(pilates, historySets),
+    };
+
+    expect(createSetsForMachine(pilates, undefined)).toEqual([]);
+    expect(exercise.sets).toEqual([]);
+    expect(addSetToExercise(exercise)).toBe(exercise);
+    expect(createEmptySetsForTrackingType('group', 4)).toEqual([]);
   });
 
   it('normalizes workout names and detects meaningful changes', () => {

@@ -79,9 +79,9 @@ function mapMachineRow(
 export function createMachineSavePayload(machine: Machine): MachineSavePayload & Json {
   return {
     id: machine.id,
-    muscleGroups: machine.muscleGroups,
+    muscleGroups: machine.trackingType === 'group' ? [] : machine.muscleGroups,
     name: machine.name,
-    note: machine.note,
+    note: machine.trackingType === 'group' ? '' : machine.note,
     trackingType: machine.trackingType,
   };
 }

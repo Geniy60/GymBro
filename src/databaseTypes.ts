@@ -1,4 +1,4 @@
-import type { MuscleGroup } from './types';
+import type { MachineTrackingType, MuscleGroup } from './types';
 
 export type Json =
   | string
@@ -18,7 +18,7 @@ export type Database = {
           name: string;
           note: string;
           sort_order: number;
-          tracking_type: 'strength' | 'cardio';
+          tracking_type: MachineTrackingType;
           updated_at: string;
         };
         Insert: {
@@ -26,13 +26,13 @@ export type Database = {
           name: string;
           note?: string;
           sort_order?: number;
-          tracking_type?: 'strength' | 'cardio';
+          tracking_type?: MachineTrackingType;
         };
         Update: {
           name?: string;
           note?: string;
           sort_order?: number;
-          tracking_type?: 'strength' | 'cardio';
+          tracking_type?: MachineTrackingType;
         };
         Relationships: [];
       };
@@ -129,7 +129,7 @@ export type Database = {
           machine_id: string | null;
           machine_name_snapshot: string;
           sort_order: number;
-          tracking_type: 'strength' | 'cardio';
+          tracking_type: MachineTrackingType;
           updated_at: string;
           workout_id: string;
         };
@@ -138,14 +138,14 @@ export type Database = {
           machine_id?: string | null;
           machine_name_snapshot: string;
           sort_order?: number;
-          tracking_type?: 'strength' | 'cardio';
+          tracking_type?: MachineTrackingType;
           workout_id: string;
         };
         Update: {
           machine_id?: string | null;
           machine_name_snapshot?: string;
           sort_order?: number;
-          tracking_type?: 'strength' | 'cardio';
+          tracking_type?: MachineTrackingType;
         };
         Relationships: [];
       };

@@ -25,7 +25,7 @@ export type MachineDraft = {
   trackingType: MachineTrackingType;
 };
 
-export type MachineTrackingType = 'strength' | 'cardio';
+export type MachineTrackingType = 'strength' | 'cardio' | 'group';
 
 export type MuscleGroup =
   | 'chest'

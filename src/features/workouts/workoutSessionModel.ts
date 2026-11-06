@@ -71,6 +71,10 @@ export function createSetsForMachine(
   machine: Machine,
   historySets: WorkoutSet[] | undefined,
 ): WorkoutSet[] {
+  if (machine.trackingType === 'group') {
+    return [];
+  }
+
   if (machine.trackingType === 'cardio') {
     return createCardioSetFromHistory(historySets);
   }
@@ -86,6 +90,10 @@ export function createEmptySetsForTrackingType(
   trackingType: MachineTrackingType,
   currentSetCount: number,
 ): WorkoutSet[] {
+  if (trackingType === 'group') {
+    return [];
+  }
+
   if (trackingType === 'cardio') {
     return [createEmptySet()];
   }
@@ -94,7 +102,7 @@ export function createEmptySetsForTrackingType(
 }
 
 export function addSetToExercise(exercise: WorkoutExercise): WorkoutExercise {
-  if (exercise.trackingType === 'cardio') {
+  if (exercise.trackingType !== 'strength') {
     return exercise;
   }
 

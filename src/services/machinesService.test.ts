@@ -15,6 +15,22 @@ beforeEach(() => {
 });
 
 describe('machinesService payload mapping', () => {
+  it('saves only the name and type when an exercise becomes a group activity', () => {
+    expect(createMachineSavePayload({
+      id: 'pilates',
+      muscleGroups: ['abs'],
+      name: 'Pilates',
+      note: 'Previous strength exercise note',
+      trackingType: 'group',
+    })).toEqual({
+      id: 'pilates',
+      muscleGroups: [],
+      name: 'Pilates',
+      note: '',
+      trackingType: 'group',
+    });
+  });
+
   it('creates the machine RPC payload', () => {
     expect(
       createMachineSavePayload({

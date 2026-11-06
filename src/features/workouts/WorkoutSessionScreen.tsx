@@ -122,7 +122,13 @@ export function WorkoutSessionScreen({
   } = sessionState;
   const filteredMachines = filterMachines(machines, machineSearchText);
   const machineIds = useMemo(
-    () => [...new Set(draftWorkout.exercises.map((exercise) => exercise.machineId))],
+    () => [
+      ...new Set(
+        draftWorkout.exercises
+          .filter((exercise) => exercise.trackingType === 'strength')
+          .map((exercise) => exercise.machineId),
+      ),
+    ],
     [draftWorkout.exercises],
   );
   const previousMaxesQuery = useQuery({
@@ -247,14 +253,16 @@ export function WorkoutSessionScreen({
   async function createExerciseForMachine(machine: Machine): Promise<WorkoutExercise> {
     let historySets: WorkoutSet[] = [];
 
-    try {
-      historySets = await loadLatestSetsForMachine({
-        currentWorkoutId: workout.id,
-        machineId: machine.id,
-        userId,
-      });
-    } catch {
-      showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+    if (machine.trackingType !== 'group') {
+      try {
+        historySets = await loadLatestSetsForMachine({
+          currentWorkoutId: workout.id,
+          machineId: machine.id,
+          userId,
+        });
+      } catch {
+        showAppAlert(strings.alerts.storageLoadTitle, strings.alerts.storageLoadMessage);
+      }
     }
 
     return {
@@ -285,9 +293,14 @@ export function WorkoutSessionScreen({
   }
 
   function confirmDeleteExercise(exerciseId: string) {
+    const exercise = draftWorkout.exercises.find((item) => item.id === exerciseId);
     showAppAlert(
-      strings.alerts.deleteExerciseTitle,
-      strings.alerts.deleteExerciseMessage,
+      exercise?.trackingType === 'group'
+        ? strings.alerts.deleteGroupActivityTitle
+        : strings.alerts.deleteExerciseTitle,
+      exercise?.trackingType === 'group'
+        ? strings.alerts.deleteGroupActivityMessage
+        : strings.alerts.deleteExerciseMessage,
       [
         {
           text: strings.actions.cancel,

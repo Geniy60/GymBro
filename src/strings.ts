@@ -131,6 +131,7 @@ export const strings = {
   },
   machineTracking: {
     cardio: 'Кардио',
+    group: 'Групповые занятия',
     strength: 'Силовое',
   },
   stats: {
@@ -173,12 +174,14 @@ export const strings = {
       `Тренировка «${name}» будет удалена из списка.`,
     deleteExerciseTitle: 'Удалить упражнение?',
     deleteExerciseMessage: 'Все подходы этого упражнения будут удалены.',
+    deleteGroupActivityMessage: 'Занятие будет удалено из этой тренировки.',
+    deleteGroupActivityTitle: 'Удалить занятие?',
     exitWorkoutTitle: 'Сохранить тренировку?',
-    exitWorkoutMessage: 'Перед выходом можно сохранить введенные подходы.',
+    exitWorkoutMessage: 'Перед выходом можно сохранить тренировку.',
     invalidWorkoutTitle: 'Проверь подходы',
     restoreWorkoutDraftTitle: 'Восстановить тренировку?',
     restoreWorkoutDraftMessage:
-      'Найден незавершенный черновик. Можно продолжить с последними введенными подходами.',
+      'Найден незавершенный черновик. Можно продолжить с последними изменениями.',
     notificationPermissionTitle: 'Уведомления выключены',
     notificationPermissionMessage:
       'Таймер запущен, но телефон не покажет уведомление без разрешения.',
@@ -199,6 +202,7 @@ export const strings = {
       editTitle: 'Редактировать упражнение',
       nameLabel: 'Название',
       namePlaceholder: 'Например, жим ногами',
+      groupNamePlaceholder: 'Например, пилатес',
       muscleGroupLabel: 'Группы мышц',
       muscleGroupHint: 'Выбери одну или несколько групп.',
       noteLabel: 'Заметка',
@@ -222,6 +226,7 @@ export const strings = {
     defaultName: 'Тренировка',
     defaultNameWithDate: (weekday: string, date: string) => `${weekday} ${date}`,
     deleteExercise: 'Удалить упражнение',
+    deleteGroupActivity: 'Удалить занятие',
     deleteSet: 'Удалить подход',
     emptyExercises: 'Добавь упражнение выше, затем вноси подходы по одному.',
     expandExercise: 'Развернуть упражнение',

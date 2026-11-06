@@ -13,7 +13,9 @@ The initial app shell is in place with a compact header, safe-area handling, and
 - Exercises
 - Workouts
 
-The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. Exercise saves now go through one transactional Supabase RPC so exercise rows and muscle-group rows are updated atomically. The standard exercise catalog currently contains 33 items.
+The Exercises tab supports list, search, add, edit, and delete. Exercise data still loads from the existing Supabase machine tables through a small service layer and TanStack Query. Exercise saves now go through one transactional Supabase RPC so exercise rows and muscle-group rows are updated atomically. The standard exercise catalog includes strength, cardio, and group activities.
+
+Exercise tracking now supports strength, cardio, and group activities. Group activities require only a name in the catalog and record attendance in workouts without sets or metric inputs. Their history shows attendance dates using the existing exercise history query.
 
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically. Active workout drafts are autosaved locally on the phone and can be restored after app restart before they are saved to Supabase. The active workout screen has separate Save and Finish actions: Save persists without closing the workout, while Finish saves and returns to the workout list.
 
@@ -39,6 +41,37 @@ The main header has a manual refresh action next to settings. It invalidates the
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Added Pilates, Mobility, and Healthy Spine group activities with matching catalog images.
+
+Details:
+
+- Added and applied `20261106160000_gymbro_add_group_activity_catalog.sql` with the three requested Russian names, stable catalog IDs, `group` tracking, empty notes, and no muscle groups.
+- Generated three square catalog images with the built-in image generation tool, matching the existing gray studio style while featuring an adult woman in dusty pink sportswear.
+- Saved the exact generated PNGs at `assets/machines/pilates.png`, `assets/machines/mobility.png`, and `assets/machines/healthy-spine.png` and registered the matching catalog IDs in `src/machineImages.ts`.
+- Pilates uses a mat bridge pose, Mobility a low lunge with torso rotation, and Healthy Spine a bird-dog pose.
+- Verified all three catalog entries are readable through the app's Supabase client and have no notes or muscle-group rows.
+- Verified `npx.cmd tsc --noEmit` and `npm.cmd test` pass (40 tests in 9 files).
+- Verified the updated Android bundle includes all three assets and their PNGs return HTTP 200 through the Expo Go tunnel.
+- The user approved publishing the group activity implementation, catalog entries, and images to the repository. No APK build was requested.
+
+Previous step:
+
+Added the group activity tracking type for name-only attendance records such as Pilates or yoga.
+
+Details:
+
+- Extended the existing tracking type with `group` and centralized its Russian UI label in `src/strings.ts`.
+- Added and applied `20261106150000_gymbro_group_activities.sql` to allow the new type in the exercise catalog and workout exercise tables, without adding tables or changing existing records.
+- Extended the existing type selector; group activity forms show only the name and type, and saves omit muscle groups and notes.
+- Group workout entries use an empty set list, show only the activity name/type and delete action, and skip previous-set and maximum-weight requests.
+- Kept group attendance intact when saving, loading, repeating, and restoring workout drafts; reused the existing history query to show dates without set counts or weight metrics.
+- Added focused regression coverage for empty-set creation, name-only catalog payloads, group workout payloads, and loading group entries alongside strength exercises.
+- Verified `npx.cmd tsc --noEmit` and `npm.cmd test` pass (40 tests in 9 files).
+- Verified the actual database RPCs under the `anon` role in a rolled-back transaction: mixed workout save/load, zero group sets, date history, exercise-name search, repeat, resave, and removal all work; strength and cardio metrics remain intact.
+- Phone UI verification is the next step; no APK build or repository push was requested for this change.
+
+Previous step:
 
 Added matching catalog images for the existing knee push-ups and plank exercises.
 
@@ -2593,10 +2626,11 @@ Verified:
 
 ## Next Proposed Step
 
-When requested, build a new APK to include the approved exercise images and validate the custom Android exact-alarm module and the migrated splash configuration.
+When requested, build a new APK to include the group activity type and images and validate the custom Android exact-alarm module and migrated splash configuration.
 
 ## Important Decisions
 
+- Keep the existing realistic gray studio catalog style; group activity images feature an adult woman wearing pink sportswear.
 - Prefer a working personal-use product over technical perfection.
 - Keep changes small, incremental, easy to review, and easy to understand.
 - Avoid speculative infrastructure and future-proof architecture.

@@ -149,7 +149,11 @@ export function MachineFormScreen({
               accessibilityLabel={strings.forms.machine.nameLabel}
               autoFocus
               onChangeText={(value) => updateMachineTextDraft('name', value)}
-              placeholder={strings.forms.machine.namePlaceholder}
+              placeholder={
+                machineDraft.trackingType === 'group'
+                  ? strings.forms.machine.groupNamePlaceholder
+                  : strings.forms.machine.namePlaceholder
+              }
               placeholderTextColor={colors.muted}
               style={[
                 styles.formInput,
@@ -167,7 +171,7 @@ export function MachineFormScreen({
               {strings.forms.machine.trackingTypeLabel}
             </Text>
             <View style={styles.trackingTypeControl}>
-              {(['strength', 'cardio'] as const).map((trackingType) => {
+              {(['strength', 'cardio', 'group'] as const).map((trackingType) => {
                 const isSelected = machineDraft.trackingType === trackingType;
 
                 return (
@@ -196,24 +200,28 @@ export function MachineFormScreen({
             </View>
           </View>
 
-          <MachineMuscleGroupPicker
-            onToggleMuscleGroup={toggleMuscleGroup}
-            selectedMuscleGroups={machineDraft.muscleGroups}
-          />
+          {machineDraft.trackingType !== 'group' ? (
+            <>
+              <MachineMuscleGroupPicker
+                onToggleMuscleGroup={toggleMuscleGroup}
+                selectedMuscleGroups={machineDraft.muscleGroups}
+              />
 
-          <View style={styles.formField}>
-            <Text style={styles.fieldLabel}>{strings.forms.machine.noteLabel}</Text>
-            <TextInput
-              accessibilityLabel={strings.forms.machine.noteLabel}
-              multiline
-              onChangeText={(value) => updateMachineTextDraft('note', value)}
-              placeholder={strings.forms.machine.notePlaceholder}
-              placeholderTextColor={colors.muted}
-              style={[styles.formInput, styles.noteInput]}
-              textAlignVertical="top"
-              value={machineDraft.note}
-            />
-          </View>
+              <View style={styles.formField}>
+                <Text style={styles.fieldLabel}>{strings.forms.machine.noteLabel}</Text>
+                <TextInput
+                  accessibilityLabel={strings.forms.machine.noteLabel}
+                  multiline
+                  onChangeText={(value) => updateMachineTextDraft('note', value)}
+                  placeholder={strings.forms.machine.notePlaceholder}
+                  placeholderTextColor={colors.muted}
+                  style={[styles.formInput, styles.noteInput]}
+                  textAlignVertical="top"
+                  value={machineDraft.note}
+                />
+              </View>
+            </>
+          ) : null}
 
           <MachineFormActions
             machine={machine}
@@ -275,7 +283,8 @@ function createStyles(colors: AppThemeColors) {
     borderRadius: 8,
     flex: 1,
     justifyContent: 'center',
-    minHeight: 38,
+    minHeight: 44,
+    paddingHorizontal: 4,
   },
   selectedTrackingTypeButton: {
     backgroundColor: colors.active,
@@ -286,6 +295,7 @@ function createStyles(colors: AppThemeColors) {
     color: colors.muted,
     fontSize: 14,
     fontWeight: '800',
+    textAlign: 'center',
   },
   selectedTrackingTypeButtonText: {
     color: colors.primary,

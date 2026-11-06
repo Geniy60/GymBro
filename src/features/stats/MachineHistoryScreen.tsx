@@ -16,6 +16,7 @@ import type {
   ExerciseHistorySummary,
   MachineHistoryItem,
   MachineHistorySet,
+  MachineTrackingType,
 } from '../../types';
 import {
   formatCardioDistance,
@@ -30,7 +31,7 @@ type MachineHistoryScreenProps = {
   isLoadingHistory: boolean;
   maxDateLabel?: string;
   maxWeightKg?: number;
-  mode: 'cardio' | 'strength';
+  mode: MachineTrackingType;
   onBack: () => void;
   selectedItem: ExerciseHistorySummary;
   userId?: string;
@@ -75,7 +76,13 @@ export function MachineHistoryScreen({
         <View style={styles.exerciseSummaryHeader}>
           <View style={styles.exerciseIconBadge}>
             <Ionicons
-              name={mode === 'cardio' ? 'walk-outline' : 'barbell-outline'}
+              name={
+                mode === 'group'
+                  ? 'people-outline'
+                  : mode === 'cardio'
+                    ? 'walk-outline'
+                    : 'barbell-outline'
+              }
               size={20}
               color={colors.primary}
             />
@@ -157,20 +164,28 @@ export function MachineHistoryScreen({
             <View style={styles.monthSection}>
               <Text style={styles.monthTitle}>{group.title}</Text>
               <View style={styles.monthGroup}>
-                {group.items.map((historyItem, index) => (
-                  <MachineHistoryRow
-                    isExpanded={expandedHistoryItemId === historyItem.id}
-                    isFirst={index === 0}
-                    item={historyItem}
-                    key={historyItem.id}
-                    onToggle={() =>
-                      setExpandedHistoryItemId((currentItemId) =>
-                        currentItemId === historyItem.id ? null : historyItem.id,
-                      )
-                    }
-                    userId={userId}
-                  />
-                ))}
+                {group.items.map((historyItem, index) =>
+                  mode === 'group' ? (
+                    <GroupActivityHistoryRow
+                      isFirst={index === 0}
+                      item={historyItem}
+                      key={historyItem.id}
+                    />
+                  ) : (
+                    <MachineHistoryRow
+                      isExpanded={expandedHistoryItemId === historyItem.id}
+                      isFirst={index === 0}
+                      item={historyItem}
+                      key={historyItem.id}
+                      onToggle={() =>
+                        setExpandedHistoryItemId((currentItemId) =>
+                          currentItemId === historyItem.id ? null : historyItem.id,
+                        )
+                      }
+                      userId={userId}
+                    />
+                  ),
+                )}
               </View>
             </View>
           )}
@@ -191,6 +206,30 @@ function SummaryMetric({ label, value }: { label: string; value: string }) {
       <Text numberOfLines={2} style={styles.summaryMetricValue}>
         {value}
       </Text>
+    </View>
+  );
+}
+
+function GroupActivityHistoryRow({
+  isFirst,
+  item,
+}: {
+  isFirst: boolean;
+  item: MachineHistoryItem;
+}) {
+  const { colors } = useAppTheme();
+  const styles = useAppStyles(createStyles);
+
+  return (
+    <View style={[styles.historyRow, isFirst && styles.firstHistoryRow]}>
+      <View style={styles.historyRowHeader}>
+        <View style={styles.historyIconBadge}>
+          <Ionicons name="checkmark-outline" size={17} color={colors.primary} />
+        </View>
+        <View style={styles.historyTextBlock}>
+          <Text style={styles.historyDate}>{item.dateLabel}</Text>
+        </View>
+      </View>
     </View>
   );
 }

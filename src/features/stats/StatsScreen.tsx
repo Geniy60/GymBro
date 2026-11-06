@@ -40,14 +40,18 @@ export function StatsScreen({ userId }: StatsScreenProps) {
   });
   const historyQuery = useQuery({
     enabled:
-      userId !== null && selectedHistoryItem?.trackingType === 'strength',
+      userId !== null &&
+      selectedHistoryItem !== null &&
+      selectedHistoryItem.trackingType !== 'cardio',
     queryFn: () =>
       loadMachineHistory({
         machineId: selectedHistoryItem?.id ?? '',
         userId: userId ?? '',
       }),
     queryKey:
-      userId === null || selectedHistoryItem?.trackingType !== 'strength'
+      userId === null ||
+      selectedHistoryItem === null ||
+      selectedHistoryItem.trackingType === 'cardio'
         ? queryKeys.machineHistory('none', 'none')
         : queryKeys.machineHistory(userId, selectedHistoryItem.id),
   });
@@ -105,7 +109,7 @@ export function StatsScreen({ userId }: StatsScreenProps) {
     );
   }
 
-  if (selectedHistoryItem?.trackingType === 'strength') {
+  if (selectedHistoryItem !== null) {
     const selectedMachineHistory = historyQuery.data ?? [];
     const isLoadingHistory =
       selectedMachineHistory.length === 0 && historyQuery.isFetching;
@@ -117,7 +121,7 @@ export function StatsScreen({ userId }: StatsScreenProps) {
         isLoadingHistory={isLoadingHistory}
         maxDateLabel={selectedMachineMax?.dateLabel}
         maxWeightKg={selectedMachineMax?.maxWeightKg ?? undefined}
-        mode="strength"
+        mode={selectedHistoryItem.trackingType}
         onBack={() => setSelectedHistoryItem(null)}
         selectedItem={selectedHistoryItem}
         userId={userId ?? ''}

@@ -341,17 +341,20 @@ export function createWorkoutSavePayload(workout: Workout): WorkoutSavePayload &
       machineId: exercise.machineId,
       machineName: exercise.machineName,
       trackingType: exercise.trackingType,
-      sets: exercise.sets.map((workoutSet) => ({
-        distanceKm: parseOptionalNumber(workoutSet.distanceKm),
-        durationSeconds: parseDurationSeconds(workoutSet.durationMinutes),
-        elevationMeters: parseOptionalNumber(workoutSet.elevationMeters),
-        id: workoutSet.id,
-        inclinePercent: parseOptionalNumber(workoutSet.inclinePercent),
-        note: workoutSet.note,
-        reps: workoutSet.reps,
-        speedKmh: parseOptionalNumber(workoutSet.speedKmh),
-        weightKg: parseWeightKg(workoutSet.weightKg),
-      })),
+      sets:
+        exercise.trackingType === 'group'
+          ? []
+          : exercise.sets.map((workoutSet) => ({
+              distanceKm: parseOptionalNumber(workoutSet.distanceKm),
+              durationSeconds: parseDurationSeconds(workoutSet.durationMinutes),
+              elevationMeters: parseOptionalNumber(workoutSet.elevationMeters),
+              id: workoutSet.id,
+              inclinePercent: parseOptionalNumber(workoutSet.inclinePercent),
+              note: workoutSet.note,
+              reps: workoutSet.reps,
+              speedKmh: parseOptionalNumber(workoutSet.speedKmh),
+              weightKg: parseWeightKg(workoutSet.weightKg),
+            })),
     })),
     id: workout.id,
     name: workout.name,

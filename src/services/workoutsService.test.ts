@@ -31,6 +31,36 @@ beforeEach(() => {
 });
 
 describe('workoutsService payload mapping', () => {
+  it('preserves a group activity in the workout payload without any sets', () => {
+    const payload = createWorkoutSavePayload({
+      id: 'workout-1',
+      userId: 'user-1',
+      name: 'Workout',
+      startedAt: '2026-11-06T10:00:00.000Z',
+      exercises: [{
+        id: 'group-exercise',
+        machineId: 'pilates',
+        machineName: 'Pilates',
+        trackingType: 'group',
+        sets: [{
+          ...emptyCardioFields,
+          id: 'stale-set',
+          note: '',
+          reps: '10',
+          weightKg: '20',
+        }],
+      }],
+    });
+
+    expect(payload.exercises).toEqual([{
+      id: 'group-exercise',
+      machineId: 'pilates',
+      machineName: 'Pilates',
+      trackingType: 'group',
+      sets: [],
+    }]);
+  });
+
   it('creates the RPC payload and normalizes weight input', () => {
     const payload = createWorkoutSavePayload({
       exercises: [
@@ -301,6 +331,13 @@ describe('workoutsService read mapping', () => {
                     tracking_type: 'strength',
                     workout_id: 'workout-1',
                   },
+                  {
+                    id: 'group-exercise',
+                    machine_id: 'pilates',
+                    machine_name_snapshot: 'Pilates',
+                    tracking_type: 'group',
+                    workout_id: 'workout-1',
+                  },
                 ],
                 error: null,
               }),
@@ -344,6 +381,13 @@ describe('workoutsService read mapping', () => {
           sets: [
             { ...emptyCardioFields, id: 'set-1', note: 'good', reps: '10', weightKg: '50' },
           ],
+        },
+        {
+          id: 'group-exercise',
+          machineId: 'pilates',
+          machineName: 'Pilates',
+          trackingType: 'group',
+          sets: [],
         },
       ],
       id: 'workout-1',
