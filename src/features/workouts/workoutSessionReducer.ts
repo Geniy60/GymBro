@@ -1,8 +1,5 @@
 import type { Workout, WorkoutExercise, WorkoutSet } from '../../types';
-import {
-  addSetToExercise,
-  createEmptySetsForTrackingType,
-} from './workoutSessionModel';
+import { addSetToExercise } from './workoutSessionModel';
 
 export type WorkoutSessionDraftState = {
   collapsedExerciseIds: string[];
@@ -175,26 +172,25 @@ function clearExerciseSets(
   state: WorkoutSessionDraftState,
   exerciseId: string,
 ): WorkoutSessionDraftState {
-  const exerciseToClear = state.draftWorkout.exercises.find(
-    (exercise) => exercise.id === exerciseId,
-  );
-  const setCount = exerciseToClear?.sets.length ?? 0;
-  const clearedSetIds = exerciseToClear?.sets.map((workoutSet) => workoutSet.id) ?? [];
-  const trackingType = exerciseToClear?.trackingType ?? 'strength';
+  return updateExercises(state, (exercise) => {
+    if (exercise.id !== exerciseId || exercise.trackingType === 'group') {
+      return exercise;
+    }
 
-  return {
-    ...updateExercises(state, (exercise) =>
-      exercise.id === exerciseId
-        ? {
-            ...exercise,
-            sets: createEmptySetsForTrackingType(trackingType, setCount),
-          }
-        : exercise,
-    ),
-    visibleSetNoteIds: state.visibleSetNoteIds.filter(
-      (currentId) => !clearedSetIds.includes(currentId),
-    ),
-  };
+    return {
+      ...exercise,
+      sets: exercise.sets.map((workoutSet) =>
+        exercise.trackingType === 'cardio'
+          ? {
+              ...workoutSet,
+              distanceKm: '',
+              durationMinutes: '',
+              elevationMeters: '',
+            }
+          : { ...workoutSet, reps: '' },
+      ),
+    };
+  });
 }
 
 function toggleId(ids: string[], id: string): string[] {

@@ -2,7 +2,6 @@ import { createId } from '../../createId';
 import { strings } from '../../strings';
 import type {
   Machine,
-  MachineTrackingType,
   MuscleGroup,
   Workout,
   WorkoutExercise,
@@ -84,21 +83,6 @@ export function createSetsForMachine(
 
 export function createEmptySets(count: number): WorkoutSet[] {
   return Array.from({ length: count }, createEmptySet);
-}
-
-export function createEmptySetsForTrackingType(
-  trackingType: MachineTrackingType,
-  currentSetCount: number,
-): WorkoutSet[] {
-  if (trackingType === 'group') {
-    return [];
-  }
-
-  if (trackingType === 'cardio') {
-    return [createEmptySet()];
-  }
-
-  return createEmptySets(currentSetCount > 0 ? currentSetCount : 4);
 }
 
 export function addSetToExercise(exercise: WorkoutExercise): WorkoutExercise {

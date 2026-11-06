@@ -17,6 +17,8 @@ The Exercises tab supports list, search, add, edit, and delete. Exercise data st
 
 Exercise tracking now supports strength, cardio, and group activities. Group activities require only a name in the catalog and record attendance in workouts without sets or metric inputs. Their history shows attendance dates using the existing exercise history query.
 
+The workout exercise clear action resets only strength repetitions or cardio distance, elevation, and duration. It preserves set rows, weights, cardio speed and incline, notes, and note visibility.
+
 The Workouts tab starts and edits factual workout logs for the selected local phone user. A workout contains exercises selected from the Exercises list, and each exercise contains individually entered sets with weight, reps, and an optional set note. Workout data now loads from Supabase through a small service layer and TanStack Query. Workout saves now go through one transactional Supabase RPC so workout rows, exercises, and sets are updated atomically. Active workout drafts are autosaved locally on the phone and can be restored after app restart before they are saved to Supabase. The active workout screen has separate Save and Finish actions: Save persists without closing the workout, while Finish saves and returns to the workout list.
 
 The active workout screen now has a rest timer button. The timer duration is stored locally on the phone, defaults to 90 seconds, can be changed from Settings, and schedules a local device notification through `expo-notifications` when started. Notification support is loaded lazily when the timer starts. Expo Go may still show its known `expo-notifications` limitation warning even though local timer notifications arrive.
@@ -41,6 +43,20 @@ The main header has a manual refresh action next to settings. It invalidates the
 The project is now linked to EAS as `@geniy60/gymbro` and has an Android internal-distribution APK build profile named `apk`.
 
 ## Last Completed Step
+
+Made the workout exercise clear action reset results while preserving exercise setup.
+
+Details:
+
+- Cardio clearing now resets only distance, elevation, and duration; speed, incline, notes, and set identity remain unchanged.
+- Following the user's clarification, strength clearing resets only repetitions in each existing set, preserving weights, row count, notes, and set identity.
+- Preserved visible note state and removed the now-unused helper that regenerated empty sets during clearing.
+- Updated the centralized Russian accessibility labels to describe the fields each clear action resets.
+- Updated the strength reducer regression test and added cardio coverage for selective clearing, unchanged neighboring exercises, preserved notes, and immutable input state.
+- Verified `npx.cmd tsc --noEmit` and `npm.cmd test` pass (41 tests in 9 files).
+- No database changes or new dependencies were needed.
+
+Previous step:
 
 Added Pilates, Mobility, and Healthy Spine group activities with matching catalog images.
 
@@ -2626,7 +2642,7 @@ Verified:
 
 ## Next Proposed Step
 
-When requested, build a new APK to include the group activity type and images and validate the custom Android exact-alarm module and migrated splash configuration.
+Verify selective clearing on the phone for one cardio and one strength exercise. When requested, build a new APK to include the recent changes and validate the custom Android exact-alarm module and migrated splash configuration.
 
 ## Important Decisions
 

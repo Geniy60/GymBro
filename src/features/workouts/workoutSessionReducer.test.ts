@@ -121,8 +121,8 @@ describe('workoutSessionDraftReducer', () => {
     expect(state.visibleSetNoteIds).toEqual([]);
   });
 
-  it('adds and clears sets through reducer actions', () => {
-    idMock.state.values = ['set-3', 'clear-1', 'clear-2', 'clear-3'];
+  it('clears only strength repetitions while preserving sets, weights, and notes', () => {
+    idMock.state.values = ['set-3'];
     let state = workoutSessionDraftReducer(
       createWorkoutSessionDraftState(workout),
       {
@@ -148,12 +148,57 @@ describe('workoutSessionDraftReducer', () => {
       },
     );
 
-    expect(state.draftWorkout.exercises[0].sets.map((set) => set.id)).toEqual([
-      'clear-1',
-      'clear-2',
-      'clear-3',
+    expect(state.draftWorkout.exercises[0].sets).toEqual([
+      { ...emptyCardioFields, id: 'set-1', note: 'warmup', reps: '', weightKg: '50' },
+      { ...emptyCardioFields, id: 'set-2', note: '', reps: '', weightKg: '60' },
+      { ...emptyCardioFields, id: 'set-3', note: '', reps: '', weightKg: '60' },
     ]);
-    expect(state.visibleSetNoteIds).toEqual([]);
+    expect(state.visibleSetNoteIds).toEqual(['set-1', 'set-2']);
+    expect(workout.exercises[0].sets[0].reps).toBe('10');
+  });
+
+  it('clears cardio distance, elevation, and time while preserving setup and other exercises', () => {
+    const cardioWorkout: Workout = {
+      ...workout,
+      exercises: [
+        ...workout.exercises,
+        {
+          id: 'cardio-exercise',
+          machineId: 'treadmill',
+          machineName: 'Treadmill',
+          trackingType: 'cardio',
+          sets: [{
+            ...emptyCardioFields,
+            id: 'cardio-set',
+            distanceKm: '3.2',
+            durationMinutes: '25',
+            elevationMeters: '80',
+            inclinePercent: '4',
+            note: 'Steady pace',
+            reps: '',
+            speedKmh: '7.5',
+            weightKg: '',
+          }],
+        },
+      ],
+    };
+    const state = workoutSessionDraftReducer(
+      {
+        ...createWorkoutSessionDraftState(cardioWorkout),
+        visibleSetNoteIds: ['cardio-set', 'set-1'],
+      },
+      { exerciseId: 'cardio-exercise', type: 'clearExerciseSets' },
+    );
+
+    expect(state.draftWorkout.exercises[1].sets).toEqual([{
+      ...cardioWorkout.exercises[1].sets[0],
+      distanceKm: '',
+      durationMinutes: '',
+      elevationMeters: '',
+    }]);
+    expect(state.draftWorkout.exercises[0]).toBe(cardioWorkout.exercises[0]);
+    expect(state.visibleSetNoteIds).toEqual(['cardio-set', 'set-1']);
+    expect(cardioWorkout.exercises[1].sets[0].distanceKm).toBe('3.2');
   });
 
   it('deletes exercises and toggles collapse state', () => {
