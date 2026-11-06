@@ -40,6 +40,19 @@ The project is now linked to EAS as `@geniy60/gymbro` and has an Android interna
 
 ## Last Completed Step
 
+Added matching catalog images for the existing knee push-ups and plank exercises.
+
+Details:
+
+- Generated two square, realistic studio-style images with the built-in image generation tool, using the existing dumbbell lunge and barbell hip thrust illustrations as style references.
+- Saved the exact generated PNGs at `assets/machines/knee-push-ups.png` and `assets/machines/forearm-plank.png`.
+- Registered them in `src/machineImages.ts` for the existing database exercise IDs `339d73bd-e5c0-4744-978d-0c7263db890d` and `5c872629-2b8f-4e09-9f33-954d481b0685` respectively.
+- Kept the existing image frames, exercise records, and database schema unchanged.
+- Verified `npx.cmd tsc --noEmit` and `npm.cmd test` pass (37 tests in 9 files).
+- The user approved the images after the Expo Go phone review.
+
+Previous step:
+
 Upgraded the project from Expo SDK 54 to SDK 58 for compatibility with the installed Expo Go app.
 
 Details:
@@ -2580,7 +2593,7 @@ Verified:
 
 ## Next Proposed Step
 
-Continue checking navigation, saved user and theme, workout editing, measurements, and the rest timer fallback in Expo Go. When requested, build a new APK to validate the custom Android exact-alarm module and the migrated splash configuration.
+When requested, build a new APK to include the approved exercise images and validate the custom Android exact-alarm module and the migrated splash configuration.
 
 ## Important Decisions
 
